@@ -14,8 +14,10 @@ namespace POSScreen.Components.Data
         {
             new(){
                 Id = 1,
-                Cols = "col-1",
-                Rows = "row-1",
+                X = 2,
+                Y = 2,
+                ColSpan = 2,
+                RowSpan = 2,
                 Color = Color.Aqua,
                 BgColor = Color.Black,
                 Text = "Burger",
@@ -23,8 +25,10 @@ namespace POSScreen.Components.Data
             },
             new(){ 
                 Id = 2,
-                Cols = "col-3",
-                Rows = "row-cols-5",
+                X = 5,
+                Y = 2,
+                ColSpan = 4,
+                RowSpan = 4,
                 BgColor = Color.DarkRed,
                 Color = Color.White,
                 Text = "Coke",

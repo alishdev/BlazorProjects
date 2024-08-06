@@ -6,9 +6,11 @@
 <div class="container m-2">
 @foreach (var button in _topList)
 {
-    <button type="button" class="@button.Cols @button.Rows" style="color:@button.Color.Name;background-color:@button.BgColor.Name">@button.Text</button>
+    <button type="button" style="color:@button.Color.Name;background-color:@button.BgColor.Name" id="@button.Id" @onclick="@(async ()=>{await ButtonClick(button.Id);})">@button.Text</button>
 }
 </div>
+
+<Modal @ref="modal" />
 
 @code{
     List<ButtonModel> _topList = new();
@@ -17,4 +19,15 @@
     {
         _topList = PLURepository.GetTopPage();
     }
+
+    private async Task ButtonClick(int id)
+    {
+        var btn = _topList.FirstOrDefault(x => x.Id == id);
+        var parameters = new Dictionary<string, object>();
+        parameters.Add("Message", $"clicked on id: {id}");
+        await modal.ShowAsync<SimpleMessage>(title: "You clicked on", parameters: parameters);
+    }
+
+    private Modal modal = default!;
+    private string? message;
 }
