@@ -1,9 +1,12 @@
 using POSScreen.Components;
+using POSScreen.Components.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddRazorComponents()
+builder.Services
+    .AddScoped<IPLURepository, PLURepository>()
+    .AddRazorComponents()
     .AddInteractiveServerComponents();
 
 var app = builder.Build();
