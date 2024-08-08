@@ -5,10 +5,10 @@ namespace POSScreen.Components.Models
     public class ButtonModel
     {
         public int Id { get; set; }
-        public int X { get; set; }
-        public int ColSpan { get; set; }
-        public int Y { get; set; }
-        public int RowSpan { get; set; }
+        public string Top { get; set; }
+        public string Width { get; set; }
+        public string Right { get; set; }
+        public string Height { get; set; }
         public Color BgColor { get; set; }
         public Color Color { get; set; }
         public string Text { get; set; }

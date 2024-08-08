@@ -3,12 +3,12 @@
 
 <PageTitle>POS</PageTitle>
 
-<div class="container m-2">
 @foreach (var button in _topList)
 {
-    <button type="button" style="color:@button.Color.Name;background-color:@button.BgColor.Name" id="@button.Id" @onclick="@(async ()=>{await ButtonClick(button.Id);})">@button.Text</button>
+    <button type="button" style="color:@button.Color.Name;background-color:@button.BgColor.Name;position:absolute;top:@button.Top;right:@button.Right;width:@button.Width;height:@button.Height;" id="@button.Id" @onclick="@(async ()=>{await ButtonClick(button.Id);})">
+        @button.Text
+    </button>
 }
-</div>
 
 <Modal @ref="modal" />
 

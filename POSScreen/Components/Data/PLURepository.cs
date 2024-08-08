@@ -14,24 +14,46 @@ namespace POSScreen.Components.Data
         {
             new(){
                 Id = 1,
-                X = 2,
-                Y = 2,
-                ColSpan = 2,
-                RowSpan = 2,
+                Top = "0px",
+                Right = "0px",
+                Width = "200px",
+                Height = "200px",
                 Color = Color.Aqua,
                 BgColor = Color.Black,
-                Text = "Burger",
+                Text = "0-0",
                 PopupMessage = false
             },
             new(){ 
                 Id = 2,
-                X = 5,
-                Y = 2,
-                ColSpan = 4,
-                RowSpan = 4,
+                Top = "220px",
+                Right = "0px",
+                Width = "200px",
+                Height = "200px",
                 BgColor = Color.DarkRed,
                 Color = Color.White,
-                Text = "Coke",
+                Text = "220-0",
+                PopupMessage = true
+            },
+           new(){
+                Id = 3,
+                Top = "400px",
+                Right = "0px",
+                Width = "200px",
+                Height = "200px",
+                Color = Color.Yellow,
+                BgColor = Color.Black,
+                Text = "300-0",
+                PopupMessage = false
+            },
+            new(){
+                Id = 4,
+                Top = "400px",
+                Right = "220px",
+                Width = "200px",
+                Height = "200px",
+                BgColor = Color.SpringGreen,
+                Color = Color.White,
+                Text = "300-220",
                 PopupMessage = true
             }
         };
