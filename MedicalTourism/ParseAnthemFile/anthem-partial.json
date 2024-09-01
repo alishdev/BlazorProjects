@@ -1,0 +1,50 @@
+{
+  "reporting_entity_name": "Anthem Inc",
+  "reporting_entity_type": "health insurance issuer",
+  "reporting_structure": [
+    {
+      "reporting_plans": [
+        {
+          "plan_name": "ENTPRS DIABETS - PARTNER FUND SERVICES LLC - ANTHEM",
+          "plan_id_type": "EIN",
+          "plan_id": "822089386",
+          "plan_market_type": "group"
+        }
+      ],
+      "in_network_files": [
+        {
+          "description": "Highmark BS : Highmark BS Network",
+          "location": "https://anthembcca.mrf.bcbs.com/2024-08_378_49A0_in-network-rates_10_of_18.json.gz?&Expires=1726840840&Signature=q0Bzb6VGAWWJVq4aUkjwrDU1qT9vK9X4ggrFc1lkOWQBqrqmurLQRl87jYgfyUnQQ0d21I6K1Jo36EIKCfKaST4gG2zr04WFtPNpvE3bMpuNiRj8pE5IYFfuatvvQa67dgOsXyLeJhd8vAsOszl9oWOA5-D~ZIvzZTJhfZMocuD~mteCwneviZ3u55QeLgdHN~qDZLVVJAYnMuJ94heHhldsjd~ckRLzT0lE0fDYKtu-1qDaw1OPGDdQw2CrsG9Zc3Hfn44qRpeWAQS1eSDUA7iFdms7~VFeLmaqsFXawat~NiQjU4JEx~QXPa6feR8OCGkaDhs59IUJvtEN-isZ-A__&Key-Pair-Id=K27TQMT39R1C8A"
+        },
+        {
+          "description": "In-Network Negotiated Rates Files",
+          "location": "https://anthembcca.mrf.bcbs.com/2024-08_131_17B0_in-network-rates_5_of_18.json.gz?&Expires=1726840840&Signature=T7mUzf5qxgferedlGUrNtmW-ivyl8Invi~1vvbV2v2P3uT8dBelwfZjPPnG0nRWV94ZUNrv6P0gBvNKkzAJMNeoesTFb07VbGqiKaLezkBM8v1dmzZXXB9qBX-kr7jgbHiEO8bnQ4VEUbpeHRFlrAFkWJR17U811zadymI9pRc~ocJJsiSlc5P-~nL-E1x60n11IvZ0g~3Wjo14tWbasbh8I2trOgmP05WqtASekqD28gKNK9F49hWkJOcRN~t0y38n24ADArhRc4WJcoLiNgYquqINKrDTeqBWLOEKnzLcc1M0keB2UBlL4wW25AihH3gCIu1tkjAbxSU8Pvd7zRw__&Key-Pair-Id=K27TQMT39R1C8A"
+        }
+      ],
+      "allowed_amount_file": {
+        "description": "Out-of-Network Allowed Amounts Files",
+        "location": "https://antm-pt-prod-dataz-nogbd-nophi-us-east1.s3.amazonaws.com/anthem/2024-08-01_anthem-oon-multiplan-empty_allowed-amounts.json.gz"
+      }
+    },
+    {
+      "reporting_plans": [
+        {
+          "plan_name": "LIVE HEALTH ONLINE - WEINTRAUB ZOLKIN TALERICO & SELTH LLP - ANTHEM",
+          "plan_id_type": "EIN",
+          "plan_id": "821862326",
+          "plan_market_type": "group"
+        }
+      ],
+      "in_network_files": [
+        {
+          "description": "In-Network Negotiated Rates Files",
+          "location": "https://anthembcca.mrf.bcbs.com/2024-08_131_17B0_in-network-rates_5_of_18.json.gz?&Expires=1726840840&Signature=T7mUzf5qxgferedlGUrNtmW-ivyl8Invi~1vvbV2v2P3uT8dBelwfZjPPnG0nRWV94ZUNrv6P0gBvNKkzAJMNeoesTFb07VbGqiKaLezkBM8v1dmzZXXB9qBX-kr7jgbHiEO8bnQ4VEUbpeHRFlrAFkWJR17U811zadymI9pRc~ocJJsiSlc5P-~nL-E1x60n11IvZ0g~3Wjo14tWbasbh8I2trOgmP05WqtASekqD28gKNK9F49hWkJOcRN~t0y38n24ADArhRc4WJcoLiNgYquqINKrDTeqBWLOEKnzLcc1M0keB2UBlL4wW25AihH3gCIu1tkjAbxSU8Pvd7zRw__&Key-Pair-Id=K27TQMT39R1C8A"
+        }
+      ],
+      "allowed_amount_file": {
+        "description": "Out-of-Network Allowed Amounts Files",
+        "location": "https://antm-pt-prod-dataz-nogbd-nophi-us-east1.s3.amazonaws.com/anthem/2024-08-01_anthem-oon-multiplan-empty_allowed-amounts.json.gz"
+      }
+    }
+  ]
+}
