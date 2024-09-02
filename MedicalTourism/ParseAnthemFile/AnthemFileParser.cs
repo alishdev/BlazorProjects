@@ -1,16 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Linq;
-using System.Net.Http.Json;
-using System.Text;
-using System.Text.Json;
-using System.Text.Json.Serialization;
-using System.Threading.Tasks;
-using System.Web;
-using System.Xml.Linq;
-using MySql.Data.MySqlClient;
+﻿using MySql.Data.MySqlClient;
 using Newtonsoft.Json;
+using System.Configuration;
+using System.Text.Json;
 
 namespace ParseAnthemFile;
 public class AnthemFileParser
@@ -18,6 +9,7 @@ public class AnthemFileParser
     public ReportingData ParseAnthemFile(string jsonFilePath)
     {
         string jsonContent = "";
+        CustomConsole.SetLogFilePath("anthem-log.txt");
 
         using (StreamReader reader = new StreamReader(jsonFilePath))
         {
@@ -35,13 +27,13 @@ public class AnthemFileParser
             string reportingEntityName = root.GetProperty("reporting_entity_name").GetString();
             string reportingEntityType = root.GetProperty("reporting_entity_type").GetString();
 
-            var reportingStructure = new List<ReportingStructure>();
+            List<ReportingStructure> reportingStructure = new List<ReportingStructure>();
             foreach (JsonElement structureElement in root.GetProperty("reporting_structure").EnumerateArray())
             {
-                var reportingPlans = new List<ReportingPlan>();
+                List<ReportingPlan> reportingPlans = new List<ReportingPlan>();
                 foreach (JsonElement planElement in structureElement.GetProperty("reporting_plans").EnumerateArray())
                 {
-                    var plan = new ReportingPlan
+                    ReportingPlan plan = new ReportingPlan
                     {
                         PlanName = planElement.GetProperty("plan_name").GetString(),
                         PlanIdType = planElement.GetProperty("plan_id_type").GetString(),
@@ -51,10 +43,10 @@ public class AnthemFileParser
                     reportingPlans.Add(plan);
                 }
 
-                var inNetworkFiles = new List<InNetworkFile>();
+                List<InNetworkFile> inNetworkFiles = new List<InNetworkFile>();
                 foreach (JsonElement fileElement in structureElement.GetProperty("in_network_files").EnumerateArray())
                 {
-                    var file = new InNetworkFile
+                    InNetworkFile file = new InNetworkFile
                     {
                         Description = fileElement.GetProperty("description").GetString(),
                         Location = fileElement.GetProperty("location").GetString()
@@ -62,14 +54,14 @@ public class AnthemFileParser
                     inNetworkFiles.Add(file);
                 }
 
-                var allowedAmountFileElement = structureElement.GetProperty("allowed_amount_file");
-                var allowedAmountFile = new AllowedAmountFile
+                JsonElement allowedAmountFileElement = structureElement.GetProperty("allowed_amount_file");
+                AllowedAmountFile allowedAmountFile = new AllowedAmountFile
                 {
                     Description = allowedAmountFileElement.GetProperty("description").GetString(),
                     Location = allowedAmountFileElement.GetProperty("location").GetString()
                 };
 
-                var structure = new ReportingStructure
+                ReportingStructure structure = new ReportingStructure
                 {
                     ReportingPlans = reportingPlans,
                     InNetworkFiles = inNetworkFiles,
@@ -78,7 +70,7 @@ public class AnthemFileParser
                 reportingStructure.Add(structure);
             }
 
-            var reportingData = new ReportingData
+            ReportingData reportingData = new ReportingData
             {
                 ReportingEntityName = reportingEntityName,
                 ReportingEntityType = reportingEntityType,
@@ -86,12 +78,12 @@ public class AnthemFileParser
             };
 
             // Example usage
-            Console.WriteLine($"Reporting Entity Name: {reportingData.ReportingEntityName}");
-            foreach (var structure in reportingData.ReportingStructure)
+            CustomConsole.WriteLine($"Reporting Entity Name: {reportingData.ReportingEntityName}");
+            foreach (ReportingStructure structure in reportingData.ReportingStructure)
             {
-                foreach (var plan in structure.ReportingPlans)
+                foreach (ReportingPlan plan in structure.ReportingPlans)
                 {
-                    Console.WriteLine($"Plan Name: {plan.PlanName}");
+                    CustomConsole.WriteLine($"Plan Name: {plan.PlanName}");
                 }
             }
 
@@ -114,49 +106,49 @@ public class AnthemFileParser
                 if (line.StartsWith("{\"reporting_plans\""))
                     index++;
                 else
-                    Console.WriteLine(line);
+                    CustomConsole.WriteLine(line);
                 if (line.Contains("ENTPRS DIABETS - PARTNER FUND SERVICES LLC", StringComparison.OrdinalIgnoreCase))
                 {
                     ParseOneCompany(line);
+                    break;
                 }
                 if (index % 1000 == 0)
-                    Console.Write(".");
+                    CustomConsole.Write(".");
             }
             reader.Close();
         }
-        Console.WriteLine($"Index: {index}");
+        CustomConsole.WriteLine($"Index: {index}");
     }
 
-    void ParseOneCompany(string json)
+    private void ParseOneCompany(string json)
     {
         if (json.EndsWith(","))
         {
             json = json.Substring(0, json.Length - 1);
         }
 
-        var data = JsonConvert.DeserializeObject<ReportingStructure>(json);
-        foreach (var p in data.ReportingPlans)
+        ReportingStructure? data = JsonConvert.DeserializeObject<ReportingStructure>(json);
+        foreach (ReportingPlan p in data.ReportingPlans)
         {
 
-            Console.WriteLine($"PlanName: {p.PlanName}");
-            Console.WriteLine($"PlanIdType: {p.PlanIdType}");
-            Console.WriteLine($"PlanId: {p.PlanId}");
-            Console.WriteLine($"PlanMarketType: {p.PlanMarketType}");
+            CustomConsole.WriteLine($"PlanName: {p.PlanName}");
+            CustomConsole.WriteLine($"PlanIdType: {p.PlanIdType}");
+            CustomConsole.WriteLine($"PlanId: {p.PlanId}");
+            CustomConsole.WriteLine($"PlanMarketType: {p.PlanMarketType}");
         }
-        foreach (var f in data.InNetworkFiles)
+        foreach (InNetworkFile f in data.InNetworkFiles)
         {
-            Console.WriteLine($"InNetworkFile Description: {f.Description}");
-            Console.WriteLine($"InNetworkFile Location: {ParseLocation(f.Location)}");
+            CustomConsole.WriteLine($"InNetworkFile Description: {f.Description}");
+            CustomConsole.WriteLine($"InNetworkFile Location: {ParseLocation(f.Location)}");
         }
     }
 
-    string ParseLocation(string location)
+    private string ParseLocation(string location)
     {
         // parse url
-        var uri = new Uri(location);
+        Uri uri = new Uri(location);
         string path = uri.AbsolutePath;
         if (path.StartsWith("/"))
-
             path = path.Substring(1);
 
         return path;
@@ -172,38 +164,38 @@ public class AnthemFileParser
     {
         string connectionString = ReadConnectionString();
 
-        using (var connection = new MySqlConnection(connectionString))
+        using (MySqlConnection connection = new MySqlConnection(connectionString))
         {
             connection.Open();
 
-            using (var transaction = connection.BeginTransaction())
+            using (MySqlTransaction transaction = connection.BeginTransaction())
             {
                 try
                 {
                     // Insert ReportingData
                     string insertReportingDataQuery = "INSERT INTO ReportingData (ReportingEntityName, ReportingEntityType) VALUES (@ReportingEntityName, @ReportingEntityType)";
-                    using (var cmd = new MySqlCommand(insertReportingDataQuery, connection, transaction))
+                    using (MySqlCommand cmd = new MySqlCommand(insertReportingDataQuery, connection, transaction))
                     {
                         cmd.Parameters.AddWithValue("@ReportingEntityName", reportingData.ReportingEntityName);
                         cmd.Parameters.AddWithValue("@ReportingEntityType", reportingData.ReportingEntityType);
                         cmd.ExecuteNonQuery();
                         long reportingDataId = cmd.LastInsertedId;
 
-                        foreach (var structure in reportingData.ReportingStructure)
+                        foreach (ReportingStructure structure in reportingData.ReportingStructure)
                         {
                             // Insert ReportingStructure
                             string insertReportingStructureQuery = "INSERT INTO ReportingStructure (ReportingDataId) VALUES (@ReportingDataId)";
-                            using (var structureCmd = new MySqlCommand(insertReportingStructureQuery, connection, transaction))
+                            using (MySqlCommand structureCmd = new MySqlCommand(insertReportingStructureQuery, connection, transaction))
                             {
                                 structureCmd.Parameters.AddWithValue("@ReportingDataId", reportingDataId);
                                 structureCmd.ExecuteNonQuery();
                                 long reportingStructureId = structureCmd.LastInsertedId;
 
-                                foreach (var plan in structure.ReportingPlans)
+                                foreach (ReportingPlan plan in structure.ReportingPlans)
                                 {
                                     // Insert ReportingPlan
                                     string insertReportingPlanQuery = "INSERT INTO ReportingPlan (ReportingStructureId, PlanName, PlanIdType, PlanId, PlanMarketType) VALUES (@ReportingStructureId, @PlanName, @PlanIdType, @PlanId, @PlanMarketType)";
-                                    using (var planCmd = new MySqlCommand(insertReportingPlanQuery, connection, transaction))
+                                    using (MySqlCommand planCmd = new MySqlCommand(insertReportingPlanQuery, connection, transaction))
                                     {
                                         planCmd.Parameters.AddWithValue("@ReportingStructureId", reportingStructureId);
                                         planCmd.Parameters.AddWithValue("@PlanName", plan.PlanName);
@@ -214,11 +206,11 @@ public class AnthemFileParser
                                     }
                                 }
 
-                                foreach (var file in structure.InNetworkFiles)
+                                foreach (InNetworkFile file in structure.InNetworkFiles)
                                 {
                                     // Insert InNetworkFile
                                     string insertInNetworkFileQuery = "INSERT INTO InNetworkFile (ReportingStructureId, Description, Location) VALUES (@ReportingStructureId, @Description, @Location)";
-                                    using (var fileCmd = new MySqlCommand(insertInNetworkFileQuery, connection, transaction))
+                                    using (MySqlCommand fileCmd = new MySqlCommand(insertInNetworkFileQuery, connection, transaction))
                                     {
                                         fileCmd.Parameters.AddWithValue("@ReportingStructureId", reportingStructureId);
                                         fileCmd.Parameters.AddWithValue("@Description", file.Description);
@@ -229,7 +221,7 @@ public class AnthemFileParser
 
                                 // Insert AllowedAmountFile
                                 string insertAllowedAmountFileQuery = "INSERT INTO AllowedAmountFile (ReportingStructureId, Description, Location) VALUES (@ReportingStructureId, @Description, @Location)";
-                                using (var allowedAmountFileCmd = new MySqlCommand(insertAllowedAmountFileQuery, connection, transaction))
+                                using (MySqlCommand allowedAmountFileCmd = new MySqlCommand(insertAllowedAmountFileQuery, connection, transaction))
                                 {
                                     allowedAmountFileCmd.Parameters.AddWithValue("@ReportingStructureId", reportingStructureId);
                                     allowedAmountFileCmd.Parameters.AddWithValue("@Description", structure.AllowedAmountFile.Description);
@@ -245,64 +237,9 @@ public class AnthemFileParser
                 catch (Exception ex)
                 {
                     transaction.Rollback();
-                    Console.WriteLine($"An error occurred: {ex.Message}");
+                    CustomConsole.WriteLine($"An error occurred: {ex.Message}");
                 }
             }
         }
     }
-}
-
-public class ReportingData
-{
-    [JsonProperty("reporting_entity_name")]
-    public string ReportingEntityName { get; set; }
-    [JsonProperty("reporting_entity_type")]
-    public string ReportingEntityType { get; set; }
-    [JsonProperty("reporting_structure")]
-    public List<ReportingStructure> ReportingStructure { get; set; }
-}
-
-public class ReportingStructure
-{
-    [JsonProperty("reporting_plans")]
-    public List<ReportingPlan> ReportingPlans { get; set; }
-
-    [JsonProperty("in_network_files")]
-    public List<InNetworkFile> InNetworkFiles { get; set; }
-
-    [JsonProperty("allowed_amount_file")]
-    public AllowedAmountFile AllowedAmountFile { get; set; }
-}
-
-public class ReportingPlan
-{
-    [JsonProperty("plan_name")]
-    public string PlanName { get; set; }
-
-    [JsonProperty("plan_id_type")]
-    public string PlanIdType { get; set; }
-
-    [JsonProperty("plan_id")]
-    public string PlanId { get; set; }
-
-    [JsonProperty("plan_market_type")]
-    public string PlanMarketType { get; set; }
-}
-
-public class InNetworkFile
-{
-    [JsonProperty("description")]
-    public string Description { get; set; }
-
-    [JsonProperty("location")]
-    public string Location { get; set; }
-}
-
-public class AllowedAmountFile
-{
-    [JsonProperty("description")]
-    public string Description { get; set; }
-
-    [JsonProperty("location")]
-    public string Location { get; set; }
 }

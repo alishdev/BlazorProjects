@@ -1,10 +1,5 @@
 using ParseAnthemFile;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
-using System.Text.Json;
-using static Google.Protobuf.Reflection.SourceCodeInfo.Types;
 
 public class Program
 {
@@ -19,7 +14,7 @@ public class Program
         stopwatch.Start();
         parser.ParseAnthemFullFile(@"C:\Users\alish\Downloads\2024-08-01_anthem_index.json");
         stopwatch.Stop();
-        Console.WriteLine($"Time elapsed: {stopwatch.Elapsed}");    
+        Console.WriteLine($"Time elapsed: {stopwatch.Elapsed}");
     }
 
     private static void DownloadAndDecompress(ReportingData data)
@@ -41,7 +36,7 @@ public class Program
 
     public static Task DownloadAndDecompress(string location, string desc)
     {
-        
+
         return FileDownloader.DownloadAndDecompressGzFileAsync(location, desc);
     }
 }
