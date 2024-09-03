@@ -29,5 +29,7 @@ public class CustomConsole
     public static void SetLogFilePath(string path)
     {
         logFilePath = path;
+        // Clear the file
+        File.WriteAllText(logFilePath, string.Empty);
     }
 }

@@ -56,3 +56,15 @@ public class AllowedAmountFile
     [JsonProperty("location")]
     public string Location { get; set; }
 }
+
+public class AnthemObjectFile
+{
+    public string Description { get; set; }
+    public List<string> Files { get; set; }
+}
+
+public class AnthemObject
+{
+    public ReportingPlan[] ReportingPlans { get; set; }
+    public List<AnthemObjectFile> InNetworkFiles { get; set; }
+}

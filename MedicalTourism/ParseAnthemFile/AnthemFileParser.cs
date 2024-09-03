@@ -9,7 +9,6 @@ public class AnthemFileParser
     public ReportingData ParseAnthemFile(string jsonFilePath)
     {
         string jsonContent = "";
-        CustomConsole.SetLogFilePath("anthem-log.txt");
 
         using (StreamReader reader = new StreamReader(jsonFilePath))
         {
@@ -109,7 +108,8 @@ public class AnthemFileParser
                     CustomConsole.WriteLine(line);
                 if (line.Contains("ENTPRS DIABETS - PARTNER FUND SERVICES LLC", StringComparison.OrdinalIgnoreCase))
                 {
-                    ParseOneCompany(line);
+                    AnthemObject obj = ParseOneCompany(line);
+                    PrintCompany(obj);
                     break;
                 }
                 if (index % 1000 == 0)
@@ -120,7 +120,7 @@ public class AnthemFileParser
         CustomConsole.WriteLine($"Index: {index}");
     }
 
-    private void ParseOneCompany(string json)
+    private AnthemObject ParseOneCompany(string json)
     {
         if (json.EndsWith(","))
         {
@@ -128,7 +128,41 @@ public class AnthemFileParser
         }
 
         ReportingStructure? data = JsonConvert.DeserializeObject<ReportingStructure>(json);
-        foreach (ReportingPlan p in data.ReportingPlans)
+        AnthemObject anthemObject = new AnthemObject();
+        anthemObject.ReportingPlans = data.ReportingPlans.ToArray();
+        anthemObject.InNetworkFiles = new List<AnthemObjectFile>();
+
+        foreach (InNetworkFile f in data.InNetworkFiles)
+        {
+            string desc = CleanupString(f.Description);
+            string location = CleanupString(ParseLocation(f.Location));
+            AnthemObjectFile? file = anthemObject.InNetworkFiles.FirstOrDefault(x => x.Description == desc);
+            if (file != null)
+            {
+                file.Files.Add(location);
+            }
+            else
+            {
+                file = new AnthemObjectFile();
+                file.Description = desc;
+                file.Files = new List<string> { location };
+                anthemObject.InNetworkFiles.Add(file);
+            }
+        }
+
+        return anthemObject;
+    }
+
+    private static string CleanupString(string input)
+    {
+        return input.Replace("\"", "").Replace(":", "_").Replace(" ", "_").Replace("/", "_").Replace(",", ".").Trim();
+    }
+
+    public void PrintCompany(AnthemObject athemObject)
+    {
+        // print contents of athemObject to CustomConsole
+        CustomConsole.WriteLine("-- Plans --");
+        foreach (ReportingPlan p in athemObject.ReportingPlans)
         {
 
             CustomConsole.WriteLine($"PlanName: {p.PlanName}");
@@ -136,11 +170,72 @@ public class AnthemFileParser
             CustomConsole.WriteLine($"PlanId: {p.PlanId}");
             CustomConsole.WriteLine($"PlanMarketType: {p.PlanMarketType}");
         }
-        foreach (InNetworkFile f in data.InNetworkFiles)
+
+        CustomConsole.WriteLine("-- Files --");
+        athemObject.InNetworkFiles.Sort((x, y) => x.Description.CompareTo(y.Description));
+        foreach (AnthemObjectFile f in athemObject.InNetworkFiles)
         {
-            CustomConsole.WriteLine($"InNetworkFile Description: {f.Description}");
-            CustomConsole.WriteLine($"InNetworkFile Location: {ParseLocation(f.Location)}");
+            CustomConsole.WriteLine($"Description: {f.Description}");
+
+            // compare f.Files using SortFileXofY function
+            f.Files.Sort(SortFileXofY);
+
+            foreach (string file in f.Files)
+            {
+                CustomConsole.WriteLine($"  {file}");
+            }
+        };
+    }
+
+    private (int, int, string) FindOfIndex(string line)
+    {
+        int X = 0, Y = 0;
+        string prefix = line;
+
+        // parsing string _23_of_35.
+        int ofIndex = line.IndexOf("_of_");
+        if (ofIndex > 0)
+        {
+            prefix = line.Substring(0, ofIndex - 1);
+
+            int start = ofIndex + 4;
+            int end = line.IndexOf(".", start);
+            string number = line.Substring(start, end - start);
+            Y = int.Parse(number);
+
+            start = end = ofIndex - 1;
+            while (start > 1 && line[start - 1] != '_')
+            {
+                start--;
+            }
+            number = line.Substring(start, end - start + 1);
+            X = int.Parse(number);
         }
+        else
+        {
+            // TODO: parse 01_02.json
+        }
+
+        return (X, Y, prefix);
+    }
+    private int SortFileXofY(string s1, string s2)
+    {
+        string prefix1, prefix2;
+        int x1, y1;
+        (x1, y1, prefix1) = FindOfIndex(s1);
+        int x2, y2;
+        (x2, y2, prefix2) = FindOfIndex(s2);
+
+        if (y1 == 0 && y2 == 0)
+            return s1.CompareTo(s2);
+
+        if (y1 != y2)
+            return y1.CompareTo(y2);
+
+        if (prefix1 != prefix2)
+            return prefix1.CompareTo(prefix2);
+
+        return x1.CompareTo(x2);
     }
 
     private string ParseLocation(string location)
