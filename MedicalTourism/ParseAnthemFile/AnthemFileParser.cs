@@ -110,6 +110,10 @@ public class AnthemFileParser
                 {
                     AnthemObject obj = ParseOneCompany(line);
                     PrintCompany(obj);
+                    List<Task> tasks = DownloadOneCompany(obj, "C:\\Temp\\DownloadedFiles");
+                    Task.WaitAll(tasks.ToArray());
+                    Console.WriteLine("Press Enter to exit...");
+                    Console.ReadLine();
                     break;
                 }
                 if (index % 1000 == 0)
@@ -135,17 +139,20 @@ public class AnthemFileParser
         foreach (InNetworkFile f in data.InNetworkFiles)
         {
             string desc = CleanupString(f.Description);
+            string url = f.Location;
             string location = CleanupString(ParseLocation(f.Location));
             AnthemObjectFile? file = anthemObject.InNetworkFiles.FirstOrDefault(x => x.Description == desc);
             if (file != null)
             {
                 file.Files.Add(location);
+                file.Urls.Add(url);
             }
             else
             {
                 file = new AnthemObjectFile();
                 file.Description = desc;
                 file.Files = new List<string> { location };
+                file.Urls = new List<string> { url };
                 anthemObject.InNetworkFiles.Add(file);
             }
         }
@@ -158,11 +165,11 @@ public class AnthemFileParser
         return input.Replace("\"", "").Replace(":", "_").Replace(" ", "_").Replace("/", "_").Replace(",", ".").Trim();
     }
 
-    public void PrintCompany(AnthemObject athemObject)
+    public void PrintCompany(AnthemObject anthemObject)
     {
         // print contents of athemObject to CustomConsole
         CustomConsole.WriteLine("-- Plans --");
-        foreach (ReportingPlan p in athemObject.ReportingPlans)
+        foreach (ReportingPlan p in anthemObject.ReportingPlans)
         {
 
             CustomConsole.WriteLine($"PlanName: {p.PlanName}");
@@ -172,8 +179,8 @@ public class AnthemFileParser
         }
 
         CustomConsole.WriteLine("-- Files --");
-        athemObject.InNetworkFiles.Sort((x, y) => x.Description.CompareTo(y.Description));
-        foreach (AnthemObjectFile f in athemObject.InNetworkFiles)
+        anthemObject.InNetworkFiles.Sort((x, y) => x.Description.CompareTo(y.Description));
+        foreach (AnthemObjectFile f in anthemObject.InNetworkFiles)
         {
             CustomConsole.WriteLine($"Description: {f.Description}");
 
@@ -185,6 +192,23 @@ public class AnthemFileParser
                 CustomConsole.WriteLine($"  {file}");
             }
         };
+    }
+
+    public List<Task> DownloadOneCompany(AnthemObject anthemObject, string rootDir)
+    {
+        List<Task> tasks = new List<Task>();
+        foreach (AnthemObjectFile file in anthemObject.InNetworkFiles)
+        {
+            foreach (string url in file.Urls)
+            {
+                string dir = Path.Combine(rootDir, file.Description);
+                Directory.CreateDirectory(rootDir);
+                Directory.CreateDirectory(dir);
+
+                tasks.Add(FileDownloader.DownloadFileAsync(url, dir));
+            }
+        }
+        return tasks;
     }
 
     private (int, int, string) FindOfIndex(string line)

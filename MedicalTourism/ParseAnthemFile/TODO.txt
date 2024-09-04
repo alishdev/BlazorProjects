@@ -1,0 +1,3 @@
+﻿Add timer and filesize, keep updating csv file for later calculations
+? use in-memory db
+new tool to read only first 50 rows and create partial files

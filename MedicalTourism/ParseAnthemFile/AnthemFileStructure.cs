@@ -61,6 +61,7 @@ public class AnthemObjectFile
 {
     public string Description { get; set; }
     public List<string> Files { get; set; }
+    public List<string> Urls { get; set; }
 }
 
 public class AnthemObject
