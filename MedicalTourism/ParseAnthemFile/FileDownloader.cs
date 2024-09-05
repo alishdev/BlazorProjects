@@ -1,5 +1,7 @@
 using Downloader;
+using ParseAnthemFile;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO.Compression;
 
 public class FileDownloader
@@ -47,7 +49,7 @@ public class FileDownloader
         }
     }
 
-    public static async Task DownloadFileAsync(string url, string outputFilePath)
+    public static void DownloadFileAsync(string url, string outputFilePath, string outputFilename)
     {
         CustomConsole.WriteLine($"Downloading {url} to {outputFilePath}");
         DownloadConfiguration downloadOpt = new DownloadConfiguration()
@@ -66,7 +68,19 @@ public class FileDownloader
 
         DirectoryInfo path = new DirectoryInfo(outputFilePath);
         // download into "outputFilePath\fileName.zip"
+        Stopwatch stopwatch = Stopwatch.StartNew();
         downloader.DownloadFileTaskAsync(url, path).Wait();
-        CustomConsole.WriteLine($"Downloaded {url}");
+        stopwatch.Stop();
+
+        //CustomConsole.WriteLine($"Downloaded {url}");
+
+        // Save dir, filename, file size and time to download to csv journal
+        long fileSize = new FileInfo(Path.Combine(outputFilePath, outputFilename)).Length;
+        TimeJournal.Write(new object[] {
+            Path.GetFileName(outputFilePath),
+            outputFilename,
+            fileSize,
+            stopwatch.ElapsedMilliseconds
+        });
     }
 }

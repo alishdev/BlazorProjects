@@ -57,11 +57,16 @@ public class AllowedAmountFile
     public string Location { get; set; }
 }
 
+public class AnthemFileStructure
+{
+    public string File { get; set; }
+    public string Url { get; set; }
+}
+
 public class AnthemObjectFile
 {
     public string Description { get; set; }
-    public List<string> Files { get; set; }
-    public List<string> Urls { get; set; }
+    public List<AnthemFileStructure> Files { get; set; }
 }
 
 public class AnthemObject
