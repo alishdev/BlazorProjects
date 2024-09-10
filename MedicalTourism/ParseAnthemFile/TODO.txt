@@ -9,5 +9,7 @@ new tool to read only first 50 rows and create partial files
 5. Count how many in network files are there
 6. Calculate the amount of data to save in the database - run GetFileSizes until it is done
 
-11. Download file for one hospital
-12. Find the data intersection between the two files
+ParseHospitalFile
+1. Parse hospital file, create list of procedures
+2. Upload procedures into database
+3. Find the data intersection between the two files
