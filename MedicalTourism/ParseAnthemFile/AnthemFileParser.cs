@@ -287,7 +287,8 @@ public class AnthemFileParser
     public async Task GetAllFileSizes(string jsonFilePath)
     {
         int index = 0;
-        int skip = 518709;
+        int skip = 518709 + 19102691;
+        DateTime lastDate = DateTime.Now;
         using (HttpClient client = new HttpClient())
         {
             // Add necessary headers
@@ -338,6 +339,11 @@ public class AnthemFileParser
 
                     if (index % 100 == 0)
                         CustomConsole.Write(".");
+                    if (DateTime.Now.Subtract(lastDate).TotalMinutes > 60)
+                    {
+                        CustomConsole.Write($"{DateTime.Now}");
+                        lastDate = DateTime.Now;
+                    }
                 }
                 reader.Close();
             }
