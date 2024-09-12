@@ -1,6 +1,7 @@
 using CsvHelper;
 using CsvHelper.Configuration;
 using MySql.Data.MySqlClient;
+using System.Configuration;
 using System.Globalization;
 using System.Text.RegularExpressions;
 
@@ -34,72 +35,119 @@ internal class ParseHospitalFile
             csv.Read();
             csv.ReadHeader();
             csv.Context.RegisterClassMap<HospitalDataMap>();
-            string[]? headers = csv.HeaderRecord;
-            Console.WriteLine(string.Join(", ", headers));
-
+            //string[]? headers = csv.HeaderRecord;
+            //Console.WriteLine(string.Join(", ", headers));
             csv.Read();
-            HospitalData dd = csv.GetRecord<HospitalData>();
 
-            csv.Read();
-            csv.ReadHeader();
-            csv.Context.RegisterClassMap<HospitalBodyMap>();
-            headers = csv.HeaderRecord;
-            Console.WriteLine(string.Join(", ", headers));
-
-            int count = 0;
-            while (csv.Read())
+            string connectionString = ConfigurationManager.ConnectionStrings["myConnectionString"].ConnectionString;
+            using (MySqlConnection conn = new MySqlConnection(connectionString))
             {
-                HospitalBody bb = csv.GetRecord<HospitalBody>();
-                Console.WriteLine($"Code1: {bb.Code1}, Gross: {bb.StandardChargeGross}");
-                count++;
+                conn.Open();
+                using (MySqlTransaction transaction = conn.BeginTransaction())
+                {
+
+                    HospitalData hospitalData = csv.GetRecord<HospitalData>();
+                    int hospital = InsertHospitalData(hospitalData, conn, transaction);
+
+                    csv.Read();
+                    csv.ReadHeader();
+                    csv.Context.RegisterClassMap<HospitalBodyMap>();
+                    //headers = csv.HeaderRecord;
+                    //Console.WriteLine(string.Join(", ", headers));
+
+                    int count = 0;
+                    while (csv.Read())
+                    {
+                        HospitalBody procedure = csv.GetRecord<HospitalBody>();
+                        InsertHospitalBody(hospital, procedure, conn, transaction);
+                        //Console.WriteLine($"Code1: {procedure.Code1}, Gross: {procedure.StandardChargeGross}");
+                        count++;
+                        if (count % 1000 == 0)
+                            Console.WriteLine($"Parsed {count} body records");
+                    }
+                    Console.WriteLine($"Parsed {count} body records");
+                    transaction.Commit();
+
+                }
             }
-            Console.WriteLine($"Parsed {count} body records");
         }
     }
 
-    public void InsertHospitalData(HospitalData hospitalData, string connectionString)
+    public int InsertHospitalData(HospitalData hospitalData, MySqlConnection conn, MySqlTransaction transaction)
     {
-        using (MySqlConnection conn = new MySqlConnection(connectionString))
-        {
-            conn.Open();
-            string query = @"
+
+        string query = @"
                 INSERT INTO HospitalData (
                     Name, LastUpdated, AsOfDate, Version, Location, Address, License, FinancialAid, Belief
                 ) VALUES (
                     @Name, @LastUpdated, @AsOfDate, @Version, @Location, @Address, @License, @FinancialAid, @Belief
                 )";
 
-            using (MySqlCommand cmd = new MySqlCommand(query, conn))
-            {
-                cmd.Parameters.AddWithValue("@Name", hospitalData.hospital_name);
-                cmd.Parameters.AddWithValue("@LastUpdated", hospitalData.last_updated_on);
-                cmd.Parameters.AddWithValue("@AsOfDate", hospitalData.as_of_date);
-                cmd.Parameters.AddWithValue("@Version", hospitalData.version);
-                cmd.Parameters.AddWithValue("@Location", hospitalData.hospital_location);
-                cmd.Parameters.AddWithValue("@Address", hospitalData.hospital_address);
-                cmd.Parameters.AddWithValue("@License", hospitalData.license_number);
-                cmd.Parameters.AddWithValue("@FinancialAid", hospitalData.financial_aid_policy);
-                cmd.Parameters.AddWithValue("@Belief", hospitalData.belief);
-
-                cmd.ExecuteNonQuery();
-            }
+        using (MySqlCommand cmd = new MySqlCommand(query, conn, transaction))
+        {
+            cmd.Parameters.AddWithValue("@Name", hospitalData.hospital_name);
+            cmd.Parameters.AddWithValue("@LastUpdated", ToDate(hospitalData.last_updated_on));
+            cmd.Parameters.AddWithValue("@AsOfDate", ToDate(hospitalData.as_of_date));
+            cmd.Parameters.AddWithValue("@Version", hospitalData.version);
+            cmd.Parameters.AddWithValue("@Location", hospitalData.hospital_location);
+            cmd.Parameters.AddWithValue("@Address", hospitalData.hospital_address);
+            cmd.Parameters.AddWithValue("@License", hospitalData.license_number);
+            cmd.Parameters.AddWithValue("@FinancialAid", ToString(hospitalData.financial_aid_policy));
+            cmd.Parameters.AddWithValue("@Belief", ToBool(hospitalData.belief));
+            cmd.ExecuteNonQuery();
+            long id = cmd.LastInsertedId;
+            return Convert.ToInt32(id);
         }
+
     }
 
+    private object ToString(string par) => string.IsNullOrEmpty(par) ? DBNull.Value : par;
 
-    public void InsertHospitalBody(HospitalBody hospitalBody, string connectionString)
+    private DateTime? ToDate(string par)
     {
-        using (MySqlConnection conn = new MySqlConnection(connectionString))
+        if (DateTime.TryParse(par, out DateTime date))
         {
-            conn.Open();
-            string query = @"
-                INSERT INTO HospitalBody (
+            return date;
+        }
+        return null;
+    }
+
+    private decimal? ToDecimal(string par)
+    {
+        if (decimal.TryParse(par, out decimal dec))
+        {
+            return dec;
+        }
+        return null;
+    }
+
+    private bool ToBool(string par)
+    {
+        if (par != null && par.ToLower() == "true")
+            return true;
+        return false;
+    }
+
+    private int? ToInt(string par)
+    {
+        if (int.TryParse(par, out int i))
+        {
+            return i;
+        }
+        return null;
+    }
+
+    public void InsertHospitalBody(int hospitalDataId, HospitalBody hospitalBody, MySqlConnection conn, MySqlTransaction transaction)
+    {
+
+        string query = @"
+                INSERT INTO HospitalBody (HospitalDataId,
                     Description, Code1, Code1Type, Code2, Code2Type, Code3, Code3Type, BillingClass, Setting, 
                     DrugUnitOfMeasurement, DrugTypeOfMeasurement, StandardChargeGross, StandardChargeDiscountedCash, 
                     PayerName, PlanName, Modifiers, StandardChargeNegotiatedDollar, StandardChargeNegotiatedAlgorithm, 
                     StandardChargeNegotiatedPercentage, StandardChargeMin, StandardChargeMax, CountOfComparedRates, 
                     StandardChargeMethodology, AdditionalGenericNotes, Footnote
-                ) VALUES (
+                ) VALUES (@HospitalDataId,
                     @Description, @Code1, @Code1Type, @Code2, @Code2Type, @Code3, @Code3Type, @BillingClass, @Setting, 
                     @DrugUnitOfMeasurement, @DrugTypeOfMeasurement, @StandardChargeGross, @StandardChargeDiscountedCash, 
                     @PayerName, @PlanName, @Modifiers, @StandardChargeNegotiatedDollar, @StandardChargeNegotiatedAlgorithm, 
@@ -107,37 +155,38 @@ internal class ParseHospitalFile
                     @StandardChargeMethodology, @AdditionalGenericNotes, @Footnote
                 )";
 
-            using (MySqlCommand cmd = new MySqlCommand(query, conn))
-            {
-                cmd.Parameters.AddWithValue("@Description", hospitalBody.Description);
-                cmd.Parameters.AddWithValue("@Code1", hospitalBody.Code1);
-                cmd.Parameters.AddWithValue("@Code1Type", hospitalBody.Code1Type);
-                cmd.Parameters.AddWithValue("@Code2", hospitalBody.Code2);
-                cmd.Parameters.AddWithValue("@Code2Type", hospitalBody.Code2Type);
-                cmd.Parameters.AddWithValue("@Code3", hospitalBody.Code3);
-                cmd.Parameters.AddWithValue("@Code3Type", hospitalBody.Code3Type);
-                cmd.Parameters.AddWithValue("@BillingClass", hospitalBody.BillingClass);
-                cmd.Parameters.AddWithValue("@Setting", hospitalBody.Setting);
-                cmd.Parameters.AddWithValue("@DrugUnitOfMeasurement", hospitalBody.DrugUnitOfMeasurement);
-                cmd.Parameters.AddWithValue("@DrugTypeOfMeasurement", hospitalBody.DrugTypeOfMeasurement);
-                cmd.Parameters.AddWithValue("@StandardChargeGross", hospitalBody.StandardChargeGross);
-                cmd.Parameters.AddWithValue("@StandardChargeDiscountedCash", hospitalBody.StandardChargeDiscountedCash);
-                cmd.Parameters.AddWithValue("@PayerName", hospitalBody.PayerName);
-                cmd.Parameters.AddWithValue("@PlanName", hospitalBody.PlanName);
-                cmd.Parameters.AddWithValue("@Modifiers", hospitalBody.Modifiers);
-                cmd.Parameters.AddWithValue("@StandardChargeNegotiatedDollar", hospitalBody.StandardChargeNegotiatedDollar);
-                cmd.Parameters.AddWithValue("@StandardChargeNegotiatedAlgorithm", hospitalBody.StandardChargeNegotiatedAlgorithm);
-                cmd.Parameters.AddWithValue("@StandardChargeNegotiatedPercentage", hospitalBody.StandardChargeNegotiatedPercentage);
-                cmd.Parameters.AddWithValue("@StandardChargeMin", hospitalBody.StandardChargeMin);
-                cmd.Parameters.AddWithValue("@StandardChargeMax", hospitalBody.StandardChargeMax);
-                cmd.Parameters.AddWithValue("@CountOfComparedRates", hospitalBody.CountOfComparedRates);
-                cmd.Parameters.AddWithValue("@StandardChargeMethodology", hospitalBody.StandardChargeMethodology);
-                cmd.Parameters.AddWithValue("@AdditionalGenericNotes", hospitalBody.AdditionalGenericNotes);
-                cmd.Parameters.AddWithValue("@Footnote", hospitalBody.Footnote);
+        using (MySqlCommand cmd = new MySqlCommand(query, conn, transaction))
+        {
+            cmd.Parameters.AddWithValue("@HospitalDataId", hospitalDataId);
+            cmd.Parameters.AddWithValue("@Description", hospitalBody.Description);
+            cmd.Parameters.AddWithValue("@Code1", ToString(hospitalBody.Code1));
+            cmd.Parameters.AddWithValue("@Code1Type", ToString(hospitalBody.Code1Type));
+            cmd.Parameters.AddWithValue("@Code2", ToString(hospitalBody.Code2));
+            cmd.Parameters.AddWithValue("@Code2Type", ToString(hospitalBody.Code2Type));
+            cmd.Parameters.AddWithValue("@Code3", ToString(hospitalBody.Code3));
+            cmd.Parameters.AddWithValue("@Code3Type", ToString(hospitalBody.Code3Type));
+            cmd.Parameters.AddWithValue("@BillingClass", ToString(hospitalBody.BillingClass));
+            cmd.Parameters.AddWithValue("@Setting", ToString(hospitalBody.Setting));
+            cmd.Parameters.AddWithValue("@DrugUnitOfMeasurement", ToString(hospitalBody.DrugUnitOfMeasurement));
+            cmd.Parameters.AddWithValue("@DrugTypeOfMeasurement", ToString(hospitalBody.DrugTypeOfMeasurement));
+            cmd.Parameters.AddWithValue("@StandardChargeGross", ToDecimal(hospitalBody.StandardChargeGross));
+            cmd.Parameters.AddWithValue("@StandardChargeDiscountedCash", ToDecimal(hospitalBody.StandardChargeDiscountedCash));
+            cmd.Parameters.AddWithValue("@PayerName", ToString(hospitalBody.PayerName));
+            cmd.Parameters.AddWithValue("@PlanName", ToString(hospitalBody.PlanName));
+            cmd.Parameters.AddWithValue("@Modifiers", ToString(hospitalBody.Modifiers));
+            cmd.Parameters.AddWithValue("@StandardChargeNegotiatedDollar", ToDecimal(hospitalBody.StandardChargeNegotiatedDollar));
+            cmd.Parameters.AddWithValue("@StandardChargeNegotiatedAlgorithm", ToDecimal(hospitalBody.StandardChargeNegotiatedAlgorithm));
+            cmd.Parameters.AddWithValue("@StandardChargeNegotiatedPercentage", ToDecimal(hospitalBody.StandardChargeNegotiatedPercentage));
+            cmd.Parameters.AddWithValue("@StandardChargeMin", ToDecimal(hospitalBody.StandardChargeMin));
+            cmd.Parameters.AddWithValue("@StandardChargeMax", ToDecimal(hospitalBody.StandardChargeMax));
+            cmd.Parameters.AddWithValue("@CountOfComparedRates", ToInt(hospitalBody.CountOfComparedRates));
+            cmd.Parameters.AddWithValue("@StandardChargeMethodology", ToString(hospitalBody.StandardChargeMethodology));
+            cmd.Parameters.AddWithValue("@AdditionalGenericNotes", ToString(hospitalBody.AdditionalGenericNotes));
+            cmd.Parameters.AddWithValue("@Footnote", ToString(hospitalBody.Footnote));
 
-                cmd.ExecuteNonQuery();
-            }
+            cmd.ExecuteNonQuery();
         }
+
     }
 }
 

@@ -10,6 +10,7 @@ new tool to read only first 50 rows and create partial files
 6. Calculate the amount of data to save in the database - run GetFileSizes until it is done
 
 ParseHospitalFile
-1. Parse hospital file, create list of procedures
-2. Upload procedures into database
+x 1. Parse hospital file, create list of procedures
+x 2. Upload procedures into database
+2b. Sinai format is different, need to parse it differently
 3. Find the data intersection between the two files
