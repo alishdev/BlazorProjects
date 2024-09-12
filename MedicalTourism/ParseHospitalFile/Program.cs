@@ -4,12 +4,12 @@
     {
         private static void Main(string[] args)
         {
-            ParseHospitalFile parseHospitalFile = new ParseHospitalFile(@"C:\Data\Sinai-Hospital-of-Baltimore.csv");
+            string file1 = @"C:\Data\Sinai-Hospital-of-Baltimore.csv";
+            string file2 = @"C:\Data\UniversityofMarylandMedicalCenter.csv";
+            string file3 = @"C:\Data\Holy-Cross-Hospital-Silver-Spring.csv";
+            ParseHospitalFile parseHospitalFile = new ParseHospitalFile(file1);
             parseHospitalFile.Parse();
             Console.WriteLine("Done");
-            /*parseHospitalFile = new ParseHospitalFile(@"C:\Data\UniversityofMarylandMedicalCenter.csv");
-            parseHospitalFile.Parse();
-            Console.WriteLine("Done");*/
         }
     }
 }

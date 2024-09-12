@@ -34,9 +34,12 @@ internal class ParseHospitalFile
         {
             csv.Read();
             csv.ReadHeader();
-            csv.Context.RegisterClassMap<HospitalDataMap>();
-            //string[]? headers = csv.HeaderRecord;
+            string[]? headers = csv.HeaderRecord;
             //Console.WriteLine(string.Join(", ", headers));
+            if (headers.Contains("as_of_date"))
+                csv.Context.RegisterClassMap<HospitalDataMapTall>();
+            else
+                csv.Context.RegisterClassMap<HospitalDataMapWide>();
             csv.Read();
 
             string connectionString = ConfigurationManager.ConnectionStrings["myConnectionString"].ConnectionString;
@@ -63,7 +66,10 @@ internal class ParseHospitalFile
                         //Console.WriteLine($"Code1: {procedure.Code1}, Gross: {procedure.StandardChargeGross}");
                         count++;
                         if (count % 1000 == 0)
+                        {
+                            //break;
                             Console.WriteLine($"Parsed {count} body records");
+                        }
                     }
                     Console.WriteLine($"Parsed {count} body records");
                     transaction.Commit();
@@ -159,12 +165,12 @@ internal class ParseHospitalFile
         {
             cmd.Parameters.AddWithValue("@HospitalDataId", hospitalDataId);
             cmd.Parameters.AddWithValue("@Description", hospitalBody.Description);
-            cmd.Parameters.AddWithValue("@Code1", ToString(hospitalBody.Code1));
-            cmd.Parameters.AddWithValue("@Code1Type", ToString(hospitalBody.Code1Type));
-            cmd.Parameters.AddWithValue("@Code2", ToString(hospitalBody.Code2));
-            cmd.Parameters.AddWithValue("@Code2Type", ToString(hospitalBody.Code2Type));
-            cmd.Parameters.AddWithValue("@Code3", ToString(hospitalBody.Code3));
-            cmd.Parameters.AddWithValue("@Code3Type", ToString(hospitalBody.Code3Type));
+            cmd.Parameters.AddWithValue("@Code1", ToString(hospitalBody.Code1 ?? hospitalBody.Codei));
+            cmd.Parameters.AddWithValue("@Code1Type", ToString(hospitalBody.Code1Type ?? hospitalBody.CodeiType));
+            cmd.Parameters.AddWithValue("@Code2", ToString(hospitalBody.Code2 ?? hospitalBody.Codeii));
+            cmd.Parameters.AddWithValue("@Code2Type", ToString(hospitalBody.Code2Type ?? hospitalBody.CodeiiType));
+            cmd.Parameters.AddWithValue("@Code3", ToString(hospitalBody.Code3 ?? hospitalBody.Codeiii));
+            cmd.Parameters.AddWithValue("@Code3Type", ToString(hospitalBody.Code3Type ?? hospitalBody.CodeiiiType));
             cmd.Parameters.AddWithValue("@BillingClass", ToString(hospitalBody.BillingClass));
             cmd.Parameters.AddWithValue("@Setting", ToString(hospitalBody.Setting));
             cmd.Parameters.AddWithValue("@DrugUnitOfMeasurement", ToString(hospitalBody.DrugUnitOfMeasurement));
@@ -201,6 +207,14 @@ public sealed class HospitalBodyMap : ClassMap<HospitalBody>
         Map(m => m.Code2Type).Name("code|2|type");
         Map(m => m.Code3).Name("code|3");
         Map(m => m.Code3Type).Name("code|3|type");
+        // sometimes code is in roman
+        Map(m => m.Codei).Name("code|[i]");
+        Map(m => m.CodeiType).Name("code|[i]|type");
+        Map(m => m.Codeii).Name("code|[ii]");
+        Map(m => m.CodeiiType).Name("code|[ii]|type");
+        Map(m => m.Codeiii).Name("code|[iii]");
+        Map(m => m.CodeiiiType).Name("code|[iii]|type");
+
         Map(m => m.BillingClass).Name("billing_class");
         Map(m => m.Setting).Name("setting");
         Map(m => m.DrugUnitOfMeasurement).Name("drug_unit_of_measurement");
@@ -236,20 +250,37 @@ public class HospitalData
     public string belief { get; set; }
 }
 
-public class HospitalDataMap : ClassMap<HospitalData>
+public class HospitalDataMapWide : ClassMap<HospitalData>
 {
-    public HospitalDataMap()
+    public HospitalDataMapWide()
     {
-        Map(m => m.hospital_name).Index(0);
-        Map(m => m.last_updated_on).Index(1);
-        Map(m => m.as_of_date).Index(2);
-        Map(m => m.version).Index(3);
-        Map(m => m.hospital_location).Index(4);
-        Map(m => m.hospital_address).Index(5);
-        Map(m => m.license_number).Index(6);
+        int index = 0;
+        Map(m => m.hospital_name).Index(index++);
+        Map(m => m.last_updated_on).Index(index++);
+        //Map(m => m.as_of_date).Index(index++);      // wide does not have as_of_date
+        Map(m => m.version).Index(index++);
+        Map(m => m.hospital_location).Index(index++);
+        Map(m => m.hospital_address).Index(index++);
+        Map(m => m.license_number).Index(index++);
         Map(m => m.financial_aid_policy).Index(7);
-        Map(m => m.belief).Index(8);
+        Map(m => m.belief).Index(index++);
+    }
+}
 
+public class HospitalDataMapTall : ClassMap<HospitalData>
+{
+    public HospitalDataMapTall()
+    {
+        int index = 0;
+        Map(m => m.hospital_name).Index(index++);
+        Map(m => m.last_updated_on).Index(index++);
+        Map(m => m.as_of_date).Index(index++);
+        Map(m => m.version).Index(index++);
+        Map(m => m.hospital_location).Index(index++);
+        Map(m => m.hospital_address).Index(index++);
+        Map(m => m.license_number).Index(index++);
+        Map(m => m.financial_aid_policy).Index(index++);
+        Map(m => m.belief).Index(index++);
     }
 }
 
@@ -262,6 +293,12 @@ public class HospitalBody
     public string Code2Type { get; set; }
     public string Code3 { get; set; }
     public string Code3Type { get; set; }
+    public string Codei { get; set; }
+    public string CodeiType { get; set; }
+    public string Codeii { get; set; }
+    public string CodeiiType { get; set; }
+    public string Codeiii { get; set; }
+    public string CodeiiiType { get; set; }
     public string BillingClass { get; set; }
     public string Setting { get; set; }
     public string DrugUnitOfMeasurement { get; set; }
