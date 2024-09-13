@@ -1,0 +1,41 @@
+﻿@page "/find-procedure"
+@using Microsoft.AspNetCore.Http.Extensions
+
+@inject NavigationManager NavigationManager
+
+<h3>FindProcedure</h3>
+
+<EditForm Model="model" OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="form-group p-2">
+        <label for="procedureCode">Procedure Code</label>
+        <InputText id="procedureCode" class="form-control" @bind-Value="model.ProcedureCode" />
+    </div>
+
+    <div class="form-group p-2">
+        <label for="procedureName">Procedure Name</label>
+        <InputText id="procedureName" class="form-control" @bind-Value="model.ProcedureName" />
+    </div>
+
+    <div class="p-2">
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </div>
+</EditForm>
+
+@code {
+    SearchProcedureModel model = new SearchProcedureModel();
+
+    void HandleValidSubmit()
+    {
+        // create url encoded query string from model
+        var queryString = new QueryBuilder();
+        queryString.Add("procedureCode", Uri.EscapeDataString(model.ProcedureCode ?? ""));
+        queryString.Add("procedureName", Uri.EscapeDataString(model.ProcedureName ?? ""));
+
+        // navigate to the page "/procedure-list" with the query string
+        NavigationManager.NavigateTo($"/procedure-list{queryString.ToQueryString()}");
+    }
+}
+

@@ -1,0 +1,142 @@
+﻿@page "/procedure-list"
+@using Microsoft.AspNetCore.WebUtilities
+@inject IHospitalDataRepository hospitalDataRepository
+@inject NavigationManager NavigationManager
+
+<PageTitle>Procedures</PageTitle>
+
+<h1>Procedures</h1>
+
+@if (procList == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <p>Records found @procList.Length</p>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Procedure</th>
+                <th>Code1</th>
+                <th>Code2</th>
+                <th>Charge Gross</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var proc in procList)
+            {
+                <tr @onclick="@(()=>{selectedProcedure=proc;})" style="@(proc!=selectedProcedure ? "background-color:white" : "background-color:cornsilk")">
+                    <td>@proc.Description</td>
+                    <td>@proc.Code1</td>
+                    <td>@proc.Code2</td>
+                    <td>@proc.StandardChargeGross</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    // make EditForm visible when a selectedProcedure is not null using css attribute
+    @if(selectedProcedure == null)
+    {
+        <h3>No selection</h3>
+    }
+    else
+    {
+        <div class="container" style="background-color:cornsilk">
+            <EditForm Model="selectedProcedure">
+                <div class="form-group m-2">
+                    <h2>@selectedProcedure.Description</h2>
+                </div>
+                <div class="row m-2">
+                    <div class="col-4">
+                        <div>
+                            <label>Code1:</label>
+                            <InputText @bind-Value="selectedProcedure.Code1" readonly />
+                        </div>
+                        <div>
+                            <label>Code1Type:</label>
+                            <InputText @bind-Value="selectedProcedure.Code1Type" readonly class="w-50"/>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div>
+                            <label>Code2:</label>
+                            <InputText @bind-Value="selectedProcedure.Code2" readonly />
+                        </div>
+                        <div>
+                            <label>Code2Type:</label>
+                            <InputText @bind-Value="selectedProcedure.Code2Type" readonly class="w-50" />
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div>
+                            <label>Code3:</label>
+                            <InputText @bind-Value="selectedProcedure.Code3" readonly />
+                        </div>
+                        <div>
+                            <label>Code3Type:</label>
+                            <InputText @bind-Value="selectedProcedure.Code3Type" readonly class="w-50" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row m-2">
+                    <div class="col col-6">
+                        <label>Charges Gross:</label>
+                        <InputText @bind-Value="selectedProcedure.StandardChargeGross" readonly class="w-50" />
+                    </div>
+                    <div class="col col-6">
+                        <label>Discounted Cash:</label>
+                        <InputText @bind-Value="selectedProcedure.StandardChargeDiscountedCash" readonly class="w-50" />
+                    </div>
+                </div>
+                <div class="row m-2">
+                    <div class="col col-6">
+                        <label>PayerName:</label>
+                        <InputText @bind-Value="selectedProcedure.PayerName" readonly />
+                    </div>
+                    <div class="col col-6">
+                        <label>PlanName:</label>
+                        <InputText @bind-Value="selectedProcedure.PlanName" readonly />
+                    </div>
+                </div>
+                <div class="row">
+                    <label>AdditionalGenericNotes:</label>
+                    <InputText @bind-Value="selectedProcedure.AdditionalGenericNotes" readonly />
+                </div>
+                <div class="row">
+                    <label>Footnote:</label>
+                    <InputText @bind-Value="selectedProcedure.Footnote" readonly />
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <label>Hospital:</label>
+                        <label>@selectedProcedure.Hospital.Name</label>
+                    </div>
+                </div>
+            </EditForm>
+        </div>
+    }
+}
+
+@code {
+    private ProcedureDataModel[]? procList;
+    private ProcedureDataModel selectedProcedure = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        //get procedureName and procedureCode from query string
+        var uri = new Uri(NavigationManager.Uri);
+        var query = QueryHelpers.ParseQuery(uri.Query);
+        var procedureName = query["procedureName"];
+        var procedureCode = query["procedureCode"];
+
+        // Simulate asynchronous loading to demonstrate a loading indicator
+        var list = await hospitalDataRepository.GetHospitalDataAsync(new SearchProcedureModel()
+        {
+            ProcedureCode = procedureCode.ToString(),
+            ProcedureName = procedureName.ToString()
+        } );
+        procList = list.ToArray();
+    }
+}

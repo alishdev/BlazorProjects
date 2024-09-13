@@ -12,5 +12,6 @@ new tool to read only first 50 rows and create partial files
 ParseHospitalFile
 x 1. Parse hospital file, create list of procedures
 x 2. Upload procedures into database
-2b. Sinai format is different, need to parse it differently
+x 2b. Sinai format is different, need to parse it differently
 3. Find the data intersection between the two files
+4. Build UI to show the data
