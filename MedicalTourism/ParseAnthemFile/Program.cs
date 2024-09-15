@@ -14,8 +14,8 @@ public class Program
 
         Stopwatch stopwatch = new Stopwatch();
         stopwatch.Start();
-        //parser.ParseAnthemFullFile(@"C:\Users\alish\Downloads\2024-08-01_anthem_index.json");
-        parser.GetAllFileSizes(@"C:\Data\2024-08-01_anthem_index.json");
+        parser.ParseAnthemFullFile(@"C:\Data\2024-08-01_anthem_index.json");
+        //parser.GetAllFileSizes(@"C:\Data\2024-08-01_anthem_index.json");
         stopwatch.Stop();
         Console.WriteLine($"Time elapsed: {stopwatch.Elapsed}");
     }

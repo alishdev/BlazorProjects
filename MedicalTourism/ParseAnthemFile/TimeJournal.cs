@@ -4,6 +4,11 @@
     {
         private static string fileName = string.Empty;
 
+        public static void SetLogFilePath(string path)
+        {
+            fileName = path;
+        }
+
         public static void Write(object[] args)
         {
             if (fileName == string.Empty)
