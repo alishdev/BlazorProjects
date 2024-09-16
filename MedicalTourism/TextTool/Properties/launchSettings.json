@@ -2,7 +2,7 @@
   "profiles": {
     "TextTool": {
       "commandName": "Project",
-      "commandLineArgs": "C:\\Data\\hospital-sample.csv 10"
+      "commandLineArgs": "-f2 C:\\Data\\file2.csv"
     }
   }
 }
