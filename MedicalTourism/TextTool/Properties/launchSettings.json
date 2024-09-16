@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "TextTool": {
+      "commandName": "Project",
+      "commandLineArgs": "C:\\Data\\hospital-sample.csv 10"
+    }
+  }
+}

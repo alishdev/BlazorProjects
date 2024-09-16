@@ -1,3 +1,4 @@
+namespace MTUtils;
 public class CustomConsole
 {
     private static string logFilePath = "log.txt";

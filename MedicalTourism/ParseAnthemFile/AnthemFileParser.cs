@@ -1,4 +1,5 @@
-﻿using MySql.Data.MySqlClient;
+﻿using MTUtils;
+using MySql.Data.MySqlClient;
 using Newtonsoft.Json;
 using System.Configuration;
 using System.Text.Json;
@@ -173,11 +174,11 @@ public class AnthemFileParser
                 }
                 if (index % 1000 == 0)
                     CustomConsole.Write(".");
-                if (index % 1000 == 0)
+                /*if (index % 1000 == 0)
                 {
                     CustomConsole.WriteLine($"Break");
                     break;
-                }
+                }*/
             }
             reader.Close();
 

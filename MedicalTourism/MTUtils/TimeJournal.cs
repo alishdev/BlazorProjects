@@ -1,6 +1,6 @@
-﻿namespace ParseAnthemFile
+﻿namespace MTUtils
 {
-    internal class TimeJournal
+    public class TimeJournal
     {
         private static string fileName = string.Empty;
 
