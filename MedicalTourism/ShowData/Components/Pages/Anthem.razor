@@ -1,7 +1,23 @@
 ﻿@page "/anthem"
 
-<h3>Anthem</h3>
+<h3>Anthem Plans</h3>
+
+
+<EditForm Model="model">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="form-group p-2">
+        <label for="companyName">Enter company name</label>
+        <InputText id="companyName" class="form-control" @bind-Value="model.CompanyName" />
+    </div>
+
+    <div class="form-group p-2">
+        <label for="planName">Select Plan</label>
+        <InputSelect id="planName" class="form-control" @bind-Value="model.Plans" />
+    </div>
+</EditForm>
 
 @code {
-
+    AnthemCompanyModel model = new AnthemCompanyModel();
 }

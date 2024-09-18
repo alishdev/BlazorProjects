@@ -21,6 +21,7 @@
 
             string outputPath = Path.Combine(Path.GetDirectoryName(filePath),
                 Path.GetFileNameWithoutExtension(filePath) + "-min" + Path.GetExtension(filePath));
+            File.Delete(outputPath);    // make sure to not append to existing file
             File.WriteAllLines(outputPath, firstLines);
         }
     }

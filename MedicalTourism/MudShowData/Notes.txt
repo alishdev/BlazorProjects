@@ -1,0 +1,15 @@
+﻿1. sAdding Blazor intellisense to VS2022
+https://jonhilton.net/visual-studio-2022-blazor-css-intellisense/
+Here’s an MSBuild task you can add to your project’s .csproj file which automates the copying of the static files to wwwroot.
+
+<Target Name="CollectMudBlazorStaticAssets" DependsOnTargets="ResolveStaticWebAssetsInputs" AfterTargets="Build" Condition=" '$(Configuration)' == 'Debug' ">
+	<Copy SourceFiles="%(StaticWebAsset.Identity)" DestinationFolder="wwwroot/temp" Condition="$([System.String]::Copy(%(StaticWebAsset.Identity)).Contains('mudblazor'))" />
+</Target>
+
+<MudAutocomplete @bind-Value="_value"
+                             SearchFunc="Search"
+                             Variant="Variant.Text"
+                             Label="Company Name"
+                             Margin="_margin"
+                             Clearable="_clearable"
+                             />

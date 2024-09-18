@@ -9,9 +9,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ParseHospitalFile", "ParseH
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShowData", "ShowData\ShowData.csproj", "{F2E6576A-5290-46E5-BBD1-6391722EFA8B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TextTool", "TextTool\TextTool.csproj", "{3D1DFC61-3F25-42BB-A12C-896B9506F223}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TextTool", "TextTool\TextTool.csproj", "{3D1DFC61-3F25-42BB-A12C-896B9506F223}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MTUtils", "MTUtils\MTUtils.csproj", "{AA7B98A3-F6E1-43EE-9B66-AAC1789F8914}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MTUtils", "MTUtils\MTUtils.csproj", "{AA7B98A3-F6E1-43EE-9B66-AAC1789F8914}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataUploadTool", "DataUploadTool\DataUploadTool.csproj", "{C84D1AA1-DA35-4432-A3BB-244A3F97D834}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MudShowData", "MudShowData\MudShowData.csproj", "{323A6A80-3F62-44C1-B0F1-2497D5D8529B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +43,14 @@ Global
 		{AA7B98A3-F6E1-43EE-9B66-AAC1789F8914}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AA7B98A3-F6E1-43EE-9B66-AAC1789F8914}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AA7B98A3-F6E1-43EE-9B66-AAC1789F8914}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C84D1AA1-DA35-4432-A3BB-244A3F97D834}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C84D1AA1-DA35-4432-A3BB-244A3F97D834}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C84D1AA1-DA35-4432-A3BB-244A3F97D834}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C84D1AA1-DA35-4432-A3BB-244A3F97D834}.Release|Any CPU.Build.0 = Release|Any CPU
+		{323A6A80-3F62-44C1-B0F1-2497D5D8529B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{323A6A80-3F62-44C1-B0F1-2497D5D8529B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{323A6A80-3F62-44C1-B0F1-2497D5D8529B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{323A6A80-3F62-44C1-B0F1-2497D5D8529B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
