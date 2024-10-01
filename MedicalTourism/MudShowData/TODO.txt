@@ -1,0 +1,3 @@
+﻿1. Implement HospitalRepository - read from db
+2. Add table of procedures to Anthem
+3. Add Loading... icons

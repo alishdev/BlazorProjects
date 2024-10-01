@@ -2,10 +2,11 @@
 @using Microsoft.AspNetCore.WebUtilities
 @inject IHospitalDataRepository hospitalDataRepository
 @inject NavigationManager NavigationManager
+@using System.Net.Http.Json
 
 <PageTitle>Procedures</PageTitle>
 
-<h1>Procedures</h1>
+<h3>Procedures</h3>
 
 @if (procList == null)
 {
@@ -13,110 +14,39 @@
 }
 else
 {
-    <p>Records found @procList.Length</p>
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Procedure</th>
-                <th>Code1</th>
-                <th>Code2</th>
-                <th>Charge Gross</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var proc in procList)
-            {
-                <tr @onclick="@(()=>{selectedProcedure=proc;})" style="@(proc!=selectedProcedure ? "background-color:white" : "background-color:cornsilk")">
-                    <td>@proc.Description</td>
-                    <td>@proc.Code1</td>
-                    <td>@proc.Code2</td>
-                    <td>@proc.StandardChargeGross</td>
-                </tr>
-            }
-        </tbody>
-    </table>
-
-    // make EditForm visible when a selectedProcedure is not null using css attribute
-    @if(selectedProcedure == null)
-    {
-        <h3>No selection</h3>
-    }
-    else
-    {
-        <div class="container" style="background-color:cornsilk">
-            <EditForm Model="selectedProcedure">
-                <div class="form-group m-2">
-                    <h2>@selectedProcedure.Description</h2>
-                </div>
-                <div class="row m-2">
-                    <div class="col-4">
-                        <div>
-                            <label>Code1:</label>
-                            <InputText @bind-Value="selectedProcedure.Code1" readonly />
-                        </div>
-                        <div>
-                            <label>Code1Type:</label>
-                            <InputText @bind-Value="selectedProcedure.Code1Type" readonly class="w-50"/>
-                        </div>
-                    </div>
-                    <div class="col-4">
-                        <div>
-                            <label>Code2:</label>
-                            <InputText @bind-Value="selectedProcedure.Code2" readonly />
-                        </div>
-                        <div>
-                            <label>Code2Type:</label>
-                            <InputText @bind-Value="selectedProcedure.Code2Type" readonly class="w-50" />
-                        </div>
-                    </div>
-                    <div class="col-4">
-                        <div>
-                            <label>Code3:</label>
-                            <InputText @bind-Value="selectedProcedure.Code3" readonly />
-                        </div>
-                        <div>
-                            <label>Code3Type:</label>
-                            <InputText @bind-Value="selectedProcedure.Code3Type" readonly class="w-50" />
-                        </div>
-                    </div>
-                </div>
-                <div class="row m-2">
-                    <div class="col col-6">
-                        <label>Charges Gross:</label>
-                        <InputText @bind-Value="selectedProcedure.StandardChargeGross" readonly class="w-50" />
-                    </div>
-                    <div class="col col-6">
-                        <label>Discounted Cash:</label>
-                        <InputText @bind-Value="selectedProcedure.StandardChargeDiscountedCash" readonly class="w-50" />
-                    </div>
-                </div>
-                <div class="row m-2">
-                    <div class="col col-6">
-                        <label>PayerName:</label>
-                        <InputText @bind-Value="selectedProcedure.PayerName" readonly />
-                    </div>
-                    <div class="col col-6">
-                        <label>PlanName:</label>
-                        <InputText @bind-Value="selectedProcedure.PlanName" readonly />
-                    </div>
-                </div>
-                <div class="row">
-                    <label>AdditionalGenericNotes:</label>
-                    <InputText @bind-Value="selectedProcedure.AdditionalGenericNotes" readonly />
-                </div>
-                <div class="row">
-                    <label>Footnote:</label>
-                    <InputText @bind-Value="selectedProcedure.Footnote" readonly />
-                </div>
-                <div class="row">
-                    <div class="col">
-                        <label>Hospital:</label>
-                        <label>@selectedProcedure.Hospital.Name</label>
-                    </div>
-                </div>
-            </EditForm>
-        </div>
-    }
+    <MudDataGrid Items="@procList"
+                 ReadOnly="true" EditMode="@DataGridEditMode.Cell">
+        <Columns>
+            <HierarchyColumn T="ProcedureDataModel" OpenIcon="@Icons.Custom.Uncategorized.FolderOpen" ClosedIcon="@Icons.Custom.Uncategorized.Folder" />
+            <PropertyColumn Property="x => x.Description" Title="Description" />
+            <PropertyColumn Property="x => x.Code1" />
+            <PropertyColumn Property="x => x.Code2" />
+            <PropertyColumn Property="x => x.StandardChargeGross" Title="Charge Gross" />
+        </Columns>
+        <ChildRowContent>
+            <MudCard>
+                <MudCardHeader>
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.h6">@context.Item.Description</MudText>
+                    </CardHeaderContent>
+                </MudCardHeader>
+                <MudCardContent>
+                    <MudText>Code 1 Type: @context.Item.Code1Type</MudText>
+                    <MudText>Code 1: @context.Item.Code1</MudText>
+                    <MudText>Code 2 Type: @context.Item.Code1Type</MudText>
+                    <MudText>Code 2: @context.Item.Code1</MudText>
+                    <MudText>Code 3 Type: @context.Item.Code1Type</MudText>
+                    <MudText>Code 3: @context.Item.Code1</MudText>
+                    <MudText>Discounted Charge Cash: @context.Item.StandardChargeDiscountedCash</MudText>
+                    <MudText>Max Charge: @context.Item.StandardChargeMax</MudText>
+                    <MudText>Min Charge: @context.Item.StandardChargeMax</MudText>
+                </MudCardContent>
+            </MudCard>
+        </ChildRowContent>
+        <PagerContent>
+            <MudDataGridPager T="ProcedureDataModel" />
+        </PagerContent>
+    </MudDataGrid>
 }
 
 @code {

@@ -1,4 +1,6 @@
 ﻿@page "/anthem"
+@inject IHospitalDataRepository hospitalDataRepository
+
 
 <h3>Anthem Plans</h3>
 
@@ -27,16 +29,15 @@
     }
     else
     {
-        <MudSelect @bind-Value="_value"
+            <MudSelect @bind-Value="_currentPlanIndex"
                    Variant="Variant.Outlined"
                    Label="Pick a plan"
                    Margin="_margin"
-                   Disabled="_disabled"
-                   ReadOnly="_readonly"
-                   Clearable="_clearable">
+                   Style="@(_showPlans?"display:block":"display:none")"
+                   Clearable="false">
             @foreach (var plan in _plans)
             {
-                <MudSelectItem Value="plan">@plan</MudSelectItem>
+                <MudSelectItem  Value="plan.Index">@plan.Plan</MudSelectItem>
             }
         </MudSelect>
     }
@@ -48,54 +49,52 @@
 @code {
     AnthemCompanyModel model = new AnthemCompanyModel();
 
-    string _value;
+    string _currentPlanIndex;
     Margin _margin;
-    bool _dense;
-    bool _disabled;
-    bool _readonly;
-    bool _placeholder;
-    bool _helperText;
-    bool _helperTextOnFocus;
-    bool _clearable;
 
-    private string[] _states =
+    private string[] _companies = [];
+    private List<AnthemCompanyModel> anthemCompanies = null;
+
+    class PlanSelection
     {
-        "Alabama", "Alaska", "Arizona", "Arkansas", "California",
-        "Colorado", "Connecticut", "Delaware", "Florida", "Georgia",
-        "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", "Kansas",
-        "Kentucky", "Louisiana", "Maine", "Maryland", "Massachusetts",
-        "Michigan", "Minnesota", "Mississippi", "Missouri", "Montana",
-        "Nebraska", "Nevada", "New Hampshire", "New Jersey", "New Mexico",
-        "New York", "North Carolina", "North Dakota", "Ohio", "Oklahoma",
-        "Oregon", "Pennsylvania", "Rhode Island", "South Carolina", "South Dakota",
-        "Tennessee", "Texas", "Utah", "Vermont", "Virginia",
-        "Washington", "West Virginia", "Wisconsin", "Wyoming"
-    };
+        public string Index { get; set; }
+        public string Plan { get; set; }
+    }
 
-    private string[] _plans = null;
+    private PlanSelection[] _plans = null;
+    private bool _showPlans = false;
 
     private async Task<IEnumerable<string>> Search(string value, CancellationToken token)
     {
-        // In real life use an asynchronous function for fetching data from an api.
-        await Task.Delay(5, token);
-
         // if text is null or empty, show complete list
         if (string.IsNullOrEmpty(value) || value.Length < 3)
         {
-            _readonly = true;
+            _showPlans = false;
             return [];
         }
 
-        _readonly = false;
-        return _states.Where(x => x.Contains(value, StringComparison.InvariantCultureIgnoreCase));
+        _showPlans = true;
+        return _companies.Where(x => x.Contains(value, StringComparison.InvariantCultureIgnoreCase));
     }
 
     private void AutocompleteTextChanged(string theUserInput)
     {
-        if (string.IsNullOrEmpty(model.CompanyName) || theUserInput != model.CompanyName)
-            _plans = null;
-        else
-            _plans = model.CompanyName.ToCharArray().Select(c => c.ToString()).ToArray();
+        _plans = null;
+        if (!string.IsNullOrEmpty(model.CompanyName) && theUserInput == model.CompanyName)
+        {
+            var company = anthemCompanies.FirstOrDefault(x => x.CompanyName == model.CompanyName);
+            if (company != null)
+            {
+                var initialPlans = company.Plans;
+                var l = new List<PlanSelection>() { new() { Index = "0", Plan = "Select a plan" } };
+                for(int i = 0; i < initialPlans.Count; i++)
+                {
+                    l.Add(new PlanSelection() { Index = (i + 1).ToString(), Plan = initialPlans[i] });
+                };
+                _plans = l.ToArray();
+                _currentPlanIndex = "0";
+            }
+        }
     }
 
     private void AutocompleteValueChanged(string theUserInput)
@@ -109,10 +108,11 @@
         await base.OnParametersSetAsync();
     }
 
-    protected override Task OnInitializedAsync()
+    protected override async Task OnInitializedAsync()
     {
         _margin = Margin.Normal;
-        return base.OnInitializedAsync();
+        anthemCompanies = await hospitalDataRepository.GetAnthemCompanies();
+        _companies = anthemCompanies.Select(x => x.CompanyName).ToArray();
     }
 }
 

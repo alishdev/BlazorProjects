@@ -6,6 +6,28 @@ namespace MudShowData.Data
     {
         public MockHospitalDataRepository() { }
 
+        public Task<List<AnthemCompanyModel>> GetAnthemCompanies()
+        {
+            List<string> plans = new List<string> { "Anthem Blue Cross", "Anthem Blue Shield", "Anthem Blue Cross Blue Shield",
+                "Anthem Blue Cross of California",  "Anthem Blue Cross of Maryland", "Anthem Blue Cross of Virginia"};
+            List<AnthemCompanyModel> mockData = new List<AnthemCompanyModel>() {
+                new AnthemCompanyModel { CompanyName = "Michael and Son", EIN = "1", Plans = plans },
+                new AnthemCompanyModel { CompanyName = "Bob and Sons", EIN = "2", Plans = plans },
+                new AnthemCompanyModel { CompanyName = "Zodiak LLC", EIN = "3", Plans = plans },
+                new AnthemCompanyModel { CompanyName = "Microsoft", EIN = "4", Plans = plans },
+                new AnthemCompanyModel { CompanyName = "Macrosoft", EIN = "5" , Plans = plans},
+                new AnthemCompanyModel { CompanyName = "Microstrategy", EIN = "6" , Plans = plans},
+                new AnthemCompanyModel { CompanyName = "Microplastic", EIN = "7" , Plans = plans},
+            };
+
+            return Task.FromResult(mockData);
+        }
+
+        public Task<IEnumerable<ProcedureDataModel>> GetAnthemPlanDetails(string plan)
+        {
+            return GetHospitalDataAsync(new SearchProcedureModel { ProcedureName = plan });
+        }
+
         public Task<IEnumerable<ProcedureDataModel>> GetHospitalDataAsync(SearchProcedureModel searchOptions)
         {
             List<ProcedureDataModel> mockData = new List<ProcedureDataModel>
@@ -119,6 +141,7 @@ namespace MudShowData.Data
 
             return Task.FromResult<IEnumerable<ProcedureDataModel>>(mockData);
         }
+
     }
 }
 
