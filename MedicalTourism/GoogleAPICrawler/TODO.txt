@@ -1,0 +1,12 @@
+1. Use .NET library to make a call to google
+2. Build a function that will read a list of hospitals and find them in google
+3. Parse the page and find price transparency link
+
+// google limits
+https://developers.google.com/webmaster-tools/limits
+
+.net library
+https://developers.google.com/api-client-library/dotnet/get_started
+
+// enable custom search api
+https://medium.com/@TerryFrederick/google-search-api-everything-you-need-to-know-fd1e24cfca45
