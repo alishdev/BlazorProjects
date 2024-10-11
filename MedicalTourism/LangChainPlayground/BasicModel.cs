@@ -6,7 +6,7 @@ using LangChain.Providers.OpenAI.Predefined;
 using LangChain.Schema;
 
 namespace LangChainPlayground;
-
+#pragma warning disable SKEXP0050, CS8604
 public class BasicModel
 {
     public async Task Play()

@@ -12,8 +12,10 @@
       <PackageReference Include="LangChain.Core" Version="0.15.2" />
       <PackageReference Include="LangChain.Databases.Sqlite" Version="0.15.4-dev.5" />
       <PackageReference Include="LangChain.DocumentLoaders.Pdf" Version="0.15.2" />
+      <PackageReference Include="LangChain.Providers.LLamaSharp" Version="0.15.2" />
       <PackageReference Include="LangChain.Providers.Ollama" Version="0.15.3-dev.31" />
       <PackageReference Include="LangChain.Sources.Pdf" Version="0.13.1-dev.178" />
+      <PackageReference Include="LLamaSharp.Backend.Cpu" Version="0.16.0" />
       <PackageReference Include="NUnit" Version="4.2.2" />
     </ItemGroup>
 
