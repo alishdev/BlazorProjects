@@ -1,0 +1,4 @@
+1. Create an image from a prompt using AI
+2. Add a logo to the image
+3. Add a text overlay to the image
+4. Save the image to a file

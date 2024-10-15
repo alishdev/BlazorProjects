@@ -2,13 +2,13 @@ using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
 using Microsoft.SemanticKernel.Connectors.OpenAI;
 
-namespace SemanticKernelPlayground;
+namespace PinterestImageBuilder;
 
 public class PluginsTest
 {
     public async Task Test()
     {
-        var openApiKey = Environment.GetEnvironmentVariable("OPENAI_API_KEY");
+        var openApiKey = Environment.GetEnvironmentVariable("OPENAI_API_KEY") ?? "";
         // Create kernel
         var builder = Kernel.CreateBuilder();
         builder.AddOpenAIChatCompletion(
@@ -17,9 +17,9 @@ public class PluginsTest
         );
         
         // add plugins
-        builder.Plugins.AddFromType<NewsPlugin>();
-        builder.Plugins.AddFromType<TodayPlugin>();
-        builder.Plugins.AddFromType<ArchivePlugin>();
+        // builder.Plugins.AddFromType<NewsPlugin>();
+        // builder.Plugins.AddFromType<TodayPlugin>();
+        // builder.Plugins.AddFromType<ArchivePlugin>();
         
         var kernel = builder.Build();
 
@@ -61,26 +61,5 @@ public class PluginsTest
             chatHistory.AddAssistantMessage(airesponse);
             Console.WriteLine();
         }
-    }
-
-    public async Task MusicPluginTest()
-    {
-        var openApiKey = Environment.GetEnvironmentVariable("OPENAI_API_KEY");
-        // Create kernel
-        var builder = Kernel.CreateBuilder();
-        var kernel = builder.Build();
-        kernel.ImportPluginFromType<MusicLibraryPlugin>();
-
-        var result = await kernel.InvokeAsync(
-            "MusicLibraryPlugin", 
-            "AddToRecentlyPlayed", 
-            new() {
-                ["artist"] = "Tiara", 
-                ["song"] = "Danse", 
-                ["genre"] = "French pop, electropop, pop"
-            }
-        );
-
-        Console.WriteLine(result);
     }
 }
