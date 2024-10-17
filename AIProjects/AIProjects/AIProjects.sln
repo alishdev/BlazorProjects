@@ -2,6 +2,10 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PinterestImageBuilder", "PinterestImageBuilder\PinterestImageBuilder.csproj", "{1C0F58BA-4034-4667-8B61-C7718295D0B0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UpdateWPPost", "UpdateWPPost\UpdateWPPost.csproj", "{7D09CA84-62E2-459C-A0C3-F10BED8E1B2B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnalyzePodcastEpisodes", "AnalyzePodcastEpisodes\AnalyzePodcastEpisodes.csproj", "{F37CA5FD-8448-4E0A-A5B8-59BBF138A0CC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +16,13 @@ Global
 		{1C0F58BA-4034-4667-8B61-C7718295D0B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1C0F58BA-4034-4667-8B61-C7718295D0B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1C0F58BA-4034-4667-8B61-C7718295D0B0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7D09CA84-62E2-459C-A0C3-F10BED8E1B2B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7D09CA84-62E2-459C-A0C3-F10BED8E1B2B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7D09CA84-62E2-459C-A0C3-F10BED8E1B2B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7D09CA84-62E2-459C-A0C3-F10BED8E1B2B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F37CA5FD-8448-4E0A-A5B8-59BBF138A0CC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F37CA5FD-8448-4E0A-A5B8-59BBF138A0CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F37CA5FD-8448-4E0A-A5B8-59BBF138A0CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F37CA5FD-8448-4E0A-A5B8-59BBF138A0CC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

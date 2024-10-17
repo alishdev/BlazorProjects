@@ -1,0 +1,10 @@
+1. Read all episodes from a podcast
+2. Analyze each episode and extract the following data:
+    - Episode title
+    - Colleges applied
+    - Colleges accepted
+    - GPA (weighted and unweighted)
+    - SAT/ACT scores
+    - Extracurricular activities
+    - Essay topics
+    

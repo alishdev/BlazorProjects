@@ -1,0 +1,5 @@
+1. Given post url and SEO keyword
+2. Run keyword in google and get top 3 pages
+3. Read data from top pages and analyze
+4. Find missing data in original post
+5. Update post with missing data

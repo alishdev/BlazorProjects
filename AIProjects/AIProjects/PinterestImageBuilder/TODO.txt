@@ -2,3 +2,6 @@
 2. Add a logo to the image
 3. Add a text overlay to the image
 4. Save the image to a file
+5. Upload the image to Pinterest or Facebook
+
+? Use other APIs to generate images: ideogram, stability (could be free or based on credits).
