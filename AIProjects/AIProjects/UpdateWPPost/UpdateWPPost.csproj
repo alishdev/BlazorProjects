@@ -7,4 +7,13 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
+    <ItemGroup>
+      <PackageReference Include="HtmlAgilityPack" Version="1.11.67" />
+      <PackageReference Include="Microsoft.SemanticKernel" Version="1.24.0" />
+      <PackageReference Include="Microsoft.SemanticKernel.Abstractions" Version="1.24.0" />
+      <PackageReference Include="Microsoft.SemanticKernel.Connectors.OpenAI" Version="1.24.0" />
+      <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+      <PackageReference Include="NUglify" Version="1.21.9" />
+    </ItemGroup>
+
 </Project>
