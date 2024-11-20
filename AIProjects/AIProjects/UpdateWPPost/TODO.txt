@@ -3,3 +3,9 @@
 3. Read data from top pages and analyze
 4. Find missing data in original post
 5. Update post with missing data
+
+Prompts:
+compare file nsls1.txt and nsls2.txt and tell me which one better answers the question "is nsls legit"? Explain why and provide examples from texts.
+how to improve the text in nsls2.txt to better answer to the question "can you go to college at any age"?
+Improve the text in nsls2.txt to better answer to the question "is nsls legit" by providing text that needs to be added to the original.
+compare file content1.txt and content2.txt and tell me which one better answers the question "can you go to college at any age"? Explain why and provide examples from texts.

@@ -6,6 +6,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UpdateWPPost", "UpdateWPPos
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnalyzePodcastEpisodes", "AnalyzePodcastEpisodes\AnalyzePodcastEpisodes.csproj", "{F37CA5FD-8448-4E0A-A5B8-59BBF138A0CC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LinkableAssets", "LinkableAssets\LinkableAssets.csproj", "{124D9F0A-9321-4307-8A9C-D73726B387A8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BuildRunSiteContent", "BuildRunSiteContent\BuildRunSiteContent.csproj", "{ADC90A13-31AC-4736-A32E-CFCD9B0443C1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +28,13 @@ Global
 		{F37CA5FD-8448-4E0A-A5B8-59BBF138A0CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F37CA5FD-8448-4E0A-A5B8-59BBF138A0CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F37CA5FD-8448-4E0A-A5B8-59BBF138A0CC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{124D9F0A-9321-4307-8A9C-D73726B387A8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{124D9F0A-9321-4307-8A9C-D73726B387A8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{124D9F0A-9321-4307-8A9C-D73726B387A8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{124D9F0A-9321-4307-8A9C-D73726B387A8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ADC90A13-31AC-4736-A32E-CFCD9B0443C1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ADC90A13-31AC-4736-A32E-CFCD9B0443C1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ADC90A13-31AC-4736-A32E-CFCD9B0443C1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ADC90A13-31AC-4736-A32E-CFCD9B0443C1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

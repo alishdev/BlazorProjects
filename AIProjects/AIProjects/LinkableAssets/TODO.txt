@@ -1,0 +1,12 @@
+Goal: provide keyword, search internet, collect data, create graphics
+
+Steps:
+1. Read CDS spreadsheet
+2. Find interesting angles
+3. Create graphics
+4. Search by keyword
+5. Create database
+6. Create graphics
+
+Resources:
+https://github.com/marcominerva/SqlDatabaseVectorSearch - SQL database vector search

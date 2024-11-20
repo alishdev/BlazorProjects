@@ -18,8 +18,9 @@ public class AIHelper
         }
         
         // create openai client
-        var builder = Kernel.CreateBuilder().AddOpenAIChatCompletion(apiKey: openApiKey,
-            modelId: "chatgpt-4o-latest");
+        var builder = Kernel.CreateBuilder().
+            AddOpenAIChatCompletion(apiKey: openApiKey,
+                                    modelId: "chatgpt-4o-latest");
         var kernel = builder.Build();
         
         // create prompt
