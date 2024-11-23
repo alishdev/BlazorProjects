@@ -16,4 +16,8 @@
       <PackageReference Include="NUglify" Version="1.21.9" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\MTUtils\MTUtils.csproj" />
+    </ItemGroup>
+
 </Project>

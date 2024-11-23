@@ -1,10 +1,11 @@
-﻿using Newtonsoft.Json;
+﻿using MTUtils;
+using Newtonsoft.Json;
 
 namespace BuildRunSiteContent;
 
-class Program
+internal class Program
 {
-    static void Main(string[] args)
+    private static void Main(string[] args)
     {
         // TODO: read https://runningintheusa.com/details/10028
         // return information about the race in json format
@@ -26,14 +27,16 @@ class Program
         {
             Console.WriteLine($"race: {race.Distance} on {race.When}");
         }*/
-        
-        CollectAllRaces();
+
+        int startRace = 5001;
+        if (args.Length > 0)
+            startRace = int.Parse(args[0]);
+
+        CollectAllRaces(startRace);
     }
 
-    static void CollectAllRaces()
+    private static void CollectAllRaces(int page)
     {
-        int page = 5001;
-
         RunInUSAService runInUSAService = new RunInUSAService();
         for (int i = page; i < 40000; i++)
         {
@@ -43,17 +46,19 @@ class Program
             {
                 RunInUSAModel raceDetails = runInUSAService.GetRaceDetailsByUrl(url).GetAwaiter().GetResult();
                 if (string.IsNullOrEmpty(raceDetails.City) && string.IsNullOrEmpty(raceDetails.State))
-                    Console.WriteLine($"Skip {i}");
+                    CustomConsole.WriteLine($"Skip {i}");
                 else
                 {
                     File.WriteAllText(filePath, JsonConvert.SerializeObject(raceDetails));
-                    Console.WriteLine(i);   
+                    CustomConsole.WriteLine(i.ToString());
                 }
             }
             catch (Exception e)
             {
-                Console.WriteLine($"Skip {i}");
+                CustomConsole.WriteLine($"Error: {i}");
+                TimeJournal.Write(new object[] { i, e.Message });
             }
+            Thread.Sleep(5000);
         }
         Console.WriteLine("Done");
     }

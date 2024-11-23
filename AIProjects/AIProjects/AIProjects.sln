@@ -1,14 +1,19 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PinterestImageBuilder", "PinterestImageBuilder\PinterestImageBuilder.csproj", "{1C0F58BA-4034-4667-8B61-C7718295D0B0}"
+# Visual Studio Version 17
+VisualStudioVersion = 17.11.35219.272
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PinterestImageBuilder", "PinterestImageBuilder\PinterestImageBuilder.csproj", "{1C0F58BA-4034-4667-8B61-C7718295D0B0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UpdateWPPost", "UpdateWPPost\UpdateWPPost.csproj", "{7D09CA84-62E2-459C-A0C3-F10BED8E1B2B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UpdateWPPost", "UpdateWPPost\UpdateWPPost.csproj", "{7D09CA84-62E2-459C-A0C3-F10BED8E1B2B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnalyzePodcastEpisodes", "AnalyzePodcastEpisodes\AnalyzePodcastEpisodes.csproj", "{F37CA5FD-8448-4E0A-A5B8-59BBF138A0CC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AnalyzePodcastEpisodes", "AnalyzePodcastEpisodes\AnalyzePodcastEpisodes.csproj", "{F37CA5FD-8448-4E0A-A5B8-59BBF138A0CC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LinkableAssets", "LinkableAssets\LinkableAssets.csproj", "{124D9F0A-9321-4307-8A9C-D73726B387A8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LinkableAssets", "LinkableAssets\LinkableAssets.csproj", "{124D9F0A-9321-4307-8A9C-D73726B387A8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BuildRunSiteContent", "BuildRunSiteContent\BuildRunSiteContent.csproj", "{ADC90A13-31AC-4736-A32E-CFCD9B0443C1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BuildRunSiteContent", "BuildRunSiteContent\BuildRunSiteContent.csproj", "{ADC90A13-31AC-4736-A32E-CFCD9B0443C1}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MTUtils", "MTUtils\MTUtils.csproj", "{97392B2E-55A1-4D10-8C53-5B8174B31249}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -36,5 +41,12 @@ Global
 		{ADC90A13-31AC-4736-A32E-CFCD9B0443C1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ADC90A13-31AC-4736-A32E-CFCD9B0443C1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{ADC90A13-31AC-4736-A32E-CFCD9B0443C1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{97392B2E-55A1-4D10-8C53-5B8174B31249}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{97392B2E-55A1-4D10-8C53-5B8174B31249}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{97392B2E-55A1-4D10-8C53-5B8174B31249}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{97392B2E-55A1-4D10-8C53-5B8174B31249}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
 	EndGlobalSection
 EndGlobal
