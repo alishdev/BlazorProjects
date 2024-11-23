@@ -28,7 +28,7 @@ internal class Program
             Console.WriteLine($"race: {race.Distance} on {race.When}");
         }*/
 
-        int startRace = 5001;
+        int startRace = 10028;
         if (args.Length > 0)
             startRace = int.Parse(args[0]);
 
@@ -44,7 +44,7 @@ internal class Program
             string filePath = $"{i}.json";
             try
             {
-                RunInUSAModel raceDetails = runInUSAService.GetRaceDetailsByUrl(url).GetAwaiter().GetResult();
+                RunInUSAModel raceDetails = runInUSAService.GetRaceDetailsByUrl(i, url).GetAwaiter().GetResult();
                 if (string.IsNullOrEmpty(raceDetails.City) && string.IsNullOrEmpty(raceDetails.State))
                     CustomConsole.WriteLine($"Skip {i}");
                 else
@@ -57,6 +57,8 @@ internal class Program
             {
                 CustomConsole.WriteLine($"Error: {i}");
                 TimeJournal.Write(new object[] { i, e.Message });
+                if(e.Message.Contains("quota"))
+                    break;
             }
             Thread.Sleep(5000);
         }

@@ -8,19 +8,18 @@ namespace BuildRunSiteContent;
 
 public class RunInUSAService
 {
-    private AIHelper _aiHelper = new AIHelper();
+    private readonly AIHelper _aiHelper = new AIHelper();
     public RunInUSAService()
     {
         TimeJournal.SetLogFilePath("RunInUSAService.txt");
     }
-    public async Task<RunInUSAModel> GetRaceDetailsByUrl(string url)
+    public async Task<RunInUSAModel> GetRaceDetailsByUrl(int raceid, string url)
     {
-        string content = await UrlToText(url);
-        // parse the content to get the details
-        return await GetRaceDetails(content);
+        string content = await UrlToText(url); 
+        return await GetRaceDetails(raceid, content);
     }
 
-    public async Task<RunInUSAModel> GetRaceDetails(string content)
+    private async Task<RunInUSAModel> GetRaceDetails(int raceid, string content)
     {
         TimeJournal.Write(new object[] { content });
         string prompt = """
@@ -30,10 +29,10 @@ public class RunInUSAService
                         """;
 
         string result = await _aiHelper.RunPrompt(prompt, content);
-        return ParseRaceDetails(result);
+        return ParseRaceDetails(raceid, result);
     }
 
-    public RunInUSAModel ParseRaceDetails(string content)
+    private RunInUSAModel ParseRaceDetails(int raceid, string content)
     {
         // the text is inside ```json``` tag
         string pattern = @"```json(.*?)```";
@@ -45,13 +44,15 @@ public class RunInUSAService
         {
             return JsonConvert.DeserializeObject<RunInUSAModel>(innerContent)!;
         }
-        catch (Exception ex)
+        catch (Exception)
         {
+			var path = Path.Combine(Directory.GetCurrentDirectory(), $"{raceid}.html");
+            File.WriteAllText(path, JsonConvert.SerializeObject(innerContent));
             throw new Exception("Error parsing JSON content: " + innerContent);
         }
     }
 
-    public async Task<string> UrlToText(string url)
+    private async Task<string> UrlToText(string url)
     {
         HttpClient httpClient = new HttpClient();
         httpClient.Timeout = TimeSpan.FromMinutes(10);
@@ -67,18 +68,18 @@ public class RunInUSAService
 
 public class RaceDateDistance
 {
-    public DateTime When { get; set; }
-    public string Distance { get; set; }
+    public DateTime? When { get; set; }
+    public string? Distance { get; set; }
 }
 
 public class RunInUSAModel
 {
     public string? City { get; set; }
     public string? State { get; set; }
-    public RaceDateDistance[] Races { get; set; }
+    public RaceDateDistance[]? Races { get; set; }
     public string? RaceWebSite { get; set; }
     public bool? IsBostonQualifier { get; set; }
     public DateTime? Added { get; set; }
     public DateTime? Updated { get; set; }
-    public string PageContent { get; set; }
+    public string? PageContent { get; set; }
 }
