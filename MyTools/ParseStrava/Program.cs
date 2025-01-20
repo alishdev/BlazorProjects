@@ -38,47 +38,53 @@ class Program
             StravaActivity activity = new StravaActivity()
             {
                 dt = dateTime,
-                minutes = (decimal.Parse(time)/60.0m).ToString("{0.00}"),
+                minutes = decimal.Parse(time)/60.0m,
                 distance = decimal.Parse(distance)
             };
             activities.Add(activity);
         }
         
         activities.Sort((a, b) => a.dt.CompareTo(b.dt));
-        /*for (int i = 0; i < activities.Count; i++)
-        {
-            Console.WriteLine($"{activities[i].dt}, {activities[i].minutes}, {activities[i].distance}");
-        }*/
-        AggregateByWeek(activities, out var l2023, out var l2024);
-        Console.WriteLine("2023: ");
-        for(int i = 1; i <= 52; i++)
-        {
-            if (l2023.ContainsKey(i))
-            {
-                Console.Write($"Week {i}, {l2023[i][0].dt.ToShortDateString()}");
-                foreach (var activity in l2023[i])
-                {
-                    Console.Write($", {activity.minutes}");
-                }
-                Console.WriteLine();
-            }
-        }
         
-        Console.WriteLine("2024: ");
+        AggregateByWeek(activities, out var l2023, out var l2024);
+
+        using (TextWriter tw = new StreamWriter(@"/Users/macmyths/Desktop/temp/strava-activities-weekly.csv"))
+        {
+            tw.WriteLine("2023: ");
+            PrintYear(tw, l2024);
+
+            tw.WriteLine("2024: ");
+            PrintYear(tw, l2024);
+            tw.Close();
+        }
+    }
+
+    static void PrintYear(TextWriter tw, Dictionary<int, List<StravaActivity>> lyear)
+    {
         for(int i = 1; i <= 52; i++)
         {
-            if (l2024.ContainsKey(i))
+            decimal total = 0;
+            if (lyear.ContainsKey(i))
             {
-                Console.Write($"Week {i}, {l2024[i][0].dt.ToShortDateString()}");
-                foreach (var activity in l2024[i])
+                // print 4 days, the last day in last column
+                tw.Write($"Week {i}, {lyear[i][0].dt.ToShortDateString()}");
+                List<StravaActivity> week = lyear[i];
+                int j;
+                for (j = 0; j < week.Count-2; j++)
                 {
-                    Console.Write($", {activity.minutes}");
+                    tw.Write($", {week[j].minutes, 0:0.00}");
+                    total += week[j].minutes;
                 }
-                Console.WriteLine();
+                for(int k = j; k < 4; k++)
+                {
+                    tw.Write(",");
+                }
+                tw.Write($", {week[week.Count-1].minutes, 0:0.00}");
+                tw.WriteLine($", {total+week[week.Count-1].minutes, 0:0.00}");
             }
         }
     }
-    
+
     // function to aggregate by week and print to file
     static void AggregateByWeek(List<StravaActivity> activities, 
         out Dictionary<int, List<StravaActivity>> l2023, 
@@ -119,7 +125,7 @@ class Program
     class StravaActivity
     {
         public DateTime dt { get; set; }
-        public string? minutes { get; set; }
+        public decimal minutes { get; set; }
         public decimal distance { get; set; }
     }
 }
