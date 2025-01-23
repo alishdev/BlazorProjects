@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Qdrant.Net", "Qdrant.Net\Qdrant.Net.csproj", "{E679BCE2-FA62-43C3-B569-F18BE6C9999F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CutAudio", "CutAudio\CutAudio.csproj", "{46A8ACF2-7C69-48A9-BBA4-07AAAB967E33}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PodcastChat", "PodcastChat\PodcastChat.csproj", "{DC10C9E7-925F-4706-A729-F137EA20C0A6}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E679BCE2-FA62-43C3-B569-F18BE6C9999F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E679BCE2-FA62-43C3-B569-F18BE6C9999F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E679BCE2-FA62-43C3-B569-F18BE6C9999F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E679BCE2-FA62-43C3-B569-F18BE6C9999F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{46A8ACF2-7C69-48A9-BBA4-07AAAB967E33}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{46A8ACF2-7C69-48A9-BBA4-07AAAB967E33}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{46A8ACF2-7C69-48A9-BBA4-07AAAB967E33}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{46A8ACF2-7C69-48A9-BBA4-07AAAB967E33}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DC10C9E7-925F-4706-A729-F137EA20C0A6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DC10C9E7-925F-4706-A729-F137EA20C0A6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DC10C9E7-925F-4706-A729-F137EA20C0A6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DC10C9E7-925F-4706-A729-F137EA20C0A6}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

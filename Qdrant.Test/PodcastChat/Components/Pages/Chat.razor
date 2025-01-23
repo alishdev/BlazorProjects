@@ -1,0 +1,30 @@
+@page "/Chat"
+<h3>Chat</h3>
+
+<div class="chat-input">
+    <input type="text" 
+           @bind="userInput" 
+           @onkeyup="HandleKeyPress"
+           placeholder="Type your question..." />
+</div>
+
+@if (!string.IsNullOrEmpty(submittedText))
+{
+    <div class="user-message">
+        @submittedText
+    </div>
+}
+
+@code {
+    private string userInput = "";
+    private string submittedText = "";
+
+    private void HandleKeyPress(KeyboardEventArgs e)
+    {
+        if (e.Code == "Enter" && !string.IsNullOrEmpty(userInput))
+        {
+            submittedText = userInput;
+            userInput = "";
+        }
+    }
+}
