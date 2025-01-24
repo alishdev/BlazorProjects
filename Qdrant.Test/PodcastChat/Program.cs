@@ -25,3 +25,13 @@ app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 
 app.Run();
+
+/***
+ * TODO:
+ * 1. - multiple back and forth with the user - make it more nice - components, scrollable, etc.
+ * 2. - in response put a link or media player to play the fragment
+ * https://demos.themeselection.com/sneat-bootstrap-html-admin-template/documentation/extended-ui-media-player.html
+ * 3. use actual search and actual timestamps
+ * 4. process CRC podcast (or Doug podcast)
+ * 5. add semantic kernel to the search
+ */

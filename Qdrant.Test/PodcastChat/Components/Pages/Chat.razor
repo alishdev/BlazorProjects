@@ -1,30 +1,94 @@
+@using PodcastChat.Components.Controls
+@using static PodcastChat.Components.Controls.ChatResponse
 @page "/Chat"
-<h3>Chat</h3>
 
-<div class="chat-input">
-    <input type="text" 
-           @bind="userInput" 
-           @onkeyup="HandleKeyPress"
-           placeholder="Type your question..." />
+<div id="main" style="height: calc(100vh - 50px); display: flex; flex-direction: column; overflow: hidden; max-width: 1200px; margin: 0 auto;">
+    <div id="conversation_parent" class="flex-grow-1 position-relative">
+        <div id="conversation" class="position-absolute top-0 bottom-0 start-0 end-0 overflow-auto">
+            @foreach (var message in chatHistory)
+            {
+                @if (message is string userMessage)
+                {
+                    <div class="d-flex justify-content-end p-3">
+                        <div class="text-end bg-light p-2 rounded">@userMessage</div>
+                    </div>
+                }
+                else if (message is ChatResponse botResponse)
+                {
+                    <ChatResponse 
+                        Response="@botResponse.Response" 
+                        Links="@botResponse.Links"
+                        AudioFiles="@botResponse.AudioFiles" />
+                }
+            }
+        </div>
+
+    </div>
+
+    <div class="align-bottom chat-input rounded-4" id="querybox" style="height: 120px;">
+        <textarea 
+            class="form-control h-100 rounded-4" 
+            @bind="userInput" 
+            @bind:event="oninput"
+            @onkeydown="HandleKeyPress"
+            placeholder="Type your question..."></textarea>
+    </div>
 </div>
 
+<!-- Display the submitted text 
 @if (!string.IsNullOrEmpty(submittedText))
 {
     <div class="user-message">
         @submittedText
     </div>
 }
+-->
 
 @code {
     private string userInput = "";
-    private string submittedText = "";
 
-    private void HandleKeyPress(KeyboardEventArgs e)
+    private List<object> chatHistory = new();
+        /*new List<object>()
+    {
+        "What is your name?",
+        new ChatResponse(){
+            Response = "Edgar", 
+            Links = new List<LinkItem>(){new LinkItem(){Caption = "My LinkedIn", LinkUrl = "https://www.linkedin.com/in/edgarmartinez98/"}},
+            AudioFiles=new List<AudioItem> { new() { Caption = "Audio 1", FileUrl = "resources/Harvard01.wav" }}
+        },
+        "What is your favorite color?",
+        new ChatResponse(){Response = "Blue", Links = new List<LinkItem>(){new LinkItem(){Caption = "Blue", LinkUrl = "https://en.wikipedia.org/wiki/Blue"}}},
+    };*/
+
+    private async Task HandleKeyPress(KeyboardEventArgs e)
     {
         if (e.Code == "Enter" && !string.IsNullOrEmpty(userInput))
         {
-            submittedText = userInput;
+            string submittedText = userInput;
+            chatHistory.Add(submittedText);
             userInput = "";
+            
+            AudioProcessor audioProcessor = new AudioProcessor();
+            var results = await audioProcessor.AnswerQuestion(submittedText);
+            foreach (var result in results)
+            {
+                /*System.Diagnostics.Debug.WriteLine($"\nFound 'canoe' in file: {result.Filename}");
+                System.Diagnostics.Debug.WriteLine($"Full Transcript: {result.Transcript}");*/
+
+                foreach (var segment in result.Segments)
+                {
+                    if (segment.Text.ToLower().Contains(submittedText))
+                    {
+                        chatHistory.Add(new ChatResponse()
+                        {
+                            Response = segment.Text,
+                            AudioFiles = new List<AudioItem> { new() { Caption = "Audio" } }
+                        });
+                        //System.Diagnostics.Debug.WriteLine($"\nTimestamp: {segment.Start:F2}s - {segment.End:F2}s");
+                        //System.Diagnostics.Debug.WriteLine($"Segment: {segment.Text}");
+                    }
+                }
+            }
         }
     }
 }
