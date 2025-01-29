@@ -115,8 +115,8 @@ def search_audio_fragments(search_term, limit=3):
     )[0]  # Return just the points, not the next page offset
 
 # Now the search example will work
-print('Searching for "georgetown" in database')
-georgetown_results = search_audio_fragments("georgetown")
+print('Searching for "Georgetown" in database')
+georgetown_results = search_audio_fragments("Georgetown")
 for i, result in enumerate(georgetown_results):
     print(f"\nFound 'georgetown' in file: {result.payload['filename']}")
     print(f"File path: {result.payload['file_path']}")

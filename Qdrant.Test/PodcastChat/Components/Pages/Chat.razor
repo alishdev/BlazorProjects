@@ -77,7 +77,7 @@
 
                 foreach (var segment in result.Segments)
                 {
-                    if (segment.Text.ToLower().Contains(submittedText))
+                    if (segment.Text.ToLower().Contains(submittedText.ToLower()))
                     {
                         chatHistory.Add(new ChatResponse()
                         {

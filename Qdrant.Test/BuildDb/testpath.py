@@ -1,4 +1,8 @@
 import os
+import torch
+
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+print(f"Using device: {device}")
 
 wav_files_dir = "wav_files"
 print(f"Looking for WAV files in: {os.path.abspath(wav_files_dir)}")
