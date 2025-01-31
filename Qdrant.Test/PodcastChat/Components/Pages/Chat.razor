@@ -1,11 +1,6 @@
-@using OpenAI.GPT3.Managers;
-@using OpenAI.GPT3.ObjectModels;
-@using OpenAI.GPT3.ObjectModels.RequestModels;
 @using PodcastChat.Components.Controls
 @using PodcastChat.Logic
 @using Qdrant.Client
-@using System.Text.Json;
-@using OpenAI.GPT3
 @using static PodcastChat.Components.Controls.ChatResponse
 @page "/Chat"
 
@@ -76,34 +71,33 @@
             userInput = "";
             
             // Initialize OpenAI
-            var openAiKey = Environment.GetEnvironmentVariable("OPENAI_API_KEY");
-            if (string.IsNullOrEmpty(openAiKey))
-            {
-                throw new Exception("Please set OPENAI_API_KEY environment variable");
-            }
-            var openAiClient = new OpenAIService(new OpenAiOptions { ApiKey = openAiKey });
 
-            // Initialize Qdrant client
-            Console.WriteLine("Connecting to Qdrant");
-            var qdrantClient = new QdrantClient("localhost", 6334);
-        
-            string collectionName = "audio_collection";
-            
-            PodcastSearch podcastSearch = new PodcastSearch();
-            
-            var question = "Which extracurricular activities are best for Georgetown?";
-            var searchResults = await PodcastSearch.SearchAudioFragments(qdrantClient, openAiClient, collectionName, question);
-            var result = await PodcastSearch.GetAiAnswer(openAiClient, question, searchResults);
-
-            Console.WriteLine($"\nQuestion: {question}");
-            Console.WriteLine($"\nAnswer: {result.Answer}");
-            
-            chatHistory.Add(new ChatResponse()
+            var result = await PodcastSearch.QueryDatabase(submittedText);
+            var chatResponse = new ChatResponse()
             {
                 Response = result.Answer,
-                AudioFiles = new List<AudioItem> { new() { Caption = "Audio" } }
-            });
+                AudioFiles = new List<AudioItem>()
+            };
 
+            if (result.Fragments != null)
+            {
+                foreach (var fragment in result.Fragments.Take(2))
+                {
+                    string inputfile = @"/Users/macmyths/BlazorProjects/Qdrant.Test/mp3_files/" + "GwynethGEORGETOWNPart1.mp3"; //fragment.Filename;
+                    string outputfile = $"{fragment.Filename}{(int)fragment.Start}" + "_cut.mp3";
+                    string outputPath = @"/Users/macmyths/BlazorProjects/Qdrant.Test/PodcastChat/wwwroot/resources/"
+                                        + outputfile;
+                                        
+                    CutAudio.CutAudioGeneric(inputfile, outputPath, (int)fragment.Start, (int)fragment.End);
+                    chatResponse.AudioFiles.Add(new AudioItem()
+                    {
+                        Caption = $"Fragment {(int)fragment.Start}",
+                        FileUrl = "resources/" + outputfile
+                    });
+                }
+            }
+            chatHistory.Add(chatResponse);
+/*
             if (result.Fragments.Any())
             {
                 Console.WriteLine("\nRelevant audio fragments:");
@@ -113,7 +107,7 @@
                     Console.WriteLine($"Timestamp: {fragment.Start:F2}s - {fragment.End:F2}s");
                     Console.WriteLine($"Text: {fragment.Text}");
                 }
-            }
+            }*/
             
             /*
             

@@ -35,3 +35,8 @@ app.Run();
  * 4. process CRC podcast (or Doug podcast)
  * 5. add semantic kernel to the search
  */
+
+/***
+ * Testing: What do you know about housing at Georgetown?
+ * What do you know about orientation at Georgetown? 
+ */

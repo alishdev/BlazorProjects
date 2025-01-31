@@ -2,19 +2,25 @@ using Newtonsoft.Json;
 
 namespace PodcastChat.Logic;
 
+public class SearchResultContext
+{
+    public string? Transcript { get; set; }
+    public Dictionary<string, List<AudioFragment>>? Fragments { get; set; }
+}
+
 public class TranscriptPayload
 {
     [JsonProperty("filename")]
-    public PayloadValue Filename { get; set; }
+    public PayloadValue? Filename { get; set; }
 
     [JsonProperty("file_path")]
-    public PayloadValue FilePath { get; set; }
+    public PayloadValue? FilePath { get; set; }
 
     [JsonProperty("transcript")]
-    public PayloadValue Transcript { get; set; }
+    public PayloadValue? Transcript { get; set; }
 
     [JsonProperty("segments")]
-    public PayloadValue Segments { get; set; }
+    public PayloadValue? Segments { get; set; }
 }
 
 public class PayloadValue
@@ -38,7 +44,7 @@ public class PayloadValue
     public bool HasIntegerValue { get; set; }
 
     [JsonProperty("StringValue")]
-    public string StringValue { get; set; }
+    public string? StringValue { get; set; }
 
     [JsonProperty("HasStringValue")]
     public bool HasStringValue { get; set; }
@@ -50,10 +56,10 @@ public class PayloadValue
     public bool HasBoolValue { get; set; }
 
     [JsonProperty("StructValue")]
-    public StructValue StructValue { get; set; }
+    public StructValue? StructValue { get; set; }
 
     [JsonProperty("ListValue")]
-    public ListValue ListValue { get; set; }
+    public ListValue? ListValue { get; set; }
 
     [JsonProperty("KindCase")]
     public int KindCase { get; set; }
@@ -62,13 +68,13 @@ public class PayloadValue
 public class StructValue
 {
     [JsonProperty("Fields")]
-    public Dictionary<string, PayloadValue> Fields { get; set; }
+    public Dictionary<string, PayloadValue>? Fields { get; set; }
 }
 
 public class ListValue
 {
     [JsonProperty("Values")]
-    public List<PayloadValue> Values { get; set; }
+    public List<PayloadValue>? Values { get; set; }
 }
 
 // Helper extension methods to easily get values
@@ -102,7 +108,7 @@ public static class PayloadValueExtensions
             .Where(v => v.StructValue?.Fields != null)
             .Select(v => new TranscriptSegment
             {
-                Start = v.StructValue.Fields["start"].GetDouble() ?? 0,
+                Start = v!.StructValue!.Fields["start"]!.GetDouble() ?? 0,
                 End = v.StructValue.Fields["end"].GetDouble() ?? 0,
                 Text = v.StructValue.Fields["text"].GetString()
             })
@@ -115,5 +121,5 @@ public class TranscriptSegment
 {
     public double Start { get; set; }
     public double End { get; set; }
-    public string Text { get; set; }
+    public string? Text { get; set; }
 }
