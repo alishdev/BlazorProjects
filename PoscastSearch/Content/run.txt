@@ -1,0 +1,10 @@
+# Download
+python3 Content/main.py --d "Your College Bound Kid"
+
+# Transcribe
+python3 Content/Transcribe.py --list "Content/ycbk.episodes"
+
+# Build table of contents
+python3 Content/toc.py --dir  "Content/ycbk.transcriptions" --sum    
+python3 Content/toc.py --dir  "Content/ycbk.transcriptions" --toc    
+python3 Content/toc.py --ai-toc Content/ycbk.transcriptions/table_of_contents.txt

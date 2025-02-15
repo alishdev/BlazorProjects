@@ -397,26 +397,26 @@ class TaddyClient:
 if __name__ == "__main__":
     client = TaddyClient()
     
-    async def main():
+    async def main(self, podcast_name):
         # First, search for the podcast
         search_variables = {
-            "term": "Your College Bound Kid"
+            "term": podcast_name
         }
         
-        client.logger.info("Searching for podcast...")
-        search_result = await client.graphql_request(client.SEARCH_PODCAST_QUERY, search_variables)
+        self.logger.info(f"Searching for podcast: {podcast_name}")
+        search_result = await self.graphql_request(self.SEARCH_PODCAST_QUERY, search_variables)
         
         if search_result and 'searchForTerm' in search_result:
             podcasts = search_result['searchForTerm']['podcastSeries']
             if podcasts:
                 # Get the first matching podcast
                 podcast = podcasts[0]
-                client.logger.info(f"\nFound podcast: {podcast['name']}")
-                client.logger.info(f"UUID: {podcast['uuid']}")
+                self.logger.info(f"\nFound podcast: {podcast['name']}")
+                self.logger.info(f"UUID: {podcast['uuid']}")
                 
                 # Download episodes from pages 2 to 20
-                for page in range(1, 2):
-                    client.logger.info(f"\nProcessing page {page} of episodes...")
+                for page in range(2, 21):
+                    self.logger.info(f"\nProcessing page {page} of episodes...")
                     
                     # Get episodes using the podcast UUID with pagination
                     episodes_variables = {
@@ -425,44 +425,44 @@ if __name__ == "__main__":
                         "limitPerPage": 25
                     }
                     
-                    episodes_result = await client.graphql_request(client.GET_EPISODES_QUERY, episodes_variables)
+                    episodes_result = await self.graphql_request(self.GET_EPISODES_QUERY, episodes_variables)
                     
                     if episodes_result and 'getPodcastSeries' in episodes_result:
                         series = episodes_result['getPodcastSeries']
                         episodes = series['episodes']
                         
                         if not episodes:
-                            client.logger.info(f"No more episodes found on page {page}")
+                            self.logger.info(f"No more episodes found on page {page}")
                             break
                         
-                        client.logger.info(f"Found {len(episodes)} episodes on page {page}")
-                        client.logger.info("-" * 50)
+                        self.logger.info(f"Found {len(episodes)} episodes on page {page}")
+                        self.logger.info("-" * 50)
                         
                         for episode in episodes:
-                            client.logger.info(f"\nProcessing Episode {episode.get('episodeNumber', 'N/A')}:")
-                            client.logger.info(f"Title: {episode['name']}")
+                            self.logger.info(f"\nProcessing Episode {episode.get('episodeNumber', 'N/A')}:")
+                            self.logger.info(f"Title: {episode['name']}")
                             
                             # Create a clean filename from episode number and name
-                            filename = f"YCBK_{episode.get('episodeNumber', '000')}_{episode['name']}"
+                            filename = f"{podcast_name}_{episode.get('episodeNumber', '000')}_{episode['name']}"
                             
                             # Download the episode
-                            result = client.mp3_downloader.download(
+                            result = self.mp3_downloader.download(
                                 url=episode['audioUrl'],
                                 output_dir="podcast_episodes",
                                 filename=filename
                             )
                             
                             if result:
-                                client.logger.info(f"Successfully downloaded to: {result}")
+                                self.logger.info(f"Successfully downloaded to: {result}")
                             else:
-                                client.logger.error(f"Failed to download episode")
-                            client.logger.info("-" * 50)
+                                self.logger.error(f"Failed to download episode")
+                            self.logger.info("-" * 50)
                     else:
-                        client.logger.error(f"Failed to fetch episodes for page {page}")
+                        self.logger.error(f"Failed to fetch episodes for page {page}")
             else:
-                client.logger.warning("No podcasts found")
+                self.logger.warning("No podcasts found")
         else:
-            client.logger.error("Search failed")
+            self.logger.error("Search failed")
     
     # Run the async main function
     asyncio.run(main()) 
