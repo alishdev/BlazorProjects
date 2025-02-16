@@ -144,7 +144,7 @@ def create_toc(directory):
         logger.error(f"Error creating table of contents: {str(e)}")
         return False
 
-def ai_toc(filename):
+def toc_chapters(filename):
     """
     Create an AI-generated table of contents using Gemini
     
@@ -152,7 +152,7 @@ def ai_toc(filename):
         filename: Path to the file containing concatenated summaries
     """
     logger = setup_logging()
-    logger.info(f"Creating AI-generated table of contents from file: {filename}")
+    logger.info(f"Creating top level table of contents from file: {filename}")
     
     try:
         # Check if file exists
@@ -168,7 +168,7 @@ def ai_toc(filename):
             return False
             
         genai.configure(api_key=api_key)
-        model = genai.GenerativeModel('gemini-1.5-pro')
+        model = genai.GenerativeModel('gemini-2.0-flash')
         
         # Read the content file
         with open(filename, 'r', encoding='utf-8') as f:
@@ -202,46 +202,35 @@ def ai_toc(filename):
         }"""
         
         # Create prompt for AI
-        prompt = f"""You are tasked with creating a structured table of contents for a book about college admissions.
-        The book is based on podcast episode summaries. Please analyze these summaries and create a clear, 
-        organized table of contents that will help readers navigate the content effectively.
-
-        For each chapter:
-        1. Keep the original chapter number
-        2. Create a descriptive title that reflects the main topic
-        3. Break down the chapter into sections
-        4. Group related topics together when possible
-
-        Use this JSON schema:
-        {output_format}
-        Here are the summaries to organize:
+        prompt = f"""You are an expert in college admissions. You have 100 podcast episodes where you discussed all nuances of college admissions process.
+        Identify between 9 and 12 major chapters for the book based on the following text that contains podcast summaries and return the result in JSON format:
 
         {content}"""
         
         # Generate TOC using AI
-        logger.info("Generating AI table of contents...")
+        logger.info("Generating top level table of contents...")
         response = model.generate_content(prompt)
         
         if response:
-            # Create output filename by replacing extension with _ai_toc.txt
+            # Create output filename by replacing extension with _toc_top.txt
             base = os.path.splitext(filename)[0]
-            output_file = f"{base}_ai_toc.txt"
+            output_file = f"{base}_toc_top.txt"
             
             # Save the AI-generated TOC
             with open(output_file, 'w', encoding='utf-8') as f:
-                f.write("COLLEGE ADMISSIONS GUIDE\n")
-                f.write("=======================\n\n")
-                f.write("TABLE OF CONTENTS\n\n")
+                #f.write("COLLEGE ADMISSIONS GUIDE\n")
+                #f.write("=======================\n\n")
+                #f.write("TABLE OF CONTENTS\n\n")
                 f.write(response.text)
             
-            logger.info(f"AI-generated table of contents saved to: {output_file}")
+            logger.info(f"Top level table of contents saved to: {output_file}")
             return True
         else:
             logger.error("No response received from Gemini API")
             return False
             
     except Exception as e:
-        logger.error(f"Error creating AI table of contents: {str(e)}")
+        logger.error(f"Error creating top level table of contents: {str(e)}")
         return False
 
 def main():
@@ -254,7 +243,7 @@ def main():
                       help='Summarize text files in the directory')
     group.add_argument('--toc', action='store_true',
                       help='Create table of contents from existing summaries')
-    group.add_argument('--ai-toc', metavar='FILENAME',
+    group.add_argument('--toc-top', metavar='FILENAME',
                       help='Create AI-generated table of contents from the specified file')
     
     # Parse arguments
@@ -272,9 +261,9 @@ def main():
         # Create table of contents
         success = create_toc(args.dir)
         return 0 if success else 1
-    else:  # args.ai_toc
+    else:  # args.toc_top
         # Create AI-generated table of contents
-        success = ai_toc(args.ai_toc)
+        success = toc_chapters(args.toc_top)
         return 0 if success else 1
 
 if __name__ == "__main__":

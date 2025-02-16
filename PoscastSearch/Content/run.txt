@@ -5,6 +5,11 @@ python3 Content/main.py --d "Your College Bound Kid"
 python3 Content/Transcribe.py --list "Content/ycbk.episodes"
 
 # Build table of contents
+# summarize podcast episodes
 python3 Content/toc.py --dir  "Content/ycbk.transcriptions" --sum    
+# concatenate summaries
 python3 Content/toc.py --dir  "Content/ycbk.transcriptions" --toc    
-python3 Content/toc.py --ai-toc Content/ycbk.transcriptions/table_of_contents.txt
+# create top level table of contents from existing summaries
+python3 Content/toc.py --top-toc Content/ycbk.transcriptions/table_of_contents.txt
+# concatenate all summaries
+python3 Content/summarize_podcast.py --concat "Content/ycbk.summaries"
