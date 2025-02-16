@@ -113,12 +113,26 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Audio file transcription tool')
     parser.add_argument('--list', metavar='DIRECTORY', type=str, help='List MP3 files in the specified directory')
     parser.add_argument('--transcribe', metavar='PATH', type=str, help='Transcribe a file or all MP3 files in a directory')
+    parser.add_argument('--concat', metavar='DIRPATH', type=str, help='Directory path to concatenate all files')
     
     # Parse arguments
     args = parser.parse_args()
     
     # Run appropriate function based on arguments
-    if args.list:
+    if args.concat:
+        try:
+            with open('all_in.txt', 'w', encoding='utf-8') as outfile:
+                for filename in os.listdir(args.concat):
+                    if filename.endswith('.txt'):
+                        filepath = os.path.join(args.concat, filename)
+                        #logger.info(f"Processing {filename}")
+                        if os.path.isfile(filepath):
+                            with open(filepath, 'r', encoding='utf-8') as infile:
+                                outfile.write(infile.read() + '\n')
+            logger.info("All files concatenated to all_in.txt")
+        except Exception as e:
+            logger.error(f"Error concatenating files: {str(e)}")
+    elif args.list:
         files = list_directory(args.list)
         if files:
             logger.info(f"\nFound {len(files)} MP3 files in {args.list}:")

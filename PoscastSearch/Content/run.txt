@@ -11,5 +11,5 @@ python3 Content/toc.py --dir  "Content/ycbk.transcriptions" --sum
 python3 Content/toc.py --dir  "Content/ycbk.transcriptions" --toc    
 # create top level table of contents from existing summaries
 python3 Content/toc.py --top-toc Content/ycbk.transcriptions/table_of_contents.txt
-# concatenate all summaries
-python3 Content/summarize_podcast.py --concat "Content/ycbk.summaries"
+# concatenate all transcriptions
+python3 Content/Transcribe.py --concat "Content/ycbk.transcriptions"
