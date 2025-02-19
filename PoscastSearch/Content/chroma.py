@@ -1,10 +1,26 @@
 import argparse
 import os
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain_openai import OpenAIEmbeddings
+from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from langchain_community.vectorstores import Chroma
 from dotenv import load_dotenv
 import logging
+from langchain.schema import Document
+import time  # Add at the top with other imports
+
+DB = None
+
+def initialize_embeddings():
+    """Initialize embeddings"""
+    global DB  # Add global declaration
+    #embeddings = OpenAIEmbeddings()
+    # Initialize Gemini embeddings
+    embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
+    DB = Chroma(
+        collection_name="pod_collection",
+        embedding_function=embeddings,
+        persist_directory="./podcast_db"
+    )
 
 def setup_logging():
     """Set up logging configuration"""
@@ -38,27 +54,26 @@ def process_file(filepath, logger):
 
         # Create text splitter
         text_splitter = RecursiveCharacterTextSplitter(
-            chunk_size=10000,
-            chunk_overlap=1000,
+            chunk_size=1000,
+            chunk_overlap=200,
             length_function=len,
+            add_start_index=True,
         )
 
         # Split text into chunks
         chunks = text_splitter.split_text(content)
-        logger.info(f"Split text into {len(chunks)} chunks")
-
-        # Initialize OpenAI embeddings
-        embeddings = OpenAIEmbeddings()
-
-        # Create and persist Chroma database
-        db = Chroma.from_texts(
-            texts=chunks,
-            embedding=embeddings,
-            persist_directory="./chroma_db"
-        )
-        db.persist()
+        filename = os.path.basename(filepath)
         
-        logger.info(f"Successfully stored {len(chunks)} chunks in Chroma database")
+        # Convert chunks to Document objects
+        documents = [
+            Document(
+                page_content=chunk,
+                metadata={"source": filename}
+            ) for chunk in chunks
+        ]
+        
+        DB.add_documents(documents)
+        logger.info(f"Added {len(documents)} chunks from {filename}")
         return True
 
     except Exception as e:
@@ -71,19 +86,34 @@ def main():
     
     # Load environment variables
     load_dotenv()
-    if not os.getenv('OPENAI_API_KEY'):
-        logger.error("OPENAI_API_KEY not found in environment variables")
+    if not os.getenv('GOOGLE_API_KEY'):
+        logger.error("GOOGLE_API_KEY not found in environment variables")
         return 1
 
     # Parse arguments
-    parser = argparse.ArgumentParser(description='Process text file into Chroma vector database')
-    parser.add_argument('--file', metavar='FILEPATH', type=str, required=True,
-                      help='Path to the text file to process')
+    parser = argparse.ArgumentParser(description='Process text files into Chroma vector database')
+    parser.add_argument('--folder', metavar='FOLDERPATH', type=str, required=True,
+                      help='Path to the folder containing files to process')
 
     args = parser.parse_args()
 
-    # Process the file
-    success = process_file(args.file, logger)
+    # Process all files in the folder
+    folder_path = args.folder
+    if not os.path.isdir(folder_path):
+        logger.error(f"'{folder_path}' is not a valid directory")
+        return 1
+    
+    initialize_embeddings()
+
+    success = True
+    for filename in os.listdir(folder_path):
+        file_path = os.path.join(folder_path, filename)
+        if os.path.isfile(file_path):
+            logger.info(f"Processing file: {filename}")
+            if not process_file(file_path, logger):
+                success = False
+            time.sleep(30)  # Add 30 second delay between files
+
     return 0 if success else 1
 
 if __name__ == "__main__":

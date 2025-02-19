@@ -13,3 +13,14 @@ python3 Content/toc.py --dir  "Content/ycbk.transcriptions" --toc
 python3 Content/toc.py --top-toc Content/ycbk.transcriptions/table_of_contents.txt
 # concatenate all transcriptions
 python3 Content/Transcribe.py --concat "Content/ycbk.transcriptions"
+
+now process the toc file in json
+while parsing create two files:
+ one is main.html which contains list of chapters and list of subchapters
+ another is a list of subchapters in text format
+
+run chapter.py for each chapter from the second file - it should create a chapter in html format (filenames cleaned up)
+
+
+
+
