@@ -1,6 +1,7 @@
 from langchain_google_genai import GoogleGenerativeAI, GoogleGenerativeAIEmbeddings
 from langchain_community.vectorstores import Chroma
-from langchain.chains import RetrievalQA
+from langchain.chains import RetrievalQA, ConversationalRetrievalChain
+from langchain.memory import ConversationBufferMemory
 from dotenv import load_dotenv
 import os
 
@@ -19,24 +20,32 @@ def initialize_rag():
     )
 
     # Initialize Gemini model
-    llm = GoogleGenerativeAI(model="gemini-pro", temperature=0.3)
+    llm = GoogleGenerativeAI(model="gemini-1.5-pro", temperature=0.5)
 
-    # Create QA chain
-    qa_chain = RetrievalQA.from_chain_type(
+    # Initialize conversation memory
+    memory = ConversationBufferMemory(
+        memory_key="chat_history",
+        return_messages=True,
+        output_key='answer'
+    )
+
+    # Create conversational chain
+    qa_chain = ConversationalRetrievalChain.from_llm(
         llm=llm,
-        chain_type="stuff",
         retriever=db.as_retriever(search_kwargs={"k": 12}),
-        return_source_documents=True
+        memory=memory,
+        return_source_documents=True,
+        return_generated_question=True
     )
 
     return qa_chain
 
 def ask_question(qa_chain, question):
     # Get response from the chain
-    result = qa_chain(question)
+    result = qa_chain({"question": question})
     
     print("\nQuestion:", question)
-    print("\nAnswer:", result['result'])
+    print("\nAnswer:", result['answer'])
     print("\nSources:")
     # Use a set to track unique sources
     unique_sources = {doc.metadata['source'] for doc in result['source_documents']}
@@ -47,6 +56,7 @@ def main():
     qa_chain = initialize_rag()
     print("\nRAG Question-Answering System")
     print("Type 'quit' to exit")
+    print("Type 'clear' to clear chat history")
     
     while True:
         print("\nEnter your question:")
@@ -55,6 +65,11 @@ def main():
         if question.lower() == 'quit':
             print("Goodbye!")
             break
+            
+        if question.lower() == 'clear':
+            qa_chain.memory.clear()
+            print("Chat history cleared!")
+            continue
             
         if question:
             ask_question(qa_chain, question)
