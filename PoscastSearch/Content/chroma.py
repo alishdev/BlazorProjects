@@ -10,7 +10,7 @@ import time  # Add at the top with other imports
 
 DB = None
 
-def initialize_embeddings():
+def initialize_embeddings(db_dir):
     """Initialize embeddings"""
     global DB  # Add global declaration
     #embeddings = OpenAIEmbeddings()
@@ -19,7 +19,7 @@ def initialize_embeddings():
     DB = Chroma(
         collection_name="pod_collection",
         embedding_function=embeddings,
-        persist_directory="./podcast_db"
+        persist_directory=db_dir
     )
 
 def setup_logging():
@@ -94,16 +94,22 @@ def main():
     parser = argparse.ArgumentParser(description='Process text files into Chroma vector database')
     parser.add_argument('--folder', metavar='FOLDERPATH', type=str, required=True,
                       help='Path to the folder containing files to process')
+    parser.add_argument('--dbname', metavar='DBPATH', type=str, required=True,
+                      help='Directory path to save the database')
 
     args = parser.parse_args()
+
+    # Create database directory if it doesn't exist
+    os.makedirs(args.dbname, exist_ok=True)
+
+    # Initialize embeddings with specified database directory
+    initialize_embeddings(args.dbname)
 
     # Process all files in the folder
     folder_path = args.folder
     if not os.path.isdir(folder_path):
         logger.error(f"'{folder_path}' is not a valid directory")
         return 1
-    
-    initialize_embeddings()
 
     success = True
     for filename in os.listdir(folder_path):

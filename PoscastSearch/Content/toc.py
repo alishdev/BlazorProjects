@@ -177,34 +177,31 @@ def toc_chapters(filename):
         output_format = """{
         "TOC": [
             {
-            "Chapter 1": {
-                "Name": "Introduction",
-                "Sections": [
-                {
-                    "Section 1.1": "Background Information",
-                    "Section 1.2": "Research Question"
-                }
-                ]
-            }
+            "Chapter 1": "Introduction",
+            "Subtopics": [
+                "Background Information",
+                "Research Question"
+            ]
             },
             {
-            "Chapter 2": {
-                "Name": "Literature Review",
-                "Sections": [
-                {
-                    "Section 2.1": "Relevant Studies",
-                    "Section 2.2": "Theoretical Framework"
-                }
-                ]
-            }
+            "Chapter 2": "Literature Review",
+            "Subtopics": [
+                "Relevant Studies",
+                "Theoretical Framework"
+            ]
             }
         ]
         }"""
         
+        
         # Create prompt for AI
-        prompt = f"""You are an expert in college admissions. You have 100 podcast episodes where you discussed all nuances of college admissions process.
-        Identify between 9 and 12 major chapters for the book based on the following text that contains podcast summaries and return the result in JSON format:
-
+        #prompt = f"""You are an expert in college admissions. You have 100 podcast episodes where you discussed all nuances of college admissions process.
+        #Identify between 9 and 12 major chapters for the book based on the following text that contains podcast summaries and return the result in JSON format:
+        prompt = f"""You are an expert in FIRE (Financial Independence, Retire Early) movement. You have 50 podcast episodes where you discussed all nuances of FIRE movement.
+        Identify between 9 and 12 major chapters for the book based on the following text that contains podcast summaries and return the result in JSON format.
+        Output format:
+        {output_format}
+        Text:
         {content}"""
         
         # Generate TOC using AI

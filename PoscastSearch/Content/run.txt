@@ -2,7 +2,7 @@
 python3 Content/main.py --d "Your College Bound Kid"
 
 # Transcribe
-python3 Content/Transcribe.py --list "Content/ycbk.episodes"
+python3 Content/Transcribe.py --transcribe "Content/ycbk.episodes"
 
 # Build table of contents
 # summarize podcast episodes
@@ -14,13 +14,20 @@ python3 Content/toc.py --top-toc Content/ycbk.transcriptions/table_of_contents.t
 # concatenate all transcriptions
 python3 Content/Transcribe.py --concat "Content/ycbk.transcriptions"
 
+# create toc and topics.txt
+python3 Content/process_toc.py
+
 now process the toc file in json
 while parsing create two files:
  one is main.html which contains list of chapters and list of subchapters
  another is a list of subchapters in text format
 
-run chapter.py for each chapter from the second file - it should create a chapter in html format (filenames cleaned up)
+# finish creating website
+python3 Content/chapter.py --file Content/mhfi/transcriptions/all_in.txt --toc Content/mhfi/toc/topics.txt
 
+#run chapter.py for each chapter from the second file - it should create a chapter in html format (filenames cleaned up)
 
+# run chroma to create RAG database
+python chroma.py --folder path/to/your/folder --dbname path/to/database 
 
 

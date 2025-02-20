@@ -2,6 +2,7 @@ import argparse
 import os
 import re
 import logging
+import time
 import google.generativeai as genai
 from dotenv import load_dotenv
 
@@ -45,9 +46,10 @@ def create_chapter(source_file, chapter_name, logger):
             content = infile.read()
             
         # Create prompt and get Gemini response
-        prompt = f"""You are an expert in college admissions. You want to make a book about college admissions process.
+        #prompt = f"""You are an expert in college admissions. You want to make a book about college admissions process.
+        prompt = f"""You are an expert in FIRE (Financial Independence, Retire Early) movement. You want to make a book about FIRE movement.
         The name of the chapter is {chapter_name}. 
-        Use only the following text to create the chapter in html format. 
+        Use only the following text to create the chapter. 
         The length of the chapter should be between 2000 and 3000 words. Do not include chapter number.
         Write the chapter in a way that is easy to understand for a high school student.
 
@@ -95,6 +97,7 @@ def process_toc_file(toc_file, source_file, logger):
                 if not create_chapter(source_file, chapter, logger):
                     success = False
                     logger.error(f"Failed to process chapter: {chapter}")
+                time.sleep(60)
         
         return success
     except Exception as e:
