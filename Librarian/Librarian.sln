@@ -1,0 +1,43 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Crawl", "Crawl", "{AD072733-442D-4320-8746-0A27BCA1A537}"
+	ProjectSection(SolutionItems) = preProject
+		Crawl\readme.txt = Crawl\readme.txt
+		Crawl\todo.txt = Crawl\todo.txt
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UI", "UI", "{698B19F0-03CF-4706-B963-07B8B7242CD8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "API", "API", "{2A42A175-5155-4A6C-ACFA-56F71E1FEDFE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LibrarianAgent", "Crawl\LibrarianAgent\LibrarianAgent.csproj", "{FE6ED5B8-F854-45E6-B253-F5B1C2EF6C0D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileCrawler", "Crawl\FileCrawler\FileCrawler.csproj", "{0E458805-50C8-4953-95B0-6062906D28F4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CrawlerTest", "Crawl\CrawlerTest\CrawlerTest.csproj", "{C2A5E519-60AD-48E8-8803-B340679849C2}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{FE6ED5B8-F854-45E6-B253-F5B1C2EF6C0D} = {AD072733-442D-4320-8746-0A27BCA1A537}
+		{0E458805-50C8-4953-95B0-6062906D28F4} = {AD072733-442D-4320-8746-0A27BCA1A537}
+		{C2A5E519-60AD-48E8-8803-B340679849C2} = {AD072733-442D-4320-8746-0A27BCA1A537}
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{FE6ED5B8-F854-45E6-B253-F5B1C2EF6C0D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FE6ED5B8-F854-45E6-B253-F5B1C2EF6C0D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FE6ED5B8-F854-45E6-B253-F5B1C2EF6C0D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FE6ED5B8-F854-45E6-B253-F5B1C2EF6C0D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0E458805-50C8-4953-95B0-6062906D28F4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0E458805-50C8-4953-95B0-6062906D28F4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0E458805-50C8-4953-95B0-6062906D28F4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0E458805-50C8-4953-95B0-6062906D28F4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C2A5E519-60AD-48E8-8803-B340679849C2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C2A5E519-60AD-48E8-8803-B340679849C2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C2A5E519-60AD-48E8-8803-B340679849C2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C2A5E519-60AD-48E8-8803-B340679849C2}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

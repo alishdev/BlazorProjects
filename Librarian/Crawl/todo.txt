@@ -1,0 +1,7 @@
+1. Make the first crawler - file crawler
+It uses a setting which contains the directory to watch
+Every time a file is added/updated/deleted update the csv file with changes
+
+2. Add Windows service
+
+3. Add first adapter - txt file. Read contents and upload embeddings to local db. Use open source model.
