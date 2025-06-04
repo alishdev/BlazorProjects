@@ -1,0 +1,72 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="CampCopilotApp.MainPage">
+
+    <Grid RowDefinitions="*, Auto">
+        <!-- Chat messages area -->
+        <CollectionView x:Name="ChatMessages"
+                      Grid.Row="0"
+                      Margin="10"
+                      ItemsUpdatingScrollMode="KeepLastItemInView"
+                      VerticalScrollBarVisibility="Always">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Frame Margin="5"
+                           Padding="10"
+                           BorderColor="LightGray"
+                           CornerRadius="10"
+                           HasShadow="True">
+                        <StackLayout>
+                            <Label Text="{Binding Sender}"
+                                   FontAttributes="Bold" />
+                            <Label Text="{Binding Message}"
+                                   LineBreakMode="WordWrap" />
+                            <Label Text="{Binding Timestamp}"
+                                   FontSize="Small"
+                                   TextColor="Gray" />
+                        </StackLayout>
+                    </Frame>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <!-- Input section -->
+        <Grid Grid.Row="1"
+              ColumnDefinitions="*, Auto"
+              Padding="10"
+              BackgroundColor="WhiteSmoke">
+            <Border Grid.Column="0"
+                    Stroke="LightGray"
+                    StrokeThickness="1"
+                    Background="White"
+                    Padding="5"
+                    Margin="0,0,10,0">
+                <Grid ColumnDefinitions="*, Auto">
+                    <Entry x:Name="MessageInput"
+                           Grid.Column="0"
+                           Placeholder="Type your message..."
+                           BackgroundColor="Transparent"
+                           Margin="5,0,0,0" />
+                    <Button x:Name="MicrophoneButton"
+                            Grid.Column="1"
+                            Text="🎤"
+                            FontSize="18"
+                            HeightRequest="35"
+                            WidthRequest="35"
+                            Padding="0"
+                            BackgroundColor="Transparent"
+                            Clicked="OnMicrophoneClicked" />
+                </Grid>
+            </Border>
+            <Button x:Name="SendButton"
+                    Text="Send"
+                    Grid.Column="1"
+                    Clicked="OnSendClicked"
+                    BackgroundColor="#6750A4"
+                    TextColor="White"
+                    HorizontalOptions="End" />
+        </Grid>
+    </Grid>
+
+</ContentPage>

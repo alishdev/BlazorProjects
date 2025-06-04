@@ -1,7 +1,11 @@
 ﻿@page "/"
 @using Microsoft.Extensions.Logging
+@using System.Text.RegularExpressions
+@using CampCopilot.Services
 @inject IJSRuntime JS
 @inject ILogger<Home> Logger
+@inject ISpeechService SpeechService
+@inject IFileService FileService
 @implements IAsyncDisposable
 
 <div class="main">
@@ -258,25 +262,56 @@
     }
 
     [JSInvokable]
-    public async Task OnTranscriptionReceived(string text)
+    public async Task TranscribeAudio(string base64Audio)
     {
         try
         {
-            Logger.LogInformation("Transcription received: {Text}", text);
-            if (!string.IsNullOrWhiteSpace(text))
+            Logger.LogInformation("Starting audio transcription process");
+            
+            if (string.IsNullOrEmpty(base64Audio))
             {
-                messages.Add(new ChatMessage { Content = text, Type = MessageType.User, IsTranscribed = true });
+                Logger.LogWarning("Received empty base64 audio data");
+                return;
+            }
+            
+            Logger.LogInformation($"Received base64 audio data of length: {base64Audio.Length}");
+            
+            // Convert base64 to bytes
+            byte[] audioData;
+            try
+            {
+                audioData = Convert.FromBase64String(base64Audio);
+                Logger.LogInformation($"Successfully converted base64 to {audioData.Length} bytes");
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, "Failed to convert base64 to bytes");
+                return;
+            }
+            
+            // Get transcription from speech service
+            string transcription = await SpeechService.TranscribeAudioAsync(audioData);
+            Logger.LogInformation($"Received transcription: '{transcription}'");
+            
+            if (!string.IsNullOrWhiteSpace(transcription) && transcription != "No audio data received" && transcription != "Failed to process transcription response")
+            {
+                messages.Add(new ChatMessage { Content = transcription, Type = MessageType.User, IsTranscribed = true });
                 await ScrollToBottom();
                 
                 string response = await GetSystemResponse(messages);
                 messages.Add(new ChatMessage { Content = response, Type = MessageType.System });
                 await ScrollToBottom();
             }
+            else
+            {
+                Logger.LogWarning($"Received invalid transcription: '{transcription}'");
+            }
+            
             StateHasChanged();
         }
         catch (Exception ex)
         {
-            Logger.LogError(ex, "Error handling transcription");
+            Logger.LogError(ex, "Error in TranscribeAudio");
             StateHasChanged();
         }
     }
@@ -287,6 +322,33 @@
         Logger.LogError("Recording error: {Error}", error);
         isRecording = false;
         StateHasChanged();
+    }
+
+    [JSInvokable]
+    public async Task SaveAudioFile(string base64Audio, string filename)
+    {
+        try
+        {
+            Logger.LogInformation($"Saving audio file: {filename}");
+            
+            if (string.IsNullOrEmpty(base64Audio))
+            {
+                Logger.LogWarning("Received empty base64 audio data");
+                return;
+            }
+            
+            // Convert base64 to bytes
+            byte[] audioData = Convert.FromBase64String(base64Audio);
+            Logger.LogInformation($"Successfully converted base64 to {audioData.Length} bytes");
+            
+            // Save the file using FileService
+            string savedPath = await FileService.SaveAudioFileAsync(audioData, filename);
+            Logger.LogInformation($"File saved successfully at: {savedPath}");
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error saving audio file");
+        }
     }
 
     public async ValueTask DisposeAsync()

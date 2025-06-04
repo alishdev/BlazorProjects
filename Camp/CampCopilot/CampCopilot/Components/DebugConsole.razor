@@ -1,0 +1,141 @@
+@inject IJSRuntime JS
+
+<div class="debug-console @(_isVisible ? "visible" : "hidden")">
+    <div class="debug-header">
+        <span>Debug Console</span>
+        <button @onclick="ToggleVisibility">@(_isVisible ? "Hide" : "Show")</button>
+    </div>
+    <div class="debug-content" @ref="_scrollContainer">
+        @foreach (var log in _logs)
+        {
+            <div class="log-entry @log.Type.ToLower()">
+                <span class="timestamp">@log.Timestamp.ToString("HH:mm:ss.fff")</span>
+                <span class="message">@log.Message</span>
+            </div>
+        }
+    </div>
+</div>
+
+<style>
+    .debug-console {
+        position: fixed;
+        bottom: 0;
+        right: 0;
+        width: 400px;
+        background-color: rgba(0, 0, 0, 0.9);
+        color: white;
+        font-family: monospace;
+        z-index: 9999;
+        border-top-left-radius: 8px;
+        transition: transform 0.3s ease;
+    }
+
+    .debug-console.hidden {
+        transform: translateY(100%);
+    }
+
+    .debug-console.visible {
+        transform: translateY(0);
+    }
+
+    .debug-header {
+        padding: 8px;
+        background-color: #333;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-top-left-radius: 8px;
+    }
+
+    .debug-header button {
+        background-color: #555;
+        border: none;
+        color: white;
+        padding: 4px 8px;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    .debug-content {
+        height: 300px;
+        overflow-y: auto;
+        padding: 8px;
+    }
+
+    .log-entry {
+        margin: 4px 0;
+        font-size: 12px;
+        word-wrap: break-word;
+    }
+
+    .log-entry.info {
+        color: #7fdbff;
+    }
+
+    .log-entry.error {
+        color: #ff4136;
+    }
+
+    .log-entry.warn {
+        color: #ffdc00;
+    }
+
+    .timestamp {
+        color: #aaa;
+        margin-right: 8px;
+    }
+</style>
+
+@code {
+    private bool _isVisible = true;
+    private ElementReference _scrollContainer;
+    private List<LogEntry> _logs = new();
+    private DotNetObjectReference<DebugConsole>? _objRef;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _objRef = DotNetObjectReference.Create(this);
+        await JS.InvokeVoidAsync("initializeDebugConsole", _objRef);
+    }
+
+    private void ToggleVisibility()
+    {
+        _isVisible = !_isVisible;
+        StateHasChanged();
+    }
+
+    [JSInvokable]
+    public async Task AddLog(string message, string type = "info")
+    {
+        _logs.Add(new LogEntry
+        {
+            Message = message,
+            Type = type,
+            Timestamp = DateTime.Now
+        });
+
+        StateHasChanged();
+        await ScrollToBottom();
+    }
+
+    private async Task ScrollToBottom()
+    {
+        await JS.InvokeVoidAsync("scrollDebugToBottom", _scrollContainer);
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_objRef != null)
+        {
+            await JS.InvokeVoidAsync("disposeDebugConsole");
+            _objRef.Dispose();
+        }
+    }
+
+    private class LogEntry
+    {
+        public string Message { get; set; } = "";
+        public string Type { get; set; } = "info";
+        public DateTime Timestamp { get; set; }
+    }
+} 

@@ -2,6 +2,8 @@
 using System.IO;
 using System.Reflection;
 using Microsoft.AspNetCore.Components.WebView.Maui;
+using CampCopilot.Services;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace CampCopilot;
 
@@ -23,6 +25,12 @@ public static class MauiProgram
             .ConfigureFonts(fonts => { fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular"); });
 
         builder.Services.AddMauiBlazorWebView();
+        builder.Services.AddHttpClient();
+        
+        // Register services
+        builder.Services.AddSingleton<IAppConfig, AppConfig>();
+        builder.Services.AddScoped<ISpeechService, SpeechService>();
+        builder.Services.AddScoped<IFileService, FileService>();
 
 #if WINDOWS
         builder.Services.AddTransient<IWebViewConfiguration, WebViewConfiguration>();
