@@ -1,7 +1,7 @@
 import argparse
 import os
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain_google_genai import GoogleGenerativeAIEmbeddings
+from langchain_community.embeddings import OllamaEmbeddings
 from langchain_community.vectorstores import Chroma
 from dotenv import load_dotenv
 import logging
@@ -13,9 +13,11 @@ DB = None
 def initialize_embeddings(db_dir):
     """Initialize embeddings"""
     global DB  # Add global declaration
-    #embeddings = OpenAIEmbeddings()
-    # Initialize Gemini embeddings
-    embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
+    # Initialize Ollama embeddings
+    embeddings = OllamaEmbeddings(
+        model="llama3.2",  # or any other model you have in Ollama
+        base_url="http://localhost:11434"  # default Ollama API endpoint
+    )
     DB = Chroma(
         collection_name="pod_collection",
         embedding_function=embeddings,
@@ -86,9 +88,6 @@ def main():
     
     # Load environment variables
     load_dotenv()
-    if not os.getenv('GOOGLE_API_KEY'):
-        logger.error("GOOGLE_API_KEY not found in environment variables")
-        return 1
 
     # Parse arguments
     parser = argparse.ArgumentParser(description='Process text files into Chroma vector database')

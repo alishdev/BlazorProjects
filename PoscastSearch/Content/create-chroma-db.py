@@ -15,7 +15,7 @@ def initialize_embeddings(db_dir):
     global DB  # Add global declaration
     #embeddings = OpenAIEmbeddings()
     # Initialize Gemini embeddings
-    embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
+    embeddings = GoogleGenerativeAIEmbeddings(model="models/text-embedding-004")
     DB = Chroma(
         collection_name="pod_collection",
         embedding_function=embeddings,
@@ -118,7 +118,7 @@ def main():
             logger.info(f"Processing file: {filename}")
             if not process_file(file_path, logger):
                 success = False
-            #time.sleep(30)  # Add 30 second delay between files
+            time.sleep(15)  # Add 15 second delay between files
 
     return 0 if success else 1
 

@@ -25,9 +25,18 @@ while parsing create two files:
 # finish creating website
 python3 Content/chapter.py --file Content/mhfi/transcriptions/all_in.txt --toc Content/mhfi/toc/topics.txt
 
+# create chapter from rag database
+python3 Content/chapter_from_rag.py --dbpath Content/firedb --chapter "Understanding FIRE movement"
+
 #run chapter.py for each chapter from the second file - it should create a chapter in html format (filenames cleaned up)
 
 # run chroma to create RAG database
 python chroma.py --folder path/to/your/folder --dbname path/to/database 
 
+# run server
+python -m http.server 1234
 
+# copy to another mac
+scp -r /Users/macmyths/BlazorProjects/PoscastSearch/Content/mhfi/ "Alisher Abdukadirov"@192.168.0.15:Content
+scp -r /Users/macmyths/BlazorProjects/PoscastSearch/Content/grclient.py "Alisher Abdukadirov"@192.168.0.15:Content
+scp -r /Users/macmyths/BlazorProjects/PoscastSearch/Content/mhfi/firedb "Alisher Abdukadirov"@192.168.0.15:Content

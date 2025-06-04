@@ -5,7 +5,6 @@ from langchain_google_genai import GoogleGenerativeAI, GoogleGenerativeAIEmbeddi
 from langchain_community.vectorstores import Chroma
 from langchain.chains import ConversationalRetrievalChain
 from langchain.memory import ConversationBufferMemory
-import time
 
 def browse_file(file_path):
     return f'<iframe src="{file_path}" width="100%" height="600px" frameborder="0"></iframe>'
@@ -14,18 +13,15 @@ def chat_response(message, history):
     return f"You said: {message}"
 
 def ask_question(message, history):
-    # Log the question to file
-    with open('chat-questions.txt', 'a', encoding='utf-8') as f:
-        timestamp = time.strftime('%Y-%m-%d %H:%M:%S')
-        f.write(f"[{timestamp}] {message}\n")
-    
     # Get response from the chain
     result = qa_chain({"question": message})
+
+    print(result)
     
     answer = result['answer']
     answer += "\n\nSources:"
-    # Use a set to track unique sources
-    unique_sources = {doc.metadata['source'] for doc in result['source_documents']}
+    # Use a set to track unique sources and limit to 3
+    unique_sources = list({doc.metadata['source'] for doc in result['source_documents']})[:3]
     for source in sorted(unique_sources):
         answer += f"\n- {source}"
     return answer
@@ -37,15 +33,17 @@ def initialize_rag():
         raise ValueError("GOOGLE_API_KEY not found in environment variables")
 
     # Initialize embeddings and vector store
-    embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
+    embeddings = GoogleGenerativeAIEmbeddings(model="models/text-embedding-004")
     db = Chroma(
         collection_name="pod_collection",
         embedding_function=embeddings,
-        persist_directory="./podcast_db"
+        persist_directory="./camper.db"
     )
 
+    print(db)
+
     # Initialize Gemini model
-    llm = GoogleGenerativeAI(model="gemini-2.0-flash", temperature=0.5)
+    llm = GoogleGenerativeAI(model="gemini-1.5-pro", temperature=0.5)
 
     # Initialize conversation memory
     memory = ConversationBufferMemory(
@@ -76,20 +74,33 @@ def create_interface():
     qa_chain = initialize_rag()
 
     # Create the interface
-    with gr.Blocks() as interface:
-        gr.Markdown("# College Admissions Assistant")
+    with gr.Blocks(css="footer {display: none}") as interface:
+        gr.Markdown("# FIRE Movement Assistant")
         
-        with gr.Tabs():
+        with gr.Tabs() as tabs:
             # HTML Viewer Tab
-            # in another terminal run `python -m http.server 1234`
             with gr.Tab("HTML Viewer"):
                 html_output = gr.HTML("""
-                                        <iframe src="http://localhost:1234/main.html" width="100%" height="600px" frameborder="0"></iframe>
-                                      """)
+                    <iframe 
+                        src="http://localhost:1234/main.html" 
+                        width="100%" 
+                        height="800px" 
+                        frameborder="0" 
+                        style="min-height: 800px;"
+                    ></iframe>
+                """)
 
             # Chat Tab
             with gr.Tab("Chat"):
-                chatbot = gr.ChatInterface(fn=ask_question)
+                chatbot = gr.ChatInterface(
+                    fn=ask_question,
+                    chatbot=gr.Chatbot(height=700),
+                    textbox=gr.Textbox(
+                        placeholder="Ask me anything about Summper Camps...",
+                        container=False,
+                        scale=7
+                    ),
+                )
 
     return interface
 

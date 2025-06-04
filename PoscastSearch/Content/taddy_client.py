@@ -415,8 +415,8 @@ if __name__ == "__main__":
                 client.logger.info(f"\nFound podcast: {podcast['name']}")
                 client.logger.info(f"UUID: {podcast['uuid']}")
                 
-                # Download episodes from pages 1 to 20
-                for page in range(1, 21):
+                # Download episodes from pages 1 to 2 (3 not included)
+                for page in range(1, 3):
                     client.logger.info(f"\nProcessing page {page} of episodes...")
                     
                     # Get episodes using the podcast UUID with pagination

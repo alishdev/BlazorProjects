@@ -1,0 +1,4 @@
+1. Create chapter using Google gemini from the vector database
+2. Add sources to the end of the chapter (with approx timestamp)
+3. Nicer UI - in Blazor?
+4. Host client on Mac Mini - gradio

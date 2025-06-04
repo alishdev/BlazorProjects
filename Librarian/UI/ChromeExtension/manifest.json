@@ -1,0 +1,26 @@
+{
+  "manifest_version": 3,
+  "name": "Librarian",
+  "version": "1.0",
+  "description": "Asks a question.",
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "images/icon16.png",
+      "48": "images/icon48.png",
+      "128": "images/icon128.png"
+    }
+  },
+  "icons": {
+    "16": "images/icon16.png",
+    "48": "images/icon48.png",
+    "128": "images/icon128.png"
+  },
+  "permissions": [
+    // No special permissions like "storage" or "tabs" needed for this basic version
+  ],
+  "host_permissions": [
+    // IMPORTANT: Replace with the actual domain of YOUR API!
+    "https://localhost:7261/*"
+  ]
+}

@@ -1,0 +1,40 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <!-- Target .NET Framework 4.8 for broad compatibility with Explorer -->
+    <TargetFramework>net48</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <LangVersion>latest</LangVersion>
+
+    <!-- COM Registration Settings -->
+    <EnableComHosting>true</EnableComHosting>
+    <RegisterForComInterop>true</RegisterForComInterop>
+    <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+    
+    <!-- Ensure it's built as a DLL -->
+    <OutputType>Library</OutputType>
+
+    <!-- Platform Target - Important for Explorer (usually 64-bit) -->
+    <PlatformTarget>x64</PlatformTarget> 
+
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Required for Windows Forms elements like MessageBox -->
+    <!-- <FrameworkReference Include="Microsoft.WindowsDesktop.App.WindowsForms" /> --> <!-- This is for .NET Core/.NET 5+, remove for .NET Framework -->
+    <!-- Explicit reference added to help linter/build -->
+    <Reference Include="System.Windows.Forms" />
+  </ItemGroup>
+
+  <!-- Optional: Add post-build events for registration (requires admin privileges) -->
+  <!-- 
+  <Target Name="RegisterForCOM" AfterTargets="Build" Condition=" '$(Configuration)' == 'Debug' ">
+    <Exec Command="&quot;%SystemRoot%\Microsoft.NET\Framework64\v4.0.30319\RegAsm.exe&quot; &quot;$(TargetPath)&quot; /codebase /tlb" Condition="'$(OS)' == 'Windows_NT'"/>
+  </Target>
+  <Target Name="UnregisterForCOM" AfterTargets="Clean" Condition=" '$(Configuration)' == 'Debug' ">
+    <Exec Command="&quot;%SystemRoot%\Microsoft.NET\Framework64\v4.0.30319\RegAsm.exe&quot; /unregister &quot;$(TargetPath)&quot; /tlb" Condition="'$(OS)' == 'Windows_NT'"/>
+  </Target>
+  -->
+
+</Project> 

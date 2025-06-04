@@ -1,0 +1,55 @@
+This error (MSB4803: The task "RegisterAssembly" is not supported on the .NET Core version of MSBuild) confirms the tooling conflict I suspected earlier.
+Cause:
+You are building a .NET Framework project (net48) that requires COM registration (RegisterForComInterop=true). However, you are likely using the dotnet build command or building within an environment (like a standard terminal) that defaults to the .NET SDK (Core) version of MSBuild. This version of MSBuild does not include the RegisterAssembly task needed for automatic COM registration during the build.
+Solution:
+You must use the .NET Framework version of MSBuild to build this project. The easiest way to do this is:
+Open a Developer Command Prompt for Visual Studio: Search for "Developer Command Prompt" in your Windows Start menu. Make sure you choose the one corresponding to your Visual Studio installation (e.g., "Developer Command Prompt for VS 2022"). This command prompt automatically sets up the environment paths to use the correct tools, including the .NET Framework msbuild.exe.
+Navigate to your project directory:
+Apply to SendToLibrar...
+Run
+SendToLibrarian
+Build using msbuild:
+Apply to SendToLibrar...
+Run
+ 
+(You can often omit the .csproj filename if there's only one in the directory)
+Using msbuild from the Developer Command Prompt will invoke the .NET Framework MSBuild, which does support the RegisterAssembly task and should resolve the MSB4803 error, allowing the COM registration to proceed as part of the build process (if it doesn't encounter other permission issues).
+Important: Remember that the registration part (RegisterAssembly task or manual regasm.exe) requires administrator privileges to write to HKEY_LOCAL_MACHINE (for the "Approved" extensions list). You might need to run the Developer Command Prompt as Administrator for the build or registration step to fully succeed.
+how do install the plugin after building an executable?
+
+Okay, let's clarify the process. When you build the SendToLibrarian project, you don't get a standalone executable (.exe) for the plugin itself. Because it's a Class Library designed to extend Windows Explorer, the build output is a .dll file (e.g., SendToLibrarian.dll).
+"Installing" this plugin means registering it as a COM component so that Windows Explorer knows it exists and can load it when you right-click files. The tool used for this is RegAsm.exe (Assembly Registration Tool), which comes with the .NET Framework.
+Here are the steps to install (register) the plugin after building the .dll:
+Locate the DLL: Find the SendToLibrarian.dll file in your project's output directory. After a successful build using the .NET Framework MSBuild (as discussed previously), it should be in a path similar to:
+UI\SendToLibrarian\bin\Release\net48\SendToLibrarian.dll
+(Adjust Release to Debug if you built in Debug mode).
+Open an Administrator Command Prompt: You must have administrator rights to register COM components, especially since the code attempts to write to the HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Shell Extensions\Approved key (which is good practice).
+Search for cmd or Command Prompt in the Windows Start menu.
+Right-click it and select "Run as administrator".
+Alternatively, run the "Developer Command Prompt for VS" as administrator. This is often easier as it already knows the path to RegAsm.exe.
+Navigate to the DLL Directory (Optional but Recommended): Change directory in the command prompt to where your SendToLibrarian.dll is located.
+Apply to SendToLibrar...
+Run
+ 
+Run RegAsm.exe: Execute the RegAsm.exe command. You need to use the version corresponding to the .NET Framework you targeted (v4.0.30319 for .NET 4.x) and the platform target (x64 in this case).
+If using Developer Command Prompt: The path should be set up, just run:
+Apply to SendToLibrar...
+Run
+ 
+If using a standard Administrator Command Prompt: You need the full path:
+Apply to SendToLibrar...
+Run
+codebase
+(Make sure the path to regasm.exe is correct for your system. Use Framework instead of Framework64 if you built for x86, but the project is currently set to x64).
+/codebase: This argument is crucial. It tells regasm to record the DLL's current location in the registry. Without it, the assembly would need to be placed in the Global Assembly Cache (GAC), which is a more complex process.
+Restart Windows Explorer: The shell extension won't be active until you restart the Windows Explorer process.
+Open Task Manager (Ctrl+Shift+Esc).
+Find "Windows Explorer" in the "Processes" or "Details" tab.
+Right-click it and select "Restart". Your taskbar and desktop icons will disappear briefly and then reload.
+After these steps, you should be able to right-click a file, go to the "Send to" menu (or the main context menu, depending on the exact registration keys used - the current code targets the general context menu handlers first, then the approved list), and see the "Send To Librarian" option.
+To Uninstall (Unregister):
+Run regasm with the /unregister flag from an Administrator Command Prompt:
+Apply to SendToLibrar...
+Run
+unregister
+Then restart Windows Explorer again.

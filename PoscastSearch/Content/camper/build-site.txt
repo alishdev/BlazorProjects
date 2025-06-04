@@ -1,0 +1,32 @@
+1. download 50 episodes
+python3 Content/taddy_client.py "The Camphacker Podcast"
+2. Rename files to remove Podcast name
+3. transcribe
+python3 Content/transcribe.py --transcribe Content/camper/podcast_episodes
+4. rename files to remove medium
+5. create chroma db
+python3 Content/create-chroma-db.py --folder Content/camper/transcriptions --dbname Content/camper/camper.db
+
+# Build book
+6. summarize podcast episodes
+python3 Content/toc-camper.py --dir  Content/camper/transcriptions --sum
+7. concatenate summaries
+python3 Content/toc-camper.py --dir  Content/camper/summaries --toc    
+8. create top level table of contents from existing summaries
+python3 Content/toc-camper.py --toc-top Content/camper/summaries/table_of_contents.txt
+9. review the json file - it may have college in the toc and verify structure is correct
+copy process_toc.py to another file and edit it with the the json
+10. create main.html file
+python3 Content/process_toc_camper.py
+11. copy chaper names from console and build chapters from RAG db
+python3 Content/chapter_from_rag_camper.py --dbpath Content/camper/camper.db --toc Content/camper/html/all_chapters.txt
+# this is for testing
+#python3 Content/chapter_from_rag_camper.py --dbpath Content/camper/camper.db --chapter "The Impact of Summer Camp"
+
+# run server
+12. goto Content/camper/html
+python3 -m http.server 1234
+
+# run client
+13. go to Content/camper
+python3 camper-client.py
