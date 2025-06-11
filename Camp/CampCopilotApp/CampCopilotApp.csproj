@@ -57,9 +57,11 @@
     </ItemGroup>
 
     <ItemGroup>
+        <PackageReference Include="Microsoft.CognitiveServices.Speech" Version="1.44.0" />
         <PackageReference Include="Microsoft.Maui.Controls" Version="8.0.3" />
         <PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="8.0.3" />
         <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="8.0.0" />
+        <PackageReference Include="OpenAI" Version="2.1.0" />
         <PackageReference Include="Plugin.Maui.Audio" Version="2.1.0" />
     </ItemGroup>
 

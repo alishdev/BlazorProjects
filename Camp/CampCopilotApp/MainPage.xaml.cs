@@ -1,5 +1,9 @@
 ﻿using System.Collections.ObjectModel;
 using Plugin.Maui.Audio;
+using System.Timers;
+using OpenAI;
+using System.IO;
+using OpenAI.Files;
 
 namespace CampCopilotApp;
 
@@ -15,108 +19,145 @@ public partial class MainPage : ContentPage
     private ObservableCollection<ChatMessage> _messages;
     private readonly IAudioManager _audioManager;
     private IAudioRecorder _audioRecorder;
-    private IAudioPlayer _audioPlayer;
     private bool _isRecording;
     private string _recordedFilePath;
+    private System.Timers.Timer _silenceTimer;
+    private const int SILENCE_THRESHOLD = 5000; // 5 seconds in milliseconds
+    private OpenAIClient _openAI;
+    private string _currentRecognizedText = "";
+    private const string API_KEY = "your-api-key-here";
 
-    public MainPage(IAudioManager audioManager)
+    public MainPage()
     {
         InitializeComponent();
-        _messages = new ObservableCollection<ChatMessage>();
-        ChatMessages.ItemsSource = _messages;
-        _audioManager = audioManager;
-        _isRecording = false;
+        InitializeOpenAI();
+        InitializeAudioManager();
+        InitializeMessages();
     }
 
-    private async void OnSendClicked(object sender, EventArgs e)
+    private void InitializeOpenAI()
     {
-        if (string.IsNullOrWhiteSpace(MessageInput.Text))
-            return;
+        var options = new OpenAIClientOptions { ApiKey = API_KEY };
+        _openAI = new OpenAIClient(options);
+    }
 
-        // Store the message and clear input
-        string userMessage = MessageInput.Text;
-        MessageInput.Text = string.Empty;
+    private void InitializeAudioManager()
+    {
+        _audioManager = AudioManager.Current;
+        _silenceTimer = new System.Timers.Timer(SILENCE_THRESHOLD);
+        _silenceTimer.Elapsed += OnSilenceTimerElapsed;
+        _silenceTimer.AutoReset = false;
+    }
 
-        // Add user message
-        MainThread.BeginInvokeOnMainThread(() =>
-        {
-            _messages.Add(new ChatMessage
-            {
-                Sender = "User",
-                Message = userMessage,
-                Timestamp = DateTime.Now.ToString("HH:mm")
-            });
-        });
-
-        // Get system response
-        string systemResponse = await GetSystemResponse(userMessage);
-        
-        // Add system response
-        MainThread.BeginInvokeOnMainThread(() =>
-        {
-            _messages.Add(new ChatMessage
-            {
-                Sender = "System",
-                Message = systemResponse,
-                Timestamp = DateTime.Now.ToString("HH:mm")
-            });
-        });
+    private void InitializeMessages()
+    {
+        _messages = new ObservableCollection<ChatMessage>();
+        MessagesCollection.ItemsSource = _messages;
     }
 
     private async void OnMicrophoneClicked(object sender, EventArgs e)
     {
+        if (!_isRecording)
+        {
+            await StartRecording();
+        }
+        else
+        {
+            await StopRecording();
+        }
+    }
+
+    private async Task StartRecording()
+    {
         try
         {
-            var status = await Permissions.RequestAsync<Permissions.Microphone>();
-            if (status != PermissionStatus.Granted)
+            _audioRecorder = await _audioManager.CreateRecorderAsync(new AudioRecorderOptions
             {
-                await DisplayAlert("Permission Required", "Microphone permission is required to record audio.", "OK");
-                return;
-            }
+                FilePath = Path.Combine(FileSystem.CacheDirectory, "recording.wav"),
+                AudioFormat = AudioFormat.Wav
+            });
 
-            if (!_isRecording)
+            await _audioRecorder.StartAsync();
+            _isRecording = true;
+            _silenceTimer.Start();
+            MicrophoneButton.Text = "⏹️";
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlert("Error", $"Failed to start recording: {ex.Message}", "OK");
+        }
+    }
+
+    private async Task StopRecording()
+    {
+        if (_audioRecorder == null) return;
+
+        try
+        {
+            _silenceTimer.Stop();
+            _recordedFilePath = _audioRecorder.FilePath;
+            await _audioRecorder.StopAsync();
+            _isRecording = false;
+            MicrophoneButton.Text = "🎤";
+
+            if (File.Exists(_recordedFilePath))
             {
-                // Start Recording
-                _recordedFilePath = Path.Combine(FileSystem.CacheDirectory, "recorded_audio.wav");
-                _audioRecorder = _audioManager.CreateRecorder();
-                
-                await _audioRecorder.StartAsync();
-                _isRecording = true;
-                MicrophoneButton.Text = "⏹️"; // Stop symbol
-                MicrophoneButton.BackgroundColor = Colors.Red;
-            }
-            else
-            {
-                if (_audioRecorder != null)
+                var fileInfo = new FileInfo(_recordedFilePath);
+                var fileStream = File.OpenRead(_recordedFilePath);
+                var fileContent = new FileContent("audio/wav", fileStream, fileInfo.Name);
+                var transcription = await _openAI.CreateTranscriptionAsync(fileContent, "whisper-1");
+
+                if (!string.IsNullOrEmpty(transcription))
                 {
-                    // Stop Recording
-                    var recordedAudio = await _audioRecorder.StopAsync();
-                    _isRecording = false;
-                    MicrophoneButton.Text = "🎤"; // Microphone symbol
-                    MicrophoneButton.BackgroundColor = Colors.Transparent;
-
-                    // Play the recorded audio
-                    if (recordedAudio != null)
-                    {
-                        // Get the audio stream and play it
-                        var stream = recordedAudio.GetAudioStream();
-                        _audioPlayer = _audioManager.CreatePlayer(stream);
-                        _audioPlayer.Play();
-                    }
+                    MessageInput.Text = transcription.Trim();
+                    await OnSendClicked(null, null);
                 }
+
+                fileStream.Dispose();
+                File.Delete(_recordedFilePath);
             }
         }
         catch (Exception ex)
         {
-            await DisplayAlert("Error", $"An error occurred: {ex.Message}", "OK");
+            await DisplayAlert("Error", $"Failed to stop recording: {ex.Message}", "OK");
+        }
+        finally
+        {
+            _audioRecorder = null;
         }
     }
 
-    private async Task<string> GetSystemResponse(string userMessage)
+    private async void OnSilenceTimerElapsed(object sender, ElapsedEventArgs e)
     {
-        // TODO: Implement actual system response logic here
-        // For now, return a simple echo
-        await Task.Delay(500); // Simulate processing time
-        return $"Echo: {userMessage}";
+        await MainThread.InvokeOnMainThreadAsync(async () =>
+        {
+            if (_isRecording)
+            {
+                await StopRecording();
+            }
+        });
+    }
+
+    private async void OnSendClicked(object sender, EventArgs e)
+    {
+        if (string.IsNullOrWhiteSpace(MessageInput.Text)) return;
+
+        _messages.Add(new ChatMessage
+        {
+            Sender = "User",
+            Message = MessageInput.Text,
+            Timestamp = DateTime.Now.ToString("HH:mm")
+        });
+
+        MessageInput.Text = string.Empty;
+        await ScrollToLastMessage();
+    }
+
+    private async Task ScrollToLastMessage()
+    {
+        if (_messages.Count > 0)
+        {
+            await MessagesCollection.ScrollTo(_messages.Count - 1);
+        }
     }
 }
