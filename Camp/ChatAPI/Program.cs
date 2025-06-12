@@ -1,3 +1,5 @@
+using ChatAPI.Services;
+
 namespace ChatAPI;
 
 public class Program
@@ -24,6 +26,9 @@ public class Program
         
         // Add services to the container.
         builder.Services.AddControllers();
+
+        // Register chat service
+        builder.Services.AddScoped<IChatService, SemanticKernelChatService>();
 
         // Add Swagger/OpenAPI for testing
         builder.Services.AddEndpointsApiExplorer();

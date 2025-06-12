@@ -17,6 +17,27 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
+ * Get the real IP address of the user, considering proxies and load balancers.
+ *
+ * @return string The user's IP address.
+ */
+function scp_get_user_ip_address() {
+    $ip = '';
+    if ( ! empty( $_SERVER['HTTP_CLIENT_IP'] ) ) {
+        // IP from shared internet
+        $ip = $_SERVER['HTTP_CLIENT_IP'];
+    } elseif ( ! empty( $_SERVER['HTTP_X_FORWARDED_FOR'] ) ) {
+        // IP passed from proxy
+        $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+    } else {
+        // Regular IP
+        $ip = $_SERVER['REMOTE_ADDR'];
+    }
+    // Sanitize the IP address
+    return esc_sql( wp_unslash( $ip ) );
+}
+
+/**
  * ===================================================================
  * Admin Settings Page (FR-1)
  * ===================================================================
@@ -174,6 +195,9 @@ function scp_handle_chat_message() {
     // 1. Security Check: Verify nonce (NFR-1)
     check_ajax_referer('scp_chat_nonce', 'nonce');
 
+    // NEW: Get the user's IP address using our helper function.
+    $user_ip = scp_get_user_ip_address();
+
     // 2. Get data from the client
     $chat_history_json = isset($_POST['chat_history']) ? stripslashes($_POST['chat_history']) : '[]';
     $chat_history = json_decode($chat_history_json, true);
@@ -203,7 +227,8 @@ function scp_handle_chat_message() {
 
     // 4.1. Explicitly prepare the data payload as a PHP array.
     $payload = [
-        'chatHistory' => $chat_history
+        'chatHistory' => $chat_history,
+        'userIpAddress' => $user_ip // NEW: Add the IP address to the payload
     ];
 
     // 4.2. Prepare the arguments for wp_remote_post.

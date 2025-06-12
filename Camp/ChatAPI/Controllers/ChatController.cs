@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using ChatAPI.Models;
+using ChatAPI.Services;
 using System.Linq;
 
 namespace ChatAPI.Controllers
@@ -10,17 +11,19 @@ namespace ChatAPI.Controllers
     public class ChatController : ControllerBase
     {
         private readonly IConfiguration _configuration;
+        private readonly IChatService _chatService;
         private readonly string? _apiKey;
 
-        public ChatController(IConfiguration configuration)
+        public ChatController(IConfiguration configuration, IChatService chatService)
         {
             _configuration = configuration;
+            _chatService = chatService;
             // Retrieve the API key from configuration on startup
             _apiKey = _configuration.GetValue<string>("ChatSettings:ApiKey");
         }
 
         [HttpPost]
-        public IActionResult Post([FromBody] ChatRequest request)
+        public async Task<IActionResult> Post([FromBody] ChatRequest request)
         {
             // --- 1. Authentication ---
             // Get the Authorization header from the incoming request
@@ -50,55 +53,24 @@ namespace ChatAPI.Controllers
                 return BadRequest(new { message = "Chat history is empty or invalid." });
             }
 
-            // --- 3. Core Logic (The "AI") ---
-            // Get the latest message from the user to process
-            var lastUserMessage = request.ChatHistory.LastOrDefault(m => m.Role == "user");
-            if (lastUserMessage == null)
+            try
             {
-                return BadRequest(new { message = "No user message found in history." });
+                // --- 3. Get Response from Chat Service ---
+                string responseMessage = await _chatService.GetResponseAsync(request.ChatHistory);
+
+                // --- 4. Prepare and Send Response ---
+                var response = new ChatResponse
+                {
+                    Response = responseMessage
+                };
+
+                return Ok(response);
             }
-            
-            // Generate a response based on the user's message
-            string responseMessage = GenerateSimpleResponse(lastUserMessage.Content);
-
-            // --- 4. Prepare and Send Response ---
-            var response = new ChatResponse
+            catch (Exception ex)
             {
-                Response = responseMessage
-            };
-
-            return Ok(response);
-        }
-
-        /// <summary>
-        /// This is a placeholder for your actual AI/bot logic.
-        /// It can be replaced with calls to OpenAI, a database, or other services.
-        /// </summary>
-        private string GenerateSimpleResponse(string? userMessage)
-        {
-            if (userMessage != null)
-            {
-                string lowerUserMessage = userMessage.ToLower();
-
-                if (lowerUserMessage.Contains("hello") || lowerUserMessage.Contains("hi"))
-                {
-                    return "Hello! How can I help you today?";
-                }
-                if (lowerUserMessage.Contains("price") || lowerUserMessage.Contains("cost"))
-                {
-                    return "Our pricing details can be found on the pricing page of our website.";
-                }
-                if (lowerUserMessage.Contains("support") || lowerUserMessage.Contains("help"))
-                {
-                    return "You can contact our support team at support@example.com.";
-                }
-                if (lowerUserMessage.Contains("bye"))
-                {
-                    return "Goodbye! Have a great day.";
-                }
+                // Log the error in production
+                return StatusCode(500, new { message = "An error occurred while processing your request." });
             }
-
-            return "I'm sorry, I don't understand that question. Please try rephrasing or ask about pricing or support.";
         }
     }
 }
