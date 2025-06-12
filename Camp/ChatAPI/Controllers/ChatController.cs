@@ -72,5 +72,42 @@ namespace ChatAPI.Controllers
                 return StatusCode(500, new { message = "An error occurred while processing your request." });
             }
         }
+
+        [HttpGet("TestAPI")]
+        public async Task<IActionResult> TestAPI()
+        {
+            try
+            {
+                // Create a sample chat history
+                var chatHistory = new List<ChatMessage>
+                {
+                    new ChatMessage
+                    {
+                        Role = "user",
+                        Content = "Hi, I'd like to schedule a call to discuss your services."
+                    }
+                };
+
+                // Create the request object
+                var request = new ChatRequest
+                {
+                    ChatHistory = chatHistory,
+                    UserIpAddress = "127.0.0.1" // Local testing IP
+                };
+
+                // Add the API key to headers
+                Request.Headers.Add("Authorization", $"Bearer {_apiKey}");
+
+                // Call the Post endpoint
+                var result = await Post(request);
+
+                // Return the result
+                return result;
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred while testing the API.", error = ex.Message });
+            }
+        }
     }
 }
