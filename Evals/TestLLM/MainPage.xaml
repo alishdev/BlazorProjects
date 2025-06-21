@@ -1,0 +1,134 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="TestLLM.MainPage"
+             BackgroundColor="#F8FAFC">
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="25*" />
+            <ColumnDefinition Width="75*" />
+        </Grid.ColumnDefinitions>
+
+        <!-- Left Panel with Vertical Tabs -->
+        <Border Grid.Column="0" 
+                BackgroundColor="#1E293B"
+                Stroke="#334155"
+                StrokeThickness="1">
+            <ScrollView Orientation="Vertical">
+                <VerticalStackLayout x:Name="TabHeaders" Spacing="8" Padding="16,20">
+                    <Button x:Name="SettingsTab" 
+                            Text="⚙️ Settings" 
+                            Clicked="OnTabClicked"
+                            BackgroundColor="#3B82F6"
+                            TextColor="White"
+                            CornerRadius="12"
+                            Padding="16,12"
+                            FontSize="21"
+                            FontAttributes="Bold"
+                            Margin="0,0,0,8" />
+                </VerticalStackLayout>
+            </ScrollView>
+        </Border>
+
+        <!-- Right Panel -->
+        <Grid Grid.Column="1" x:Name="RightPanel" Padding="20">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="25*" x:Name="TopRow" />
+                <RowDefinition Height="75*" x:Name="BottomRow" />
+            </Grid.RowDefinitions>
+
+            <!-- Right Top Panel (RTP) -->
+            <Border Grid.Row="0" 
+                    BackgroundColor="White" 
+                    Stroke="#E2E8F0" 
+                    StrokeThickness="1" 
+                    Padding="24"
+                    x:Name="TopPanel"
+                    Margin="0,0,0,16">
+                <Border.Shadow>
+                    <Shadow Brush="#00000020" Offset="0,4" Radius="12" />
+                </Border.Shadow>
+                <VerticalStackLayout Spacing="16">
+                    <Label Text="💬 Ask Your Question" 
+                           FontSize="20" 
+                           FontAttributes="Bold"
+                           TextColor="#1E293B" />
+                    
+                    <Editor x:Name="QuestionEditor" 
+                           Placeholder="Enter your question here..."
+                           AutoSize="TextChanges"
+                           MinimumHeightRequest="100"
+                           MaximumHeightRequest="200"
+                           BackgroundColor="#F8FAFC"
+                           TextColor="#1E293B"
+                           PlaceholderColor="#94A3B8"
+                           FontSize="16"
+                           Margin="0,8,0,0" />
+                    
+                    <Button x:Name="SubmitButton" 
+                            Text="🚀 Submit Question" 
+                            Clicked="OnSubmitClicked"
+                            HorizontalOptions="Start"
+                            BackgroundColor="#3B82F6"
+                            TextColor="White"
+                            CornerRadius="12"
+                            Padding="24,16"
+                            FontSize="16"
+                            FontAttributes="Bold" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Right Bottom Panel (RBP) -->
+            <Border Grid.Row="1" 
+                    BackgroundColor="White" 
+                    Stroke="#E2E8F0" 
+                    StrokeThickness="1" 
+                    Padding="24"
+                    x:Name="BottomPanel">
+                <Border.Shadow>
+                    <Shadow Brush="#00000020" Offset="0,4" Radius="12" />
+                </Border.Shadow>
+                <Grid x:Name="RBPContent">
+                    <!-- Settings Content -->
+                    <ScrollView x:Name="SettingsContent" IsVisible="False">
+                        <VerticalStackLayout x:Name="SettingsCheckboxes" Spacing="16">
+                            <Label Text="🤖 Select LLMs" 
+                                   FontSize="20" 
+                                   FontAttributes="Bold"
+                                   TextColor="#1E293B"
+                                   Margin="0,0,0,8" />
+                            
+                            <Label Text="Choose which AI models to enable in your tabs" 
+                                   FontSize="14"
+                                   TextColor="#64748B"
+                                   Margin="0,0,0,16" />
+                            <!-- Checkboxes will be generated here -->
+                        </VerticalStackLayout>
+                    </ScrollView>
+
+                    <!-- Result Content -->
+                    <VerticalStackLayout x:Name="ResultContent" IsVisible="True" Spacing="16">
+                        <Label Text="📊 Result" 
+                               FontSize="20" 
+                               FontAttributes="Bold"
+                               TextColor="#1E293B" />
+                        
+                        <Border BackgroundColor="#F1F5F9" 
+                                Stroke="#E2E8F0" 
+                                StrokeThickness="1" 
+                                Padding="20">
+                            <Label x:Name="lResult" 
+                                   Text="No result yet"
+                                   FontSize="16"
+                                   TextColor="#475569"
+                                   VerticalOptions="Start"
+                                   HorizontalOptions="Start" />
+                        </Border>
+                    </VerticalStackLayout>
+                </Grid>
+            </Border>
+        </Grid>
+    </Grid>
+
+</ContentPage>

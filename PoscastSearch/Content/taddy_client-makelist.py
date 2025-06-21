@@ -1,6 +1,9 @@
 import os
 import asyncio
 import logging
+import argparse
+import csv
+from datetime import datetime
 from dotenv import load_dotenv
 from gql import gql, Client
 from gql.transport.aiohttp import AIOHTTPTransport
@@ -397,8 +400,16 @@ class TaddyClient:
 if __name__ == "__main__":
     client = TaddyClient()
     
+    # Set up argument parser
+    parser = argparse.ArgumentParser(description='Search and download podcast episodes')
+    parser.add_argument('podcast_name', help='Name of the podcast to search for')
+    parser.add_argument('--list-only', action='store_true', help='Only list episodes without downloading them')
+    parser.add_argument('--csv', action='store_true', help='Save episode list to CSV file')
+    parser.add_argument('--output-dir', default='.', help='Directory to save the CSV file (default: current directory)')
+    args = parser.parse_args()
+    
     # Move main() outside the if block and fix the self reference
-    async def main(podcast_name):
+    async def main(podcast_name, list_only=False, save_csv=False, output_dir='.'):
         # First, search for the podcast
         search_variables = {
             "term": podcast_name
@@ -415,8 +426,27 @@ if __name__ == "__main__":
                 client.logger.info(f"\nFound podcast: {podcast['name']}")
                 client.logger.info(f"UUID: {podcast['uuid']}")
                 
+                # Prepare CSV file if requested
+                csv_file = None
+                csv_writer = None
+                if save_csv:
+                    # Create output directory if it doesn't exist
+                    os.makedirs(output_dir, exist_ok=True)
+                    
+                    # Create a filename based on podcast name and timestamp
+                    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+                    safe_podcast_name = "".join(c for c in podcast_name if c.isalnum() or c in (' ', '-', '_')).strip()
+                    csv_filename = f"podcast_episodes_{safe_podcast_name}_{timestamp}.csv"
+                    csv_path = os.path.join(output_dir, csv_filename)
+                    
+                    csv_file = open(csv_path, 'w', newline='', encoding='utf-8')
+                    csv_writer = csv.writer(csv_file)
+                    # Write header
+                    csv_writer.writerow(['Episode Number', 'Title', 'Published Date', 'Duration', 'Audio URL'])
+                    client.logger.info(f"Will save CSV file to: {os.path.abspath(csv_path)}")
+                
                 # Download episodes from pages 1 to 2 (3 not included)
-                for page in range(3, 9):
+                for page in range(1, 10):
                     client.logger.info(f"\nProcessing page {page} of episodes...")
                     
                     # Get episodes using the podcast UUID with pagination
@@ -440,35 +470,49 @@ if __name__ == "__main__":
                         client.logger.info("-" * 50)
                         
                         for episode in episodes:
-                            client.logger.info(f"\nProcessing Episode {episode.get('episodeNumber', 'N/A')}:")
-                            client.logger.info(f"Title: {episode['name']}")
+                            episode_number = episode.get('episodeNumber', 'N/A')
+                            title = episode['name']
+                            published_date = episode['datePublished']
+                            duration = episode['duration']
+                            audio_url = episode['audioUrl']
                             
-                            # Create a clean filename from episode number and name
-                            filename = f"{podcast_name}_{episode.get('episodeNumber', '000')}_{episode['name']}"
+                            client.logger.info(f"\nEpisode {episode_number}:")
+                            client.logger.info(f"Title: {title}")
+                            client.logger.info(f"Published: {published_date}")
+                            client.logger.info(f"Duration: {duration}")
                             
-                            # Download the episode
-                            result = client.mp3_downloader.download(
-                                url=episode['audioUrl'],
-                                output_dir="podcast_episodes",
-                                filename=filename
-                            )
+                            # Write to CSV if requested
+                            if save_csv and csv_writer:
+                                csv_writer.writerow([episode_number, title, published_date, duration, audio_url])
                             
-                            if result:
-                                client.logger.info(f"Successfully downloaded to: {result}")
-                            else:
-                                client.logger.error(f"Failed to download episode")
+                            if not list_only:
+                                # Create a clean filename from episode number and name
+                                filename = f"{podcast_name}_{episode_number}_{title}"
+                                
+                                # Download the episode
+                                result = None
+                                #result = client.mp3_downloader.download(
+                                #    url=episode['audioUrl'],
+                                #    output_dir="podcast_episodes",
+                                #    filename=filename
+                                #)
+                                
+                                if result:
+                                    client.logger.info(f"Successfully downloaded to: {result}")
+                                else:
+                                    client.logger.error(f"Failed to download episode")
                             client.logger.info("-" * 50)
                     else:
                         client.logger.error(f"Failed to fetch episodes for page {page}")
+                
+                # Close CSV file if it was opened
+                if csv_file:
+                    csv_file.close()
+                    client.logger.info(f"\nEpisode list saved to: {os.path.abspath(csv_path)}")
             else:
                 client.logger.warning("No podcasts found")
         else:
             client.logger.error("Search failed")
     
-    # Run the async main function with command line argument
-    import sys
-    if len(sys.argv) > 1:
-        podcast_name = sys.argv[1]
-        asyncio.run(main(podcast_name))
-    else:
-        print("Please provide a podcast name as an argument") 
+    # Run the async main function with command line arguments
+    asyncio.run(main(args.podcast_name, args.list_only, args.csv, args.output_dir)) 
