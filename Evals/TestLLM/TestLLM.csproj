@@ -65,11 +65,4 @@
         <PackageReference Include="pythonnet" Version="3.0.3"/>
     </ItemGroup>
 
-    <ItemGroup>
-        <EmbeddedResource Include="llm_util.py">
-            <LogicalName>TestLLM.llm_util.py</LogicalName>
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </EmbeddedResource>
-    </ItemGroup>
-
 </Project>

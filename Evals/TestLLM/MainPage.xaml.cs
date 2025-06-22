@@ -1,5 +1,8 @@
 ﻿using System.Collections.ObjectModel;
 using Python.Runtime;
+using System.Net.Http;
+using System.Text;
+using System.Text.Json;
 
 namespace TestLLM;
 
@@ -208,7 +211,7 @@ public partial class MainPage : ContentPage
         }
     }
 
-    private void OnSubmitClicked(object? sender, EventArgs e)
+    private async void OnSubmitClicked(object? sender, EventArgs e)
     {
         string question = QuestionEditor.Text?.Trim() ?? "";
         
@@ -224,13 +227,42 @@ public partial class MainPage : ContentPage
             return;
         }
         
-        lResult.Text = AskLLM(_currentSelectedTab, question);
+        lResult.Text = await AskLLM(_currentSelectedTab, question);
         
         QuestionEditor.Text = "";
     }
 
-    private string AskLLM(string llm, string prompt)
+    private async Task<string> AskLLM(string llm, string prompt)
     {
-        return $"{llm} responded to question: {prompt}";
+        try
+        {
+            using (var client = new HttpClient())
+            {
+                var requestData = new
+                {
+                    llm = llm,
+                    prompt = prompt
+                };
+                
+                var json = JsonSerializer.Serialize(requestData);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+                
+                var response = await client.PostAsync("http://localhost:8000/askllm", content);
+                
+                if (response.IsSuccessStatusCode)
+                {
+                    var responseText = await response.Content.ReadAsStringAsync();
+                    return responseText;
+                }
+                else
+                {
+                    return $"Error: HTTP {response.StatusCode} - {response.ReasonPhrase}";
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            return $"Error connecting to server: {ex.Message}";
+        }
     }
 }
