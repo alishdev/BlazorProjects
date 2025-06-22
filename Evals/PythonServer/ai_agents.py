@@ -141,74 +141,38 @@ class AIAgents:
             ValueError: If no Anthropic API key is configured
             Exception: If the API call fails
         """
-        print(f"[DEBUG] answer_anthropic called with model: {model}, prompt length: {len(prompt)}")
-        
         # Check if Anthropic API key is available
         if not self.api_keys['anthropic']:
-            print("[DEBUG] No Anthropic API key found")
             raise ValueError("No Anthropic API key configured. Please set ANTHROPIC_API_KEY environment variable.")
         
-        print(f"[DEBUG] Anthropic API key found: {self.api_keys['anthropic'][:10]}...")
-        
         try:
-            print("[DEBUG] Creating Anthropic client...")
+            client = anthropic.Anthropic(
+                api_key=self.api_keys['anthropic']
+            )
             
-            # Try different client initialization approaches
-            try:
-                # Method 1: Direct initialization
-                anthropic_api_key = self.api_keys['anthropic']
-                print("[DEBUG] Trying direct client initialization..." + anthropic_api_key)
-                client = anthropic.Client(api_key=self.api_keys['anthropic'])
-                print("[DEBUG] Direct client initialization successful")
-            except TypeError as e:
-                print(f"[DEBUG] Direct initialization failed: {e}")
-                try:
-                    # Method 2: Create client without parameters, then set API key
-                    print("[DEBUG] Trying client creation without parameters...")
-                    client = anthropic.Client()
-                    client.api_key = self.api_keys['anthropic']
-                    print("[DEBUG] Client creation without parameters successful")
-                except Exception as e2:
-                    print(f"[DEBUG] Client creation without parameters failed: {e2}")
-                    # Method 3: Try using Anthropic class instead of Client
-                    print("[DEBUG] Trying Anthropic class instead of Client...")
-                    client = anthropic.Anthropic(api_key=self.api_keys['anthropic'])
-                    print("[DEBUG] Anthropic class initialization successful")
-            
-            print("[DEBUG] Anthropic client created successfully")
-            
-            print(f"[DEBUG] Making API call to Anthropic with model: {model}")
-            # Make the API call using the older API format
-            response = client.messages.create(
+            message = client.messages.create(
                 model=model,
-                max_tokens=1000,  # Adjust as needed
+                max_tokens=1024,
                 messages=[
-                    {
-                        "role": "user",
-                        "content": prompt
-                    }
+                    {"role": "user", "content": prompt}
                 ]
             )
-            print("[DEBUG] Anthropic API call completed successfully")
+
+            # Extract text content from the response
+            if hasattr(message.content, '__iter__'):
+                # If content is a list, extract text from the first item
+                return message.content[0].text
+            else:
+                # If content is a single item, extract text directly
+                return message.content.text
             
-            # Extract and return the response
-            result = response.content[0].text
-            print(f"[DEBUG] Anthropic response length: {len(result)}")
-            return result
-            
-        except anthropic.AuthenticationError as e:
-            print(f"[DEBUG] Anthropic AuthenticationError: {e}")
+        except anthropic.AuthenticationError:
             raise Exception("Invalid Anthropic API key. Please check your ANTHROPIC_API_KEY.")
-        except anthropic.RateLimitError as e:
-            print(f"[DEBUG] Anthropic RateLimitError: {e}")
+        except anthropic.RateLimitError:
             raise Exception("Anthropic API rate limit exceeded. Please try again later.")
         except anthropic.APIError as e:
-            print(f"[DEBUG] Anthropic APIError: {e}")
             raise Exception(f"Anthropic API error: {str(e)}")
         except Exception as e:
-            print(f"[DEBUG] Unexpected error in Anthropic call: {e}")
-            print(f"[DEBUG] Error type: {type(e)}")
-            print(f"[DEBUG] Error details: {str(e)}")
             raise Exception(f"Unexpected error calling Anthropic API: {str(e)}")
 
     def answer(self, llm_name: str, prompt: str, model: str = None) -> str:
