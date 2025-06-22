@@ -4,3 +4,6 @@ few changes required - tabs must be ordered vertically. also the checkbox list m
 
 when user clicks on Settings tab hide top panel in the right panel and only leave checkboxes with a label "Select LLMs"
 when user clicks on Settings tab the bottom panel in the right panel must expand over entire right panel
+
+intsall python.net
+https://github.com/QuantConnect/Lean/blob/master/Algorithm.Python/readme.md#setup-lean-locally-with-python

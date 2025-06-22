@@ -49,34 +49,37 @@
                 <Border.Shadow>
                     <Shadow Brush="#00000020" Offset="0,4" Radius="12" />
                 </Border.Shadow>
-                <VerticalStackLayout Spacing="16">
-                    <Label Text="💬 Ask Your Question" 
-                           FontSize="20" 
-                           FontAttributes="Bold"
-                           TextColor="#1E293B" />
-                    
-                    <Editor x:Name="QuestionEditor" 
-                           Placeholder="Enter your question here..."
-                           AutoSize="TextChanges"
-                           MinimumHeightRequest="100"
-                           MaximumHeightRequest="200"
-                           BackgroundColor="#F8FAFC"
-                           TextColor="#1E293B"
-                           PlaceholderColor="#94A3B8"
-                           FontSize="16"
-                           Margin="0,8,0,0" />
-                    
-                    <Button x:Name="SubmitButton" 
-                            Text="🚀 Submit Question" 
-                            Clicked="OnSubmitClicked"
-                            HorizontalOptions="Start"
-                            BackgroundColor="#3B82F6"
-                            TextColor="White"
-                            CornerRadius="12"
-                            Padding="24,16"
-                            FontSize="16"
-                            FontAttributes="Bold" />
-                </VerticalStackLayout>
+                <ScrollView>
+                    <VerticalStackLayout Spacing="16">
+                        <Label Text="💬 Ask Your Question" 
+                               FontSize="20" 
+                               FontAttributes="Bold"
+                               TextColor="#1E293B" />
+                        
+                        <Editor x:Name="QuestionEditor" 
+                               Placeholder="Enter your question here..."
+                               IsReadOnly="False"
+                               AutoSize="Disabled"
+                               MinimumHeightRequest="100"
+                               MaximumHeightRequest="200"
+                               BackgroundColor="#F8FAFC"
+                               TextColor="#1E293B"
+                               PlaceholderColor="#94A3B8"
+                               FontSize="16"
+                               Margin="0,8,0,0" />
+                        
+                        <Button x:Name="SubmitButton" 
+                                Text="🚀 Submit Question" 
+                                Clicked="OnSubmitClicked"
+                                HorizontalOptions="Start"
+                                BackgroundColor="#3B82F6"
+                                TextColor="White"
+                                CornerRadius="12"
+                                Padding="24,16"
+                                FontSize="16"
+                                FontAttributes="Bold" />
+                    </VerticalStackLayout>
+                </ScrollView>
             </Border>
 
             <!-- Right Bottom Panel (RBP) -->

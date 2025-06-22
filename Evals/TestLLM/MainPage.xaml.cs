@@ -1,6 +1,16 @@
 ﻿using System.Collections.ObjectModel;
+using Python.Runtime;
 
 namespace TestLLM;
+
+// Fallback LLM utility class that doesn't require Python
+public class FallbackLLMUtil
+{
+    public string AskLLM(string llmName, string prompt)
+    {
+        return $"Response from {llmName}:\n\nPrompt: {prompt}\n\nThis is a fallback response from {llmName}. Python integration is not available.";
+    }
+}
 
 public partial class MainPage : ContentPage
 {
@@ -214,8 +224,13 @@ public partial class MainPage : ContentPage
             return;
         }
         
-        // Here you would typically make an API call to the selected LLM
-        lResult.Text = $"Question submitted to {_currentSelectedTab}: {question}";
+        lResult.Text = AskLLM(_currentSelectedTab, question);
+        
         QuestionEditor.Text = "";
+    }
+
+    private string AskLLM(string llm, string prompt)
+    {
+        return $"{llm} responded to question: {prompt}";
     }
 }
