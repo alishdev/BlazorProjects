@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List, Optional
 import uvicorn
+from ai_agents import AIAgents
 
 # Create FastAPI app instance
 app = FastAPI(
@@ -10,6 +11,9 @@ app = FastAPI(
     description="A FastAPI application for evaluation services",
     version="1.0.0"
 )
+
+# Initialize AIAgents instance
+ai_agents = AIAgents()
 
 # Add CORS middleware
 app.add_middleware(
@@ -33,6 +37,7 @@ class EvaluationResponse(BaseModel):
 class AskLLMRequest(BaseModel):
     llm: str
     prompt: str
+    model: Optional[str] = None
 
 class AskLLMResponse(BaseModel):
     text: str
@@ -111,7 +116,7 @@ async def delete_evaluation(evaluation_id: int):
 # Ask LLM endpoint
 @app.post("/askllm", response_model=AskLLMResponse)
 async def ask_llm(request: AskLLMRequest):
-    response_text = request.llm + " response to: " + request.prompt
+    response_text = ai_agents.answer(request.llm, request.prompt, request.model)
     return AskLLMResponse(text=response_text)
 
 if __name__ == "__main__":

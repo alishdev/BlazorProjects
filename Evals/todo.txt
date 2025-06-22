@@ -1,0 +1,20 @@
+//// Simple eval
+1. Register for API for Anthropic and other APIs
+2. Add python func to run prompt against all LLMs in PythonServer
+3. Run for all models and display result in Evals
+4. Save api keys in config file in PythonServer
+
+//// RAG eval
+1. Download docs for YMCA
+2. New program that use FAISS to build RAG system with different LLMs
+3. New program that creates questions based on prompt and RAG for different LLMs and saves them into csv
+4. Make one list from all questions
+5??. New program that grades questions using different LLMs
+6. Make all LLMs answer all questions and save them into Sqlite db
+7. In C# create a UI that will display questions and answer from different LLMs and let human select best answer
+8. Make a list of questions and best answers, find out which LLM is best for answering 
+
+//// Reviewer AI
+1. Download docs for another YMCA
+2. Generate questions from RAG
+2. Create a Reviewer AI which will review answers from other LLMs
