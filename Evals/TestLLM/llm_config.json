@@ -5,35 +5,35 @@
       "description": "OpenAI's GPT-4 model",
       "enabled": true,
       "apiKey": "openai",
-      "defaultModel": "gpt-4"
+      "defaultModel": "gpt-4.1-mini"
     },
     {
       "name": "Claude",
       "description": "Anthropic's Claude model",
       "enabled": true,
       "apiKey": "anthropic",
-      "defaultModel": "claude-3-sonnet-20240229"
+      "defaultModel": "claude-3-7-sonnet-latest"
+    },
+    {
+      "name": "Claude",
+      "description": "Anthropic's Claude model",
+      "enabled": true,
+      "apiKey": "anthropic",
+      "defaultModel": "claude-3-5-sonnet-latest"
     },
     {
       "name": "Gemini",
       "description": "Google's Gemini model",
       "enabled": true,
       "apiKey": "gemini",
-      "defaultModel": "gemini-pro"
+      "defaultModel": "gemini-2.5-flash"
     },
     {
       "name": "Llama",
       "description": "Meta's Llama model",
       "enabled": true,
       "apiKey": "llama",
-      "defaultModel": "llama-2-70b"
-    },
-    {
-      "name": "Cohere",
-      "description": "Cohere's language model",
-      "enabled": true,
-      "apiKey": "cohere",
-      "defaultModel": "command"
+      "defaultModel": "llama-3.3-70b-instruct"
     },
     {
       "name": "Mistral",

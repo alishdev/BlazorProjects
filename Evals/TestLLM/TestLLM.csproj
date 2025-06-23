@@ -59,9 +59,8 @@
         <MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)"/>
         
         <!-- Configuration Files -->
-        <MauiAsset Include="llm_config.json" LogicalName="llm_config.json">
-          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </MauiAsset>
+        <MauiAsset Include="llm_config.json" LogicalName="llm_config.json"/>
+        <MauiAsset Include="logging_config.json" LogicalName="logging_config.json"/>
     </ItemGroup>
 
     <ItemGroup>
@@ -69,6 +68,8 @@
         <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.0"/>
         <PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.0"/>
         <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="9.0.0"/>
+        <PackageReference Include="Microsoft.Extensions.Configuration" Version="9.0.0"/>
+        <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="9.0.0"/>
         <PackageReference Include="pythonnet" Version="3.0.3"/>
     </ItemGroup>
 

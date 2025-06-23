@@ -1,0 +1,37 @@
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft": "Warning",
+      "Microsoft.Hosting.Lifetime": "Information",
+      "TestLLM": "Debug",
+      "TestLLM.LLMConfigService": "Debug",
+      "TestLLM.MainPage": "Information"
+    },
+    "Console": {
+      "LogLevel": {
+        "Default": "Information",
+        "TestLLM": "Debug"
+      }
+    },
+    "Debug": {
+      "LogLevel": {
+        "Default": "Debug",
+        "TestLLM": "Debug"
+      }
+    },
+    "File": {
+      "LogLevel": {
+        "Default": "Information",
+        "TestLLM": "Debug"
+      },
+      "FolderPath": "logs",
+      "FileName": "testllm-{Date}.log",
+      "MaxFileSizeInMB": 10,
+      "MaxFilesToKeep": 30,
+      "IncludeTimestamp": true,
+      "IncludeLogLevel": true,
+      "IncludeCategory": true
+    }
+  }
+} 
