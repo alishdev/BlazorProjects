@@ -194,7 +194,7 @@ public partial class MainPage : ContentPage
         // Show responses summary if available
         if (_llmResponses.Count > 0)
         {
-            lResult.Text = GetResponsesSummary();
+            lResult.MarkdownText = GetResponsesSummary();
         }
     }
 
@@ -213,12 +213,12 @@ public partial class MainPage : ContentPage
         // Display stored response if available, otherwise show default message
         if (_llmResponses.TryGetValue(llmName, out var response))
         {
-            lResult.Text = response;
+            lResult.MarkdownText = response;
             _logger.LogDebug("Displaying stored response for {LLMName}", llmName);
         }
         else
         {
-            lResult.Text = $"Selected LLM: {llmName}\n\nNo response available yet. Submit a question to get a response from this LLM.";
+            lResult.MarkdownText = $"Selected LLM: {llmName}\n\nNo response available yet. Submit a question to get a response from this LLM.";
             _logger.LogDebug("No stored response found for {LLMName}", llmName);
         }
     }
@@ -271,7 +271,7 @@ public partial class MainPage : ContentPage
         
         if (string.IsNullOrEmpty(question))
         {
-            lResult.Text = "Please enter a question first.";
+            lResult.MarkdownText = "Please enter a question first.";
             _logger.LogWarning("Submit clicked with empty question");
             return;
         }
@@ -290,7 +290,7 @@ public partial class MainPage : ContentPage
         
         if (!enabledLLMs.Any())
         {
-            lResult.Text = "Please enable at least one LLM in Settings to submit your question.";
+            lResult.MarkdownText = "Please enable at least one LLM in Settings to submit your question.";
             _logger.LogWarning("Submit clicked with no enabled LLMs");
             return;
         }
@@ -298,7 +298,7 @@ public partial class MainPage : ContentPage
         _logger.LogInformation("Submitting question to {Count} enabled LLMs: {Question}", enabledLLMs.Count, question);
         
         // Show loading message
-        lResult.Text = $"Sending question to {enabledLLMs.Count} LLMs...\n\n";
+        lResult.MarkdownText = $"Sending question to {enabledLLMs.Count} LLMs...\n\n";
         
         // Update status bar to show initial state
         UpdateStatusBar($"Sending question to {enabledLLMs.Count} LLMs...", "0/" + enabledLLMs.Count);
@@ -329,7 +329,7 @@ public partial class MainPage : ContentPage
                     {
                         if (_currentSelectedTab == llm.NameAndModel)
                         {
-                            lResult.Text = response;
+                            lResult.MarkdownText = response;
                         }
                         else if (_currentSelectedTab == "Settings")
                         {
@@ -337,11 +337,11 @@ public partial class MainPage : ContentPage
                             var status = GetResponseStatus();
                             if (status.Contains("All") || status.Contains("Received"))
                             {
-                                lResult.Text = GetResponsesSummary();
+                                lResult.MarkdownText = GetResponsesSummary();
                             }
                             else
                             {
-                                lResult.Text = status;
+                                lResult.MarkdownText = status;
                             }
                         }
                     });
@@ -385,13 +385,13 @@ public partial class MainPage : ContentPage
                 UpdateTabLoadingStatus(llm.NameAndModel, false);
             }
             
-            lResult.Text = "Requests were cancelled.";
+            lResult.MarkdownText = "Requests were cancelled.";
             UpdateStatusBar("Requests cancelled", $"{_llmResponses.Count}/{enabledLLMs.Count}");
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error waiting for LLM responses");
-            lResult.Text = $"Error: {ex.Message}";
+            lResult.MarkdownText = $"Error: {ex.Message}";
             UpdateStatusBar($"Error: {ex.Message}", $"{_llmResponses.Count}/{enabledLLMs.Count}");
         }
         
@@ -625,7 +625,7 @@ public partial class MainPage : ContentPage
             ClearResponses();
             if (_currentSelectedTab != "Settings")
             {
-                lResult.Text = $"Selected LLM: {_currentSelectedTab}\n\nNo response available yet. Submit a question to get a response from this LLM.";
+                lResult.MarkdownText = $"Selected LLM: {_currentSelectedTab}\n\nNo response available yet. Submit a question to get a response from this LLM.";
             }
         }
     }

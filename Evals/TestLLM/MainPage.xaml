@@ -1,6 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:TestLLM"
              x:Class="TestLLM.MainPage"
              BackgroundColor="#F8FAFC">
 
@@ -128,12 +129,14 @@
                                     Stroke="#E2E8F0" 
                                     StrokeThickness="1" 
                                     Padding="20">
-                                <Label x:Name="lResult" 
-                                       Text="No result yet"
+                                <ScrollView>
+                                    <local:MarkdownLabel x:Name="lResult" 
+                                       MarkdownText="No result yet"
                                        FontSize="16"
                                        TextColor="#475569"
                                        VerticalOptions="Start"
                                        HorizontalOptions="Start" />
+                                </ScrollView>
                             </Border>
                         </VerticalStackLayout>
                     </Grid>
