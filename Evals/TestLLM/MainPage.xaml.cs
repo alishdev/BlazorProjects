@@ -506,15 +506,6 @@ public partial class MainPage : ContentPage
                     fileInfo.Name, fileInfo.Length, fileInfo.LastWriteTime);
             }
             
-            // Log some test messages to demonstrate file logging
-            _logger.LogTrace("This is a trace message");
-            _logger.LogDebug("This is a debug message");
-            _logger.LogInformation("This is an information message");
-            _logger.LogWarning("This is a warning message");
-            _logger.LogError("This is an error message");
-            
-            _logger.LogInformation("File logging demonstration completed");
-            
             // Check if the test log file was created
             if (logFilePath != null && File.Exists(logFilePath))
             {

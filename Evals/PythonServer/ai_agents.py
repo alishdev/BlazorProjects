@@ -8,10 +8,6 @@ import anthropic
 # Load environment variables from .env file
 load_dotenv()
 
-# Debug: Check what anthropic module we're importing
-print(f"[DEBUG] Anthropic module imported: {anthropic}")
-print(f"[DEBUG] Anthropic module version: {getattr(anthropic, '__version__', 'unknown')}")
-print(f"[DEBUG] Available attributes in anthropic: {dir(anthropic)}")
 
 class AIAgents:
     """

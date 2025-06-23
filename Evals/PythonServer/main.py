@@ -114,10 +114,10 @@ async def delete_evaluation(evaluation_id: int):
     raise HTTPException(status_code=404, detail="Evaluation not found")
 
 # Ask LLM endpoint
-@app.post("/askllm", response_model=AskLLMResponse)
+@app.post("/askllm")
 async def ask_llm(request: AskLLMRequest):
     response_text = ai_agents.answer(request.llm, request.prompt, request.model)
-    return AskLLMResponse(text=response_text)
+    return response_text
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000) 
