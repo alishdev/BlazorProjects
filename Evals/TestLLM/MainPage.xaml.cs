@@ -72,7 +72,8 @@ public partial class MainPage : ContentPage
                 Padding = new Thickness(16, 12),
                 FontSize = 21,
                 FontAttributes = FontAttributes.Bold,
-                Margin = new Thickness(0, 0, 0, 8)
+                Margin = new Thickness(0, 0, 0, 8),
+                HorizontalOptions = LayoutOptions.Start
             };
             
             tabButton.Clicked += OnTabClicked;
