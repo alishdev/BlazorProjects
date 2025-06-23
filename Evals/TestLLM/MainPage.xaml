@@ -119,26 +119,30 @@
                         </ScrollView>
 
                         <!-- Result Content -->
-                        <VerticalStackLayout x:Name="ResultContent" IsVisible="True" Spacing="16">
-                            <Label Text="📊 Result" 
-                                   FontSize="20" 
-                                   FontAttributes="Bold"
-                                   TextColor="#1E293B" />
-                            
-                            <Border BackgroundColor="#F1F5F9" 
-                                    Stroke="#E2E8F0" 
-                                    StrokeThickness="1" 
-                                    Padding="20">
-                                <ScrollView>
-                                    <local:MarkdownLabel x:Name="lResult" 
-                                       MarkdownText="No result yet"
-                                       FontSize="16"
-                                       TextColor="#475569"
-                                       VerticalOptions="Start"
-                                       HorizontalOptions="Start" />
-                                </ScrollView>
-                            </Border>
-                        </VerticalStackLayout>
+                        <ScrollView>
+                            <VerticalStackLayout x:Name="ResultContent" IsVisible="True" Spacing="16">
+                                <Label Text="📊 Result" 
+                                       FontSize="20" 
+                                       FontAttributes="Bold"
+                                       TextColor="#1E293B" />
+                                
+                                <Border BackgroundColor="#F1F5F9" 
+                                        Stroke="#E2E8F0" 
+                                        StrokeThickness="1" 
+                                        Padding="20">
+                                    <ScrollView VerticalOptions="FillAndExpand">
+                                        <StackLayout>
+                                        <local:MarkdownLabel x:Name="lResult" 
+                                                             MarkdownText="No result yet"
+                                                             FontSize="16"
+                                                             TextColor="#475569"
+                                                             VerticalOptions="Start"
+                                                             HorizontalOptions="Start" />
+                                        </StackLayout>
+                                    </ScrollView>
+                                </Border>
+                            </VerticalStackLayout>
+                        </ScrollView>
                     </Grid>
                 </Border>
             </Grid>
