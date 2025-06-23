@@ -33,12 +33,15 @@ namespace TestLLM
 
             try
             {
+                // Replace literal \n and \n with actual newlines
+                var normalizedText = MarkdownText.Replace("\\n", "\n").Replace("\n", System.Environment.NewLine);
+
                 // Convert markdown to HTML first
                 var pipeline = new MarkdownPipelineBuilder()
                     .UseAdvancedExtensions()
                     .Build();
                 
-                var html = Markdown.ToHtml(MarkdownText, pipeline);
+                var html = Markdown.ToHtml(normalizedText, pipeline);
                 
                 // Convert HTML to FormattedString for MAUI
                 var formattedString = ConvertHtmlToFormattedString(html);
