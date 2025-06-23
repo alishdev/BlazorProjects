@@ -6,6 +6,11 @@ using System.Text.Json;
 using System.Linq;
 using System.IO;
 using Microsoft.Extensions.Logging;
+using System.Collections.Concurrent;
+using System.Threading.Tasks;
+using System.Threading;
+using System.Collections.Generic;
+using Microsoft.Maui.Controls;
 
 namespace TestLLM;
 
@@ -25,6 +30,8 @@ public partial class MainPage : ContentPage
     private Dictionary<string, Button> _tabButtons;
     private Dictionary<string, CheckBox> _checkBoxes;
     private string _currentSelectedTab = "Settings";
+    private ConcurrentDictionary<string, string> _llmResponses = new ConcurrentDictionary<string, string>();
+    private CancellationTokenSource _currentRequestCancellation = new CancellationTokenSource();
 
     public MainPage()
     {
@@ -146,7 +153,7 @@ public partial class MainPage : ContentPage
     {
         if (sender is Button button)
         {
-            string tabName = button.Text.Replace("⚙️ ", "").Replace("🤖 ", "");
+            string tabName = button.Text.Replace("⚙️ ", "").Replace("🤖 ", "").Replace("⏳ ", "");
             _currentSelectedTab = tabName;
             _logger.LogDebug("Tab clicked: {TabName}", tabName);
             
@@ -180,6 +187,12 @@ public partial class MainPage : ContentPage
         TopPanel.IsVisible = false;
         SettingsContent.IsVisible = true;
         ResultContent.IsVisible = false;
+        
+        // Show responses summary if available
+        if (_llmResponses.Count > 0)
+        {
+            lResult.Text = GetResponsesSummary();
+        }
     }
 
     private void ShowLLMTab(string llmName)
@@ -193,7 +206,18 @@ public partial class MainPage : ContentPage
         TopPanel.IsVisible = true;
         SettingsContent.IsVisible = false;
         ResultContent.IsVisible = true;
-        lResult.Text = $"Selected LLM: {llmName}";
+        
+        // Display stored response if available, otherwise show default message
+        if (_llmResponses.TryGetValue(llmName, out var response))
+        {
+            lResult.Text = response;
+            _logger.LogDebug("Displaying stored response for {LLMName}", llmName);
+        }
+        else
+        {
+            lResult.Text = $"Selected LLM: {llmName}\n\nNo response available yet. Submit a question to get a response from this LLM.";
+            _logger.LogDebug("No stored response found for {LLMName}", llmName);
+        }
     }
 
     private void OnCheckBoxChanged(string llmName, bool isChecked)
@@ -215,12 +239,16 @@ public partial class MainPage : ContentPage
             }
             else
             {
-                // Hide the tab
+                // Hide the tab and remove response
                 if (TabHeaders.Children.Contains(tabButton))
                 {
                     TabHeaders.Children.Remove(tabButton);
                     _logger.LogDebug("Removed tab for {LLMName}", llmName);
                 }
+                
+                // Remove response from dictionary
+                _llmResponses.TryRemove(llmName, out _);
+                _logger.LogDebug("Removed response for {LLMName}", llmName);
                 
                 // If this tab was selected, switch to Settings
                 if (_currentSelectedTab == llmName)
@@ -245,15 +273,109 @@ public partial class MainPage : ContentPage
             return;
         }
         
-        if (_currentSelectedTab == "Settings")
+        // Cancel any ongoing requests
+        _currentRequestCancellation.Cancel();
+        _currentRequestCancellation = new CancellationTokenSource();
+        
+        // Clear previous responses
+        _llmResponses.Clear();
+        
+        // Get enabled LLMs (those with visible tabs)
+        var enabledLLMs = _llmList.Where(llm => 
+            _tabButtons.ContainsKey(llm.NameAndModel) && 
+            TabHeaders.Children.Contains(_tabButtons[llm.NameAndModel])).ToList();
+        
+        if (!enabledLLMs.Any())
         {
-            lResult.Text = "Please select an LLM tab to submit your question.";
-            _logger.LogWarning("Submit clicked while on Settings tab");
+            lResult.Text = "Please enable at least one LLM in Settings to submit your question.";
+            _logger.LogWarning("Submit clicked with no enabled LLMs");
             return;
         }
         
-        _logger.LogInformation("Submitting question to {LLM}: {Question}", _currentSelectedTab, question);
-        lResult.Text = await AskLLM(_currentSelectedTab, question);
+        _logger.LogInformation("Submitting question to {Count} enabled LLMs: {Question}", enabledLLMs.Count, question);
+        
+        // Show loading message
+        lResult.Text = $"Sending question to {enabledLLMs.Count} LLMs...\n\n";
+        
+        // Create tasks for all enabled LLMs
+        var tasks = new List<Task>();
+        
+        foreach (var llm in enabledLLMs)
+        {
+            var task = Task.Run(async () =>
+            {
+                try
+                {
+                    // Show loading status
+                    UpdateTabLoadingStatus(llm.NameAndModel, true);
+                    
+                    var response = await AskLLM(llm.Name, question);
+                    _llmResponses[llm.NameAndModel] = response;
+                    
+                    // Hide loading status
+                    UpdateTabLoadingStatus(llm.NameAndModel, false);
+                    
+                    // Update UI on main thread if this is the currently selected tab
+                    await MainThread.InvokeOnMainThreadAsync(() =>
+                    {
+                        if (_currentSelectedTab == llm.NameAndModel)
+                        {
+                            lResult.Text = response;
+                        }
+                        else if (_currentSelectedTab == "Settings")
+                        {
+                            // Update status on Settings tab
+                            var status = GetResponseStatus();
+                            if (status.Contains("All") || status.Contains("Received"))
+                            {
+                                lResult.Text = GetResponsesSummary();
+                            }
+                            else
+                            {
+                                lResult.Text = status;
+                            }
+                        }
+                    });
+                    
+                    _logger.LogInformation("Received response from {LLM}", llm.NameAndModel);
+                }
+                catch (Exception ex)
+                {
+                    // Hide loading status on error
+                    UpdateTabLoadingStatus(llm.NameAndModel, false);
+                    
+                    var errorMessage = $"Error from {llm.NameAndModel}: {ex.Message}";
+                    _llmResponses[llm.NameAndModel] = errorMessage;
+                    _logger.LogError(ex, "Error getting response from {LLM}", llm.NameAndModel);
+                }
+            }, _currentRequestCancellation.Token);
+            
+            tasks.Add(task);
+        }
+        
+        // Wait for all tasks to complete
+        try
+        {
+            await Task.WhenAll(tasks);
+            _logger.LogInformation("All LLM requests completed");
+        }
+        catch (OperationCanceledException)
+        {
+            _logger.LogInformation("LLM requests were cancelled");
+            
+            // Reset loading status for all LLMs
+            foreach (var llm in enabledLLMs)
+            {
+                UpdateTabLoadingStatus(llm.NameAndModel, false);
+            }
+            
+            lResult.Text = "Requests were cancelled.";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error waiting for LLM responses");
+            lResult.Text = $"Error: {ex.Message}";
+        }
         
         QuestionEditor.Text = "";
     }
@@ -311,6 +433,11 @@ public partial class MainPage : ContentPage
     private void RefreshLLMListFromConfig()
     {
         _logger.LogInformation("Refreshing LLM list from config");
+        
+        // Cancel any ongoing requests and clear responses
+        _currentRequestCancellation.Cancel();
+        _currentRequestCancellation = new CancellationTokenSource();
+        ClearResponses();
         
         var newLLMs = LLMConfigService.LoadLLMsFromConfig();
         
@@ -434,6 +561,89 @@ public partial class MainPage : ContentPage
         {
             System.Diagnostics.Debug.WriteLine($"Direct file write test failed: {ex.Message}");
             _logger.LogError(ex, "Direct file write test failed");
+        }
+    }
+
+    private void ClearResponses()
+    {
+        _llmResponses.Clear();
+        _logger.LogDebug("Cleared all LLM responses");
+    }
+    
+    private string GetResponseStatus()
+    {
+        var enabledLLMs = _llmList.Where(llm => 
+            _tabButtons.ContainsKey(llm.NameAndModel) && 
+            TabHeaders.Children.Contains(_tabButtons[llm.NameAndModel])).ToList();
+        
+        var receivedCount = _llmResponses.Count;
+        var totalCount = enabledLLMs.Count;
+        
+        if (totalCount == 0)
+            return "No LLMs enabled";
+        
+        if (receivedCount == 0)
+            return $"Waiting for responses from {totalCount} LLMs...";
+        
+        if (receivedCount == totalCount)
+            return $"All {totalCount} responses received";
+        
+        return $"Received {receivedCount}/{totalCount} responses...";
+    }
+    
+    private string GetResponsesSummary()
+    {
+        if (_llmResponses.Count == 0)
+            return "No responses available yet. Submit a question to get responses from all enabled LLMs.";
+        
+        var summary = $"Responses received from {_llmResponses.Count} LLMs:\n\n";
+        
+        foreach (var kvp in _llmResponses.OrderBy(x => x.Key))
+        {
+            var shortResponse = kvp.Value.Length > 150 ? kvp.Value.Substring(0, 150) + "..." : kvp.Value;
+            summary += $"📋 {kvp.Key}:\n{shortResponse}\n\n";
+        }
+        
+        return summary;
+    }
+    
+    private void OnQuestionTextChanged(object? sender, TextChangedEventArgs e)
+    {
+        // Clear responses when user starts typing a new question
+        if (!string.IsNullOrEmpty(e.NewTextValue) && _llmResponses.Count > 0)
+        {
+            ClearResponses();
+            if (_currentSelectedTab != "Settings")
+            {
+                lResult.Text = $"Selected LLM: {_currentSelectedTab}\n\nNo response available yet. Submit a question to get a response from this LLM.";
+            }
+        }
+    }
+    
+    protected override void OnDisappearing()
+    {
+        base.OnDisappearing();
+        
+        // Cancel any ongoing requests when page disappears
+        _currentRequestCancellation.Cancel();
+        _logger.LogDebug("Cancelled ongoing requests due to page disappearing");
+    }
+    
+    private void UpdateTabLoadingStatus(string llmName, bool isLoading)
+    {
+        if (_tabButtons.TryGetValue(llmName, out var tabButton))
+        {
+            MainThread.BeginInvokeOnMainThread(() =>
+            {
+                if (isLoading)
+                {
+                    tabButton.Text = $"⏳ {llmName}";
+                }
+                else
+                {
+                    tabButton.Text = $"🤖 {llmName}";
+                }
+            });
         }
     }
 }

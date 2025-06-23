@@ -66,6 +66,7 @@
                                TextColor="#1E293B"
                                PlaceholderColor="#94A3B8"
                                FontSize="16"
+                               TextChanged="OnQuestionTextChanged"
                                Margin="0,8,0,0" />
                         
                         <Button x:Name="SubmitButton" 
