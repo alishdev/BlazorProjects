@@ -62,10 +62,9 @@ public partial class MainPage : ContentPage
         // Create tab buttons for each LLM
         foreach (var llm in _llmList)
         {
-            string llm_model = $"{llm.Name}:{llm.DefaultModel}";
             var tabButton = new Button
             {
-                Text = $"🤖 {llm_model}",
+                Text = $"🤖 {llm.NameAndModel}",
                 BackgroundColor = Colors.Transparent,
                 TextColor = Colors.White,
                 CornerRadius = 12,
@@ -77,9 +76,9 @@ public partial class MainPage : ContentPage
             };
             
             tabButton.Clicked += OnTabClicked;
-            _tabButtons[llm_model] = tabButton;
+            _tabButtons[llm.NameAndModel] = tabButton;
             TabHeaders.Children.Add(tabButton);
-            _logger.LogDebug("Created tab for LLM: {Name}", llm_model);
+            _logger.LogDebug($"Created tab for LLM: {llm.NameAndModel}");
         }
     }
 
@@ -106,7 +105,7 @@ public partial class MainPage : ContentPage
             
             var description = new Label
             {
-                Text = llm.Description,
+                Text = $"Model: {llm.DefaultModel}",
                 VerticalOptions = LayoutOptions.Center,
                 FontSize = 14,
                 TextColor = Color.FromArgb("#64748B")
@@ -135,7 +134,7 @@ public partial class MainPage : ContentPage
                 Margin = new Thickness(0, 0, 0, 8)
             };
             
-            checkBox.CheckedChanged += (sender, e) => OnCheckBoxChanged(llm.Name, e.Value);
+            checkBox.CheckedChanged += (sender, e) => OnCheckBoxChanged(llm.NameAndModel, e.Value);
             
             _checkBoxes[llm.Name] = checkBox;
             SettingsCheckboxes.Children.Add(container);

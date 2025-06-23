@@ -7,7 +7,14 @@ public class LLM
     public bool Enabled { get; set; } = true;
     public string ApiKey { get; set; } = string.Empty;
     public string DefaultModel { get; set; } = string.Empty;
-    
+
+    public string NameAndModel {
+        get
+        {
+            return $"{Name}:{DefaultModel}";
+        }
+    }
+
     // Parameterless constructor for JSON deserialization
     public LLM()
     {
