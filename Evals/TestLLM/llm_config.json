@@ -1,0 +1,46 @@
+{
+  "llms": [
+    {
+      "name": "GPT-4",
+      "description": "OpenAI's GPT-4 model",
+      "enabled": true,
+      "apiKey": "openai",
+      "defaultModel": "gpt-4"
+    },
+    {
+      "name": "Claude",
+      "description": "Anthropic's Claude model",
+      "enabled": true,
+      "apiKey": "anthropic",
+      "defaultModel": "claude-3-sonnet-20240229"
+    },
+    {
+      "name": "Gemini",
+      "description": "Google's Gemini model",
+      "enabled": true,
+      "apiKey": "gemini",
+      "defaultModel": "gemini-pro"
+    },
+    {
+      "name": "Llama",
+      "description": "Meta's Llama model",
+      "enabled": true,
+      "apiKey": "llama",
+      "defaultModel": "llama-2-70b"
+    },
+    {
+      "name": "Cohere",
+      "description": "Cohere's language model",
+      "enabled": true,
+      "apiKey": "cohere",
+      "defaultModel": "command"
+    },
+    {
+      "name": "Mistral",
+      "description": "Mistral AI's model",
+      "enabled": true,
+      "apiKey": "mistral",
+      "defaultModel": "mistral-large"
+    }
+  ]
+} 

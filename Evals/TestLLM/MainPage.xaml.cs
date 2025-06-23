@@ -3,6 +3,7 @@ using Python.Runtime;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
+using System.Linq;
 
 namespace TestLLM;
 
@@ -27,13 +28,7 @@ public partial class MainPage : ContentPage
         InitializeComponent();
         
         // Initialize collections
-        _llmList = new ObservableCollection<LLM>
-        {
-            new LLM("GPT-4"),
-            new LLM("Claude"),
-            new LLM("Gemini"),
-            new LLM("Llama")
-        };
+        _llmList = new ObservableCollection<LLM>(LLMConfigService.LoadLLMsFromConfig());
         
         _tabButtons = new Dictionary<string, Button>();
         _checkBoxes = new Dictionary<string, CheckBox>();
@@ -93,7 +88,7 @@ public partial class MainPage : ContentPage
             
             var description = new Label
             {
-                Text = $"AI model for {llm.Name}",
+                Text = llm.Description,
                 VerticalOptions = LayoutOptions.Center,
                 FontSize = 14,
                 TextColor = Color.FromArgb("#64748B")
@@ -236,12 +231,17 @@ public partial class MainPage : ContentPage
     {
         try
         {
+            // Find the LLM configuration
+            var llmConfig = _llmList.FirstOrDefault(l => l.Name == llm);
+            var model = llmConfig?.DefaultModel ?? "default";
+            
             using (var client = new HttpClient())
             {
                 var requestData = new
                 {
-                    llm = llm,
-                    prompt = prompt
+                    llm = llmConfig?.ApiKey ?? llm.ToLower(),
+                    prompt = prompt,
+                    model = model
                 };
                 
                 var json = JsonSerializer.Serialize(requestData);
@@ -264,5 +264,33 @@ public partial class MainPage : ContentPage
         {
             return $"Error connecting to server: {ex.Message}";
         }
+    }
+    
+    private void RefreshLLMListFromConfig()
+    {
+        var newLLMs = LLMConfigService.LoadLLMsFromConfig();
+        
+        // Clear existing collections
+        _llmList.Clear();
+        _tabButtons.Clear();
+        _checkBoxes.Clear();
+        
+        // Clear UI elements
+        TabHeaders.Children.Clear();
+        SettingsCheckboxes.Children.Clear();
+        
+        // Add new LLMs
+        foreach (var llm in newLLMs)
+        {
+            _llmList.Add(llm);
+        }
+        
+        // Reinitialize UI
+        InitializeTabs();
+        InitializeSettingsCheckboxes();
+        
+        // Reset to Settings tab
+        _currentSelectedTab = "Settings";
+        ShowSettingsTab();
     }
 }

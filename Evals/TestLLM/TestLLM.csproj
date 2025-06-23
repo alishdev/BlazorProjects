@@ -57,11 +57,18 @@
 
         <!-- Raw Assets (also remove the "Resources\Raw" prefix) -->
         <MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)"/>
+        
+        <!-- Configuration Files -->
+        <MauiAsset Include="llm_config.json" LogicalName="llm_config.json">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </MauiAsset>
     </ItemGroup>
 
     <ItemGroup>
         <PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)"/>
         <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.0"/>
+        <PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.0"/>
+        <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="9.0.0"/>
         <PackageReference Include="pythonnet" Version="3.0.3"/>
     </ItemGroup>
 
