@@ -53,6 +53,9 @@ public partial class MainPage : ContentPage
         // Set initial state
         ShowSettingsTab();
         
+        // Initialize status bar
+        UpdateStatusBar("Ready", "");
+        
         // Test file logging
         LogFileInformation();
         
@@ -297,6 +300,9 @@ public partial class MainPage : ContentPage
         // Show loading message
         lResult.Text = $"Sending question to {enabledLLMs.Count} LLMs...\n\n";
         
+        // Update status bar to show initial state
+        UpdateStatusBar($"Sending question to {enabledLLMs.Count} LLMs...", "0/" + enabledLLMs.Count);
+        
         // Create tasks for all enabled LLMs
         var tasks = new List<Task>();
         
@@ -314,6 +320,9 @@ public partial class MainPage : ContentPage
                     
                     // Hide loading status
                     UpdateTabLoadingStatus(llm.NameAndModel, false);
+                    
+                    // Update status bar with new response count
+                    UpdateStatusBar($"Received response from {llm.NameAndModel}", $"{_llmResponses.Count}/{enabledLLMs.Count}");
                     
                     // Update UI on main thread if this is the currently selected tab
                     await MainThread.InvokeOnMainThreadAsync(() =>
@@ -346,6 +355,10 @@ public partial class MainPage : ContentPage
                     
                     var errorMessage = $"Error from {llm.NameAndModel}: {ex.Message}";
                     _llmResponses[llm.NameAndModel] = errorMessage;
+                    
+                    // Update status bar even for errors
+                    UpdateStatusBar($"Error from {llm.NameAndModel}", $"{_llmResponses.Count}/{enabledLLMs.Count}");
+                    
                     _logger.LogError(ex, "Error getting response from {LLM}", llm.NameAndModel);
                 }
             }, _currentRequestCancellation.Token);
@@ -358,6 +371,9 @@ public partial class MainPage : ContentPage
         {
             await Task.WhenAll(tasks);
             _logger.LogInformation("All LLM requests completed");
+            
+            // Update status bar with completion message
+            UpdateStatusBar($"All {enabledLLMs.Count} responses received", $"{enabledLLMs.Count}/{enabledLLMs.Count}");
         }
         catch (OperationCanceledException)
         {
@@ -370,11 +386,13 @@ public partial class MainPage : ContentPage
             }
             
             lResult.Text = "Requests were cancelled.";
+            UpdateStatusBar("Requests cancelled", $"{_llmResponses.Count}/{enabledLLMs.Count}");
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error waiting for LLM responses");
             lResult.Text = $"Error: {ex.Message}";
+            UpdateStatusBar($"Error: {ex.Message}", $"{_llmResponses.Count}/{enabledLLMs.Count}");
         }
         
         QuestionEditor.Text = "";
@@ -558,6 +576,7 @@ public partial class MainPage : ContentPage
     private void ClearResponses()
     {
         _llmResponses.Clear();
+        UpdateStatusBar("Ready", "");
         _logger.LogDebug("Cleared all LLM responses");
     }
     
@@ -636,5 +655,14 @@ public partial class MainPage : ContentPage
                 }
             });
         }
+    }
+
+    private void UpdateStatusBar(string message, string detail)
+    {
+        MainThread.BeginInvokeOnMainThread(() =>
+        {
+            StatusLabel.Text = message;
+            ResponseCountLabel.Text = detail;
+        });
     }
 }
