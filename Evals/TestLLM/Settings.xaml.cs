@@ -8,6 +8,9 @@ public partial class Settings : ContentView
     private static readonly ILogger _logger = LoggingService.GetLogger<Settings>();
     private ObservableCollection<LLM> _llmList;
     private Dictionary<string, CheckBox> _checkBoxes;
+
+    public ObservableCollection<string> MaxTokensOptions { get; set; } = new() { "1000", "10000", "28000" };
+    public string SelectedMaxTokens { get; set; } = "1000";
     
     // Event to notify parent when checkboxes change
     public event EventHandler<CheckBoxChangedEventArgs>? CheckBoxChanged;
@@ -23,6 +26,14 @@ public partial class Settings : ContentView
         _logger.LogInformation("Loaded {Count} LLMs from config", _llmList.Count);
         
         _checkBoxes = new Dictionary<string, CheckBox>();
+        
+        // Set binding context for DropDown
+        BindingContext = this;
+        MaxTokensDropDown.ItemsSource = MaxTokensOptions;
+        MaxTokensDropDown.SelectedItem = SelectedMaxTokens;
+        MaxTokensDropDown.SelectionChanged += (s, val) => {
+            SelectedMaxTokens = val;
+        };
         
         // Initialize UI
         InitializeSettingsCheckboxes();
@@ -136,6 +147,29 @@ public partial class Settings : ContentView
         return _llmList.Where(llm => 
             _checkBoxes.ContainsKey(llm.Name) && 
             _checkBoxes[llm.Name].IsChecked).ToList();
+    }
+
+    // Method to get the selected Max Tokens value
+    public int GetMaxTokens()
+    {
+        if (int.TryParse(SelectedMaxTokens, out int maxTokens))
+        {
+            return maxTokens;
+        }
+        
+        // Return default value if parsing fails
+        return 1000;
+    }
+
+    // Method to set the Max Tokens value
+    public void SetMaxTokens(int maxTokens)
+    {
+        var tokensString = maxTokens.ToString();
+        if (MaxTokensOptions.Contains(tokensString))
+        {
+            SelectedMaxTokens = tokensString;
+            MaxTokensDropDown.SelectedItem = tokensString;
+        }
     }
 }
 

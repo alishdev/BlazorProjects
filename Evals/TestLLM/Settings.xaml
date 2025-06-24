@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:TestLLM"
              x:Class="TestLLM.Settings"
+             x:Name="ThisSettings"
              BackgroundColor="Transparent">
 
     <ScrollView>
@@ -17,6 +18,24 @@
                    FontSize="14"
                    TextColor="#64748B"
                    Margin="0,0,0,16" />
+            
+            <!-- Max Tokens Control -->
+            <Border BackgroundColor="#F8FAFC" 
+                    Stroke="#E2E8F0" 
+                    StrokeThickness="1" 
+                    Padding="16,12"
+                    Margin="0,0,0,16">
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Max Tokens" 
+                           FontSize="16" 
+                           FontAttributes="Bold"
+                           TextColor="#1E293B" />
+                    <local:DropDown x:Name="MaxTokensDropDown"
+                                    ItemsSource="{Binding MaxTokensOptions, Source={x:Reference Name=ThisSettings}}"
+                                    SelectedItem="{Binding SelectedMaxTokens, Source={x:Reference Name=ThisSettings}, Mode=TwoWay}" />
+                </VerticalStackLayout>
+            </Border>
+            
             <!-- Checkboxes will be generated here -->
         </VerticalStackLayout>
     </ScrollView>

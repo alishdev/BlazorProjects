@@ -364,7 +364,10 @@ public partial class MainPage : ContentPage
             var model = llmConfig?.DefaultModel ?? "default";
             var apiKey = llmConfig?.ApiKey ?? llm.ToLower();
             
-            _logger.LogInformation("Asking LLM: {LLM}, Model: {Model}, API Key: {ApiKey}", llm, model, apiKey);
+            // Get Max Tokens from Settings control
+            var maxTokens = SettingsControl.GetMaxTokens();
+            
+            _logger.LogInformation("Asking LLM: {LLM}, Model: {Model}, API Key: {ApiKey}, Max Tokens: {MaxTokens}", llm, model, apiKey, maxTokens);
             
             using (var client = new HttpClient())
             {
@@ -372,7 +375,8 @@ public partial class MainPage : ContentPage
                 {
                     llm = apiKey,
                     prompt = prompt,
-                    model = model
+                    model = model,
+                    max_tokens = maxTokens
                 };
                 
                 var json = JsonSerializer.Serialize(requestData);
