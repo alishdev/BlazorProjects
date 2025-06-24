@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:TestLLM"
+             x:Class="TestLLM.Settings"
+             BackgroundColor="Transparent">
+
+    <ScrollView>
+        <VerticalStackLayout x:Name="SettingsCheckboxes" Spacing="16">
+            <Label Text="🤖 Select LLMs" 
+                   FontSize="20" 
+                   FontAttributes="Bold"
+                   TextColor="#1E293B"
+                   Margin="0,0,0,8" />
+            
+            <Label Text="Choose which AI models to enable in your tabs" 
+                   FontSize="14"
+                   TextColor="#64748B"
+                   Margin="0,0,0,16" />
+            <!-- Checkboxes will be generated here -->
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentView> 

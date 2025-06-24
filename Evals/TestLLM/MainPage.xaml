@@ -106,23 +106,9 @@
                         </Grid.RowDefinitions>
                         
                         <!-- Settings Content -->
-                        <ScrollView x:Name="SettingsContent" 
-                                   IsVisible="False"
-                                   Grid.Row="0">
-                            <VerticalStackLayout x:Name="SettingsCheckboxes" Spacing="16">
-                                <Label Text="🤖 Select LLMs" 
-                                       FontSize="20" 
-                                       FontAttributes="Bold"
-                                       TextColor="#1E293B"
-                                       Margin="0,0,0,8" />
-                                
-                                <Label Text="Choose which AI models to enable in your tabs" 
-                                       FontSize="14"
-                                       TextColor="#64748B"
-                                       Margin="0,0,0,16" />
-                                <!-- Checkboxes will be generated here -->
-                            </VerticalStackLayout>
-                        </ScrollView>
+                        <local:Settings x:Name="SettingsControl" 
+                                       IsVisible="False"
+                                       Grid.Row="0" />
 
                         <!-- Result Content -->
                         <ScrollView x:Name="ResultContent" 

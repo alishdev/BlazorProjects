@@ -1,8 +1,11 @@
 //// Simple eval
-1. Register for API for Anthropic and other APIs
-2. Add python func to run prompt against all LLMs in PythonServer
-3. Run for all models and display result in Evals
-4. Save api keys in config file in PythonServer
+x1. Register for API for Anthropic and other APIs
+x2. Add python func to run prompt against all LLMs in PythonServer
+x3. Run for all models and display result in Evals
+x4. Save api keys in config file in PythonServer
+5. Add dropdown for max tokens: 1000, 10000, 32000 and pass it in request
+6. Add button to merge all responses in one file and open filesavedialog
+7. Ask "list all reasons why having a chat bot is a bad idea"
 
 //// RAG eval
 1. Download docs for YMCA
