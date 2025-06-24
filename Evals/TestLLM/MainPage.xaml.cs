@@ -50,6 +50,9 @@ public partial class MainPage : ContentPage
         // Subscribe to Settings control events
         SettingsControl.CheckBoxChanged += OnSettingsCheckBoxChanged;
         
+        // Set MainPage reference in Settings control for response access
+        SettingsControl.SetMainPage(this);
+        
         // Set initial state
         ShowSettingsTab();
         
@@ -620,5 +623,11 @@ public partial class MainPage : ContentPage
             StatusLabel.Text = message;
             ResponseCountLabel.Text = detail;
         });
+    }
+
+    // Public method to get current LLM responses for use by Settings control
+    public Dictionary<string, string> GetCurrentResponses()
+    {
+        return _llmResponses.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
     }
 }

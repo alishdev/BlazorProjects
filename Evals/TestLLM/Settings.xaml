@@ -36,6 +36,29 @@
                 </VerticalStackLayout>
             </Border>
             
+            <!-- Functions Group -->
+            <Border BackgroundColor="#F8FAFC" 
+                    Stroke="#E2E8F0" 
+                    StrokeThickness="1" 
+                    Padding="16,12"
+                    Margin="0,0,0,16">
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="🔧 Functions" 
+                           FontSize="16" 
+                           FontAttributes="Bold"
+                           TextColor="#1E293B" />
+                    
+                    <Button x:Name="MergeResponsesButton"
+                            Text="Merge Responses"
+                            BackgroundColor="#3B82F6"
+                            TextColor="White"
+                            FontAttributes="Bold"
+                            CornerRadius="8"
+                            Padding="16,12"
+                            Clicked="OnMergeResponsesClicked" />
+                </VerticalStackLayout>
+            </Border>
+            
             <!-- Checkboxes will be generated here -->
         </VerticalStackLayout>
     </ScrollView>
