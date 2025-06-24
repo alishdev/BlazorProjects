@@ -72,6 +72,8 @@ public partial class MainPage : ContentPage
         // Create tab buttons for each LLM
         foreach (var llm in _llmList)
         {
+            _logger.LogDebug("Creating tab button for LLM: {Name} (NameAndModel: {NameAndModel})", llm.Name, llm.NameAndModel);
+            
             var tabButton = new Button
             {
                 Text = $"🤖 {llm.NameAndModel}",
@@ -90,6 +92,9 @@ public partial class MainPage : ContentPage
             TabHeaders.Children.Add(tabButton);
             _logger.LogDebug($"Created tab for LLM: {llm.NameAndModel}");
         }
+        
+        _logger.LogInformation("Initialized {Count} tab buttons", _tabButtons.Count);
+        _logger.LogDebug("Tab button keys: {Keys}", string.Join(", ", _tabButtons.Keys));
     }
 
     private void InitializeSettingsCheckboxes()
@@ -98,6 +103,8 @@ public partial class MainPage : ContentPage
         
         foreach (var llm in _llmList)
         {
+            _logger.LogDebug("Creating checkbox for LLM: {Name} (NameAndModel: {NameAndModel})", llm.Name, llm.NameAndModel);
+            
             var checkBox = new CheckBox
             {
                 IsChecked = true,
@@ -144,12 +151,36 @@ public partial class MainPage : ContentPage
                 Margin = new Thickness(0, 0, 0, 8)
             };
             
-            checkBox.CheckedChanged += (sender, e) => OnCheckBoxChanged(llm.NameAndModel, e.Value);
+            // Add debugging for checkbox event
+            checkBox.CheckedChanged += (sender, e) => 
+            {
+                _logger.LogInformation("Checkbox CheckedChanged event fired for {LLMName}: {IsChecked}", llm.NameAndModel, e.Value);
+                OnCheckBoxChanged(llm.NameAndModel, e.Value);
+            };
+            
+            // Add a tap gesture to the container that toggles the checkbox
+            var tapGesture = new TapGestureRecognizer();
+            tapGesture.Tapped += (sender, e) => 
+            {
+                _logger.LogInformation("Container tapped for {LLMName}, toggling checkbox", llm.NameAndModel);
+                checkBox.IsChecked = !checkBox.IsChecked;
+            };
+            container.GestureRecognizers.Add(tapGesture);
+            
+            // Add a subtle shadow to make it look more interactive
+            container.Shadow = new Shadow
+            {
+                Brush = Color.FromArgb("#00000010"),
+                Offset = new Point(0, 2),
+                Radius = 4
+            };
             
             _checkBoxes[llm.Name] = checkBox;
             SettingsCheckboxes.Children.Add(container);
             _logger.LogDebug("Created checkbox for LLM: {Name}", llm.Name);
         }
+        
+        _logger.LogInformation("Initialized {Count} checkboxes", _checkBoxes.Count);
     }
 
     private void OnTabClicked(object? sender, EventArgs e)
@@ -191,6 +222,9 @@ public partial class MainPage : ContentPage
         SettingsContent.IsVisible = true;
         ResultContent.IsVisible = false;
         
+        _logger.LogDebug("SettingsContent.IsVisible: {IsVisible}, ResultContent.IsVisible: {ResultVisible}", 
+            SettingsContent.IsVisible, ResultContent.IsVisible);
+        
         // Show responses summary if available
         if (_llmResponses.Count > 0)
         {
@@ -225,10 +259,13 @@ public partial class MainPage : ContentPage
 
     private void OnCheckBoxChanged(string llmName, bool isChecked)
     {
-        _logger.LogDebug("Checkbox changed for {LLMName}: {IsChecked}", llmName, isChecked);
+        _logger.LogInformation("OnCheckBoxChanged called for {LLMName}: {IsChecked}", llmName, isChecked);
+        _logger.LogDebug("Current tab buttons count: {Count}", _tabButtons.Count);
+        _logger.LogDebug("Available tab button keys: {Keys}", string.Join(", ", _tabButtons.Keys));
         
         if (_tabButtons.ContainsKey(llmName))
         {
+            _logger.LogDebug("Found tab button for {LLMName}", llmName);
             var tabButton = _tabButtons[llmName];
             
             if (isChecked)
@@ -237,7 +274,11 @@ public partial class MainPage : ContentPage
                 if (!TabHeaders.Children.Contains(tabButton))
                 {
                     TabHeaders.Children.Add(tabButton);
-                    _logger.LogDebug("Added tab for {LLMName}", llmName);
+                    _logger.LogInformation("Added tab for {LLMName}", llmName);
+                }
+                else
+                {
+                    _logger.LogDebug("Tab already exists for {LLMName}", llmName);
                 }
             }
             else
@@ -246,7 +287,11 @@ public partial class MainPage : ContentPage
                 if (TabHeaders.Children.Contains(tabButton))
                 {
                     TabHeaders.Children.Remove(tabButton);
-                    _logger.LogDebug("Removed tab for {LLMName}", llmName);
+                    _logger.LogInformation("Removed tab for {LLMName}", llmName);
+                }
+                else
+                {
+                    _logger.LogDebug("Tab not found in children for {LLMName}", llmName);
                 }
                 
                 // Remove response from dictionary
@@ -259,9 +304,14 @@ public partial class MainPage : ContentPage
                     _currentSelectedTab = "Settings";
                     SettingsTab.BackgroundColor = Colors.White;
                     ShowSettingsTab();
-                    _logger.LogDebug("Switched to Settings tab because {LLMName} was deselected", llmName);
+                    _logger.LogInformation("Switched to Settings tab because {LLMName} was deselected", llmName);
                 }
             }
+        }
+        else
+        {
+            _logger.LogWarning("Tab button not found for {LLMName}", llmName);
+            _logger.LogDebug("Available tab buttons: {AvailableButtons}", string.Join(", ", _tabButtons.Keys));
         }
     }
 

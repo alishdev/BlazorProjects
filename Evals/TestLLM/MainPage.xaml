@@ -101,8 +101,14 @@
                         <Shadow Brush="#00000020" Offset="0,4" Radius="12" />
                     </Border.Shadow>
                     <Grid x:Name="RBPContent">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+                        
                         <!-- Settings Content -->
-                        <ScrollView x:Name="SettingsContent" IsVisible="False">
+                        <ScrollView x:Name="SettingsContent" 
+                                   IsVisible="False"
+                                   Grid.Row="0">
                             <VerticalStackLayout x:Name="SettingsCheckboxes" Spacing="16">
                                 <Label Text="🤖 Select LLMs" 
                                        FontSize="20" 
@@ -119,8 +125,10 @@
                         </ScrollView>
 
                         <!-- Result Content -->
-                        <ScrollView>
-                            <VerticalStackLayout x:Name="ResultContent" IsVisible="True" Spacing="16">
+                        <ScrollView x:Name="ResultContent" 
+                                   IsVisible="True"
+                                   Grid.Row="0">
+                            <VerticalStackLayout Spacing="16">
                                 <Label Text="📊 Result" 
                                        FontSize="20" 
                                        FontAttributes="Bold"
