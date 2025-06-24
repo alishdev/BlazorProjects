@@ -38,6 +38,7 @@ class AskLLMRequest(BaseModel):
     llm: str
     prompt: str
     model: Optional[str] = None
+    max_tokens: Optional[int] = 1000
 
 class AskLLMResponse(BaseModel):
     text: str
@@ -116,7 +117,7 @@ async def delete_evaluation(evaluation_id: int):
 # Ask LLM endpoint
 @app.post("/askllm")
 async def ask_llm(request: AskLLMRequest):
-    response_text = ai_agents.answer(request.llm, request.prompt, request.model)
+    response_text = ai_agents.answer(request.llm, request.prompt, request.model, request.max_tokens)
     return response_text
 
 if __name__ == "__main__":

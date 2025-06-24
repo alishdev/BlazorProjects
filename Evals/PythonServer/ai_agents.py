@@ -35,13 +35,14 @@ class AIAgents:
         available_apis = [name for name, key in self.api_keys.items() if key is not None]
         print(f"Available LLM APIs: {available_apis}")
     
-    def answer_open_ai(self, model: str, prompt: str) -> str:
+    def answer_open_ai(self, model: str, prompt: str, max_tokens: int = 1000) -> str:
         """
         Make an API call to OpenAI with the specified model and prompt.
         
         Args:
             model (str): The OpenAI model to use (e.g., 'gpt-4', 'gpt-3.5-turbo')
             prompt (str): The prompt to send to the model
+            max_tokens (int): Maximum number of tokens to generate
             
         Returns:
             str: The response from OpenAI
@@ -64,7 +65,7 @@ class AIAgents:
                 messages=[
                     {"role": "user", "content": prompt}
                 ],
-                max_tokens=1000,  # Adjust as needed
+                max_tokens=max_tokens,
                 temperature=0.7   # Adjust as needed
             )
             
@@ -80,13 +81,14 @@ class AIAgents:
         except Exception as e:
             raise Exception(f"Unexpected error calling OpenAI API: {str(e)}")
 
-    def answer_gemini(self, model: str, prompt: str) -> str:
+    def answer_gemini(self, model: str, prompt: str, max_tokens: int = 1000) -> str:
         """
         Make an API call to Google Gemini with the specified model and prompt.
         
         Args:
             model (str): The Gemini model to use (e.g., 'gemini-pro', 'gemini-pro-vision')
             prompt (str): The prompt to send to the model
+            max_tokens (int): Maximum number of tokens to generate
             
         Returns:
             str: The response from Gemini
@@ -103,8 +105,12 @@ class AIAgents:
             # Configure Gemini with API key
             genai.configure(api_key=self.api_keys['gemini'])
             
-            # Create the model instance
-            gemini_model = genai.GenerativeModel(model)
+            # Create the model instance with generation config
+            generation_config = genai.types.GenerationConfig(
+                max_output_tokens=max_tokens,
+                temperature=0.7
+            )
+            gemini_model = genai.GenerativeModel(model, generation_config=generation_config)
             
             # Generate content
             response = gemini_model.generate_content(prompt)
@@ -122,13 +128,14 @@ class AIAgents:
             else:
                 raise Exception(f"Unexpected error calling Gemini API: {str(e)}")
 
-    def answer_anthropic(self, model: str, prompt: str) -> str:
+    def answer_anthropic(self, model: str, prompt: str, max_tokens: int = 1000) -> str:
         """
         Make an API call to Anthropic Claude with the specified model and prompt.
         
         Args:
             model (str): The Claude model to use (e.g., 'claude-3-sonnet-20240229', 'claude-3-opus-20240229')
             prompt (str): The prompt to send to the model
+            max_tokens (int): Maximum number of tokens to generate
             
         Returns:
             str: The response from Claude
@@ -148,7 +155,7 @@ class AIAgents:
             
             message = client.messages.create(
                 model=model,
-                max_tokens=1024,
+                max_tokens=max_tokens,
                 messages=[
                     {"role": "user", "content": prompt}
                 ]
@@ -171,7 +178,7 @@ class AIAgents:
         except Exception as e:
             raise Exception(f"Unexpected error calling Anthropic API: {str(e)}")
 
-    def answer(self, llm_name: str, prompt: str, model: str = None) -> str:
+    def answer(self, llm_name: str, prompt: str, model: str = None, max_tokens: int = 1000) -> str:
         """
         Generate an answer using the specified LLM.
         
@@ -179,6 +186,7 @@ class AIAgents:
             llm_name (str): The name of the LLM to use
             prompt (str): The prompt to send to the LLM
             model (str, optional): The specific model to use (e.g., 'gpt-4', 'gpt-3.5-turbo', 'claude-3-sonnet')
+            max_tokens (int): Maximum number of tokens to generate
             
         Returns:
             str: The response from the LLM
@@ -196,7 +204,7 @@ class AIAgents:
             if not model:
                 model = 'gpt-3.5-turbo'  # Default model
             try:
-                return self.answer_open_ai(model, prompt)
+                return self.answer_open_ai(model, prompt, max_tokens)
             except Exception as e:
                 return f"Error calling OpenAI API: {str(e)}"
         
@@ -204,7 +212,7 @@ class AIAgents:
             if not model:
                 model = 'gemini-pro'  # Default model
             try:
-                return self.answer_gemini(model, prompt)
+                return self.answer_gemini(model, prompt, max_tokens)
             except Exception as e:
                 return f"Error calling Gemini API: {str(e)}"
         
@@ -212,14 +220,14 @@ class AIAgents:
             if not model:
                 model = 'claude-3-sonnet-20240229'  # Default model
             try:
-                return self.answer_anthropic(model, prompt)
+                return self.answer_anthropic(model, prompt, max_tokens)
             except Exception as e:
                 return f"Error calling Anthropic API: {str(e)}"
         
         # This is a placeholder implementation for other LLMs
         # In a real application, you would integrate with actual LLM APIs here
         model_info = f" (model: {model})" if model else ""
-        response = f"{llm_name} response to: {prompt} (API key available){model_info}"
+        response = f"{llm_name} response to: {prompt} (API key available){model_info} (max_tokens: {max_tokens})"
         return response
     
     def get_available_llms(self) -> list:
