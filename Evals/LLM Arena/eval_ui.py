@@ -28,21 +28,75 @@ def launch_evaluation_ui(config):
     # Load graded question_ids
     c.execute("SELECT question_id FROM evaluation_results")
     graded_ids = set(row[0] for row in c.fetchall())
-    # Find first ungraded question
+    # Find ungraded and graded questions
     ungraded = [q for q in data if q['question_id'] not in graded_ids]
+    graded = [q for q in data if q['question_id'] in graded_ids]
     total = len(data)
-    graded = total - len(ungraded)
+    graded_count = len(graded)
     st.title("LLM Arena: Human Evaluation")
-    st.write(f"Graded {graded} / {total}")
-    if not ungraded:
-        st.success("Completed!")
-        return
-    q = ungraded[0]
-    st.header(f"Question: {q['question_text']}")
+    
+    # Initialize session state for navigation
+    if 'show_first' not in st.session_state:
+        st.session_state.show_first = False
+    if 'show_last' not in st.session_state:
+        st.session_state.show_last = False
+    
+    # Navigation buttons
+    col1, col2 = st.columns(2)
+    with col1:
+        if st.button("First"):
+            st.session_state.show_first = True
+            st.session_state.show_last = False
+            st.rerun()
+    with col2:
+        if st.button("Last"):
+            st.session_state.show_last = True
+            st.session_state.show_first = False
+            st.rerun()
+    
+    # Determine which question to show
+    if st.session_state.show_first:
+        if ungraded:
+            q = ungraded[0]
+        elif graded:
+            q = graded[0]
+        st.session_state.show_first = False
+    elif st.session_state.show_last:
+        if graded:
+            q = graded[-1]
+        elif ungraded:
+            q = ungraded[-1]
+        st.session_state.show_last = False
+    elif not ungraded:
+        # All questions graded - show the last question
+        if graded:
+            q = graded[-1]
+        else:
+            conn.close()
+            return
+    else:
+        # Show first ungraded question
+        q = ungraded[0]
+    
+    # Calculate current question number
+    current_question_number = data.index(q) + 1
+    
+    st.header(f"Question {current_question_number}/{total}: {q['question_text']}")
     answers = q['answers']
     llm_names = list(answers.keys())
     st.subheader("Answers:")
-    best = st.radio("Select the best answer:", llm_names, format_func=lambda x: f"{x}: {answers[x]}")
+    
+    # Check if question was already graded
+    is_graded = q['question_id'] in graded_ids
+    if is_graded:
+        # Get the previous evaluation to preselect
+        c.execute("SELECT winning_llm_name FROM evaluation_results WHERE question_id = ?", (q['question_id'],))
+        result = c.fetchone()
+        index = llm_names.index(result[0]) if result else None
+        best = st.radio("Select the best answer:", llm_names, index=index, format_func=lambda x: f"{x}: {answers[x]}")
+    else:
+        # Don't preselect for ungraded questions
+        best = st.radio("Select the best answer:", llm_names, index=None, format_func=lambda x: f"{x}: {answers[x]}")
     if st.button("Select as Best"):
         c.execute(
             "INSERT INTO evaluation_results (question_id, question_text, best_answer_text, winning_llm_name) VALUES (?, ?, ?, ?)",
