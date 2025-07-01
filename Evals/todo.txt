@@ -7,7 +7,7 @@ x5. Add dropdown for max tokens: 1000, 10000, 32000 and pass it in request
 6. Add button to merge all responses in one file and open filesavedialog
 7. Ask "list all reasons why having a chat bot is a bad idea"
 
-//// RAG eval
+//// RAG eval - create a PRD to build the package
 1. Download docs for YMCA
 2. New program that use FAISS to build RAG system with different LLMs
 3. New program that creates questions based on prompt and RAG for different LLMs and saves them into csv
@@ -21,3 +21,7 @@ x5. Add dropdown for max tokens: 1000, 10000, 32000 and pass it in request
 1. Download docs for another YMCA
 2. Generate questions from RAG
 2. Create a Reviewer AI which will review answers from other LLMs
+
+
+????
+Instead of automating n8n why LLM can not handle automation and reminders. How to make LLM to stay in background and do some tasks on schedule?
