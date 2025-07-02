@@ -27,10 +27,14 @@ def launch_evaluation_ui(config):
         evaluation_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )''')
     conn.commit()
+    conn.close()
     
     # Load graded question_ids
+    conn = sqlite3.connect(db_path)
+    c = conn.cursor()
     c.execute("SELECT question_id FROM evaluation_results")
     graded_ids = set(row[0] for row in c.fetchall())
+    conn.close()
     
     # Find ungraded and graded questions
     ungraded = [q for q in data if q['question_id'] not in graded_ids]
@@ -48,12 +52,31 @@ def launch_evaluation_ui(config):
         """Get answers for display"""
         answers = question['answers']
         llm_names = list(answers.keys())
-        return llm_names, [f"{name}: {answer}" for name, answer in answers.items()]
+        answer_options = [f"{name}: {answer}" for name, answer in answers.items()]
+        return llm_names, answer_options
+    
+    def get_selected_answer(question):
+        """Get the previously selected answer for this question if it exists"""
+        conn = sqlite3.connect(db_path)
+        c = conn.cursor()
+        c.execute("SELECT winning_llm_name FROM evaluation_results WHERE question_id = ?", (question['question_id'],))
+        result = c.fetchone()
+        conn.close()
+        if result:
+            winning_llm = result[0]
+            return f"{winning_llm}: {question['answers'][winning_llm]}"
+        return None
     
     def save_selection(question, selected_answer):
         """Save the selected answer to database"""
         if not selected_answer:
             return "Please select an answer first."
+        
+        # Extract LLM name from the selected answer
+        llm_name = selected_answer.split(": ")[0]
+        
+        conn = sqlite3.connect(db_path)
+        c = conn.cursor()
         
         # Remove existing evaluation if it exists
         c.execute("DELETE FROM evaluation_results WHERE question_id = ?", (question['question_id'],))
@@ -61,9 +84,10 @@ def launch_evaluation_ui(config):
         # Insert new evaluation
         c.execute(
             "INSERT INTO evaluation_results (question_id, question_text, best_answer_text, winning_llm_name) VALUES (?, ?, ?, ?)",
-            (question['question_id'], question['question_text'], question['answers'][selected_answer], selected_answer)
+            (question['question_id'], question['question_text'], question['answers'][llm_name], llm_name)
         )
         conn.commit()
+        conn.close()
         return "Result saved!"
     
     def get_first_question():
@@ -112,16 +136,15 @@ def launch_evaluation_ui(config):
         # Question display
         question_display = gr.Markdown(get_question_info(current_question))
         
-        # Answer selection
-        llm_names, answer_texts = get_answers_display(current_question)
-        answer_radio = gr.Radio(
-            choices=llm_names,
-            label="Select the best answer:",
-            value=None
-        )
+        # Answer selection - each answer as an option
+        llm_names, answer_options = get_answers_display(current_question)
+        selected_answer = get_selected_answer(current_question)
         
-        # Answer text display
-        answer_display = gr.Markdown("\n\n".join(answer_texts))
+        answer_radio = gr.Radio(
+            choices=answer_options,
+            label="",
+            value=selected_answer
+        )
         
         # Save button
         save_btn = gr.Button("Select as Best", variant="primary")
@@ -131,26 +154,26 @@ def launch_evaluation_ui(config):
         def on_first_click():
             question = get_first_question()
             if question:
-                llm_names, answer_texts = get_answers_display(question)
+                llm_names, answer_options = get_answers_display(question)
+                selected_answer = get_selected_answer(question)
                 return (
                     get_question_info(question),
-                    gr.Radio(choices=llm_names, value=None),
-                    "\n\n".join(answer_texts),
+                    gr.Radio(choices=answer_options, value=selected_answer),
                     ""
                 )
-            return question_display.value, answer_radio.value, answer_display.value, "No questions available."
+            return question_display.value, answer_radio.value, "No questions available."
         
         def on_last_click():
             question = get_last_question()
             if question:
-                llm_names, answer_texts = get_answers_display(question)
+                llm_names, answer_options = get_answers_display(question)
+                selected_answer = get_selected_answer(question)
                 return (
                     get_question_info(question),
-                    gr.Radio(choices=llm_names, value=None),
-                    "\n\n".join(answer_texts),
+                    gr.Radio(choices=answer_options, value=selected_answer),
                     ""
                 )
-            return question_display.value, answer_radio.value, answer_display.value, "No questions available."
+            return question_display.value, answer_radio.value, "No questions available."
         
         def on_save_click(selected_answer):
             if not selected_answer:
@@ -162,12 +185,12 @@ def launch_evaluation_ui(config):
         # Connect events
         first_btn.click(
             fn=on_first_click,
-            outputs=[question_display, answer_radio, answer_display, status_output]
+            outputs=[question_display, answer_radio, status_output]
         )
         
         last_btn.click(
             fn=on_last_click,
-            outputs=[question_display, answer_radio, answer_display, status_output]
+            outputs=[question_display, answer_radio, status_output]
         )
         
         save_btn.click(
@@ -176,5 +199,4 @@ def launch_evaluation_ui(config):
             outputs=[status_output]
         )
     
-    conn.close()
     return demo 
