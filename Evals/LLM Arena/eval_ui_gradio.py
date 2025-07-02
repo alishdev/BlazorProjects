@@ -141,19 +141,21 @@ def launch_evaluation_ui(config):
             
             with answer_container:
                 with gr.Row():
-                    # Small selection button with LLM name
-                    btn = gr.Button(
-                        llm_name,
-                        variant="primary" if is_selected else "secondary",
-                        size="sm",
-                        min_width=30
-                    )
-                    answer_buttons.append(btn)
+                    # Small selection button with LLM name (1/4 width)
+                    with gr.Column(scale=1):
+                        btn = gr.Button(
+                            llm_name,
+                            variant="primary" if is_selected else "secondary",
+                            size="sm",
+                            min_width=30
+                        )
+                        answer_buttons.append(btn)
                     
-                    # Full answer text in markdown (without LLM name)
-                    answer_text = option.split(": ", 1)[1] if ": " in option else option
-                    answer_text = gr.Markdown(answer_text)
-                    answer_displays.append(answer_text)
+                    # Full answer text in markdown (3/4 width)
+                    with gr.Column(scale=3):
+                        answer_text = option.split(": ", 1)[1] if ": " in option else option
+                        answer_text = gr.Markdown(answer_text)
+                        answer_displays.append(answer_text)
         
         # Navigation functions
         def update_button_states(current_q):
