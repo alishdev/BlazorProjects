@@ -127,6 +127,14 @@ def launch_evaluation_ui(config):
     with gr.Blocks(title="LLM Arena: Human Evaluation") as demo:
         gr.Markdown(f"# LLM Arena: Human Evaluation")
         #gr.Markdown(f"**Graded {graded_count} / {total}**")
+        
+        # State to track current question
+        current_question_state = gr.State(current_question)
+        # Flag to prevent auto-navigation during manual navigation
+        navigation_flag = gr.State(False)
+        # Flag to track if we're currently navigating
+        is_navigating = gr.State(False)
+        
         # Question display
         question_display = gr.Markdown(get_question_info(current_question))
         
@@ -139,60 +147,170 @@ def launch_evaluation_ui(config):
         llm_names, answer_options = get_answers_display(current_question)
         selected_answer = get_selected_answer(current_question)
         
-        answer_radio = gr.Radio(
-            choices=answer_options,
-            label="",
-            value=selected_answer
-        )
+        # Create a container for answers with buttons and markdown
+        answer_container = gr.Column()
         
-        # Save button
-        save_btn = gr.Button("Select as Best", variant="primary")
+        # Create buttons and markdown for each answer option
+        answer_buttons = []
+        answer_displays = []
+        
+        for i, option in enumerate(answer_options):
+            is_selected = (option == selected_answer)
+            llm_name = llm_names[i]  # Get the LLM name for this option
+            
+            with answer_container:
+                with gr.Row():
+                    # Small selection button with LLM name
+                    btn = gr.Button(
+                        llm_name,
+                        variant="primary" if is_selected else "secondary",
+                        size="sm",
+                        min_width=30,
+                        scale=0.5
+                    )
+                    answer_buttons.append(btn)
+                    
+                    # Full answer text in markdown (without LLM name)
+                    answer_text = option.split(": ", 1)[1] if ": " in option else option
+                    answer_text = gr.Markdown(answer_text)
+                    answer_displays.append(answer_text)
         
         # Navigation functions
-        def on_first_click():
-            question = get_first_question()
-            if question:
-                llm_names, answer_options = get_answers_display(question)
-                selected_answer = get_selected_answer(question)
-                return (
-                    get_question_info(question),
-                    gr.Radio(choices=answer_options, value=selected_answer)
-                )
-            return question_display.value, answer_radio.value
-        
-        def on_last_click():
-            question = get_last_question()
-            if question:
-                llm_names, answer_options = get_answers_display(question)
-                selected_answer = get_selected_answer(question)
-                return (
-                    get_question_info(question),
-                    gr.Radio(choices=answer_options, value=selected_answer)
-                )
-            return question_display.value, answer_radio.value
-        
-        def on_save_click(selected_answer):
-            if not selected_answer:
-                return "Please select an answer first."
+        def on_answer_click(button_index, current_q):
+            """Handle when user clicks an answer button - save and move to next"""
+            if button_index is None:
+                return question_display.value, current_q, *answer_buttons, *answer_displays
             
-            result = save_selection(current_question, selected_answer)
-            return result
+            # Get the selected answer
+            selected_answer = answer_options[button_index]
+            
+            # Save the selection for current question
+            save_selection(current_q, selected_answer)
+            
+            # Find next question
+            current_index = data.index(current_q)
+            next_index = current_index + 1
+            
+            if next_index < len(data):
+                next_question = data[next_index]
+                llm_names, next_answer_options = get_answers_display(next_question)
+                next_selected_answer = get_selected_answer(next_question)
+                
+                # Create new buttons and displays for next question
+                new_buttons = []
+                new_displays = []
+                for i, option in enumerate(next_answer_options):
+                    is_selected = (option == next_selected_answer)
+                    new_buttons.append(
+                        gr.Button(
+                            llm_names[i],
+                            variant="primary" if is_selected else "secondary",
+                            size="sm",
+                            min_width=30,
+                            scale=0.5
+                        )
+                    )
+                    # Remove LLM name from markdown text
+                    answer_text = option.split(": ", 1)[1] if ": " in option else option
+                    new_displays.append(gr.Markdown(answer_text))
+                
+                return (
+                    get_question_info(next_question),
+                    next_question,
+                    *new_buttons,
+                    *new_displays
+                )
+            else:
+                # No more questions, stay on current
+                return question_display.value, current_q, *answer_buttons, *answer_displays
+        
+        def on_first_click(current_q):
+            # Go to the actual first question in the dataset
+            first_question = data[0]
+            print(f"First button clicked. Going from question {data.index(current_q) + 1} to question 1")
+            llm_names, answer_options = get_answers_display(first_question)
+            selected_answer = get_selected_answer(first_question)
+            
+            # Create buttons and displays for first question
+            new_buttons = []
+            new_displays = []
+            for i, option in enumerate(answer_options):
+                is_selected = (option == selected_answer)
+                new_buttons.append(
+                    gr.Button(
+                        llm_names[i],
+                        variant="primary" if is_selected else "secondary",
+                        size="sm",
+                        min_width=30,
+                        scale=0.5
+                    )
+                )
+                # Remove LLM name from markdown text
+                answer_text = option.split(": ", 1)[1] if ": " in option else option
+                new_displays.append(gr.Markdown(answer_text))
+            
+            return (
+                get_question_info(first_question),
+                first_question,
+                *new_buttons,
+                *new_displays
+            )
+        
+        def on_last_click(current_q):
+            # Go to the actual last question in the dataset
+            last_question = data[-1]
+            print(f"Last button clicked. Going from question {data.index(current_q) + 1} to question {len(data)}")
+            llm_names, answer_options = get_answers_display(last_question)
+            selected_answer = get_selected_answer(last_question)
+            
+            # Create buttons and displays for last question
+            new_buttons = []
+            new_displays = []
+            for i, option in enumerate(answer_options):
+                is_selected = (option == selected_answer)
+                new_buttons.append(
+                    gr.Button(
+                        llm_names[i],
+                        variant="primary" if is_selected else "secondary",
+                        size="sm",
+                        min_width=30,
+                        scale=0.5
+                    )
+                )
+                # Remove LLM name from markdown text
+                answer_text = option.split(": ", 1)[1] if ": " in option else option
+                new_displays.append(gr.Markdown(answer_text))
+            
+            return (
+                get_question_info(last_question),
+                last_question,
+                *new_buttons,
+                *new_displays
+            )
         
         # Connect events
+        def create_click_handler(button_index):
+            def click_handler(current_q):
+                return on_answer_click(button_index, current_q)
+            return click_handler
+        
+        for i, btn in enumerate(answer_buttons):
+            btn.click(
+                fn=create_click_handler(i),
+                inputs=[current_question_state],
+                outputs=[question_display, current_question_state, *answer_buttons, *answer_displays]
+            )
+        
         first_btn.click(
             fn=on_first_click,
-            outputs=[question_display, answer_radio]
+            inputs=[current_question_state],
+            outputs=[question_display, current_question_state, *answer_buttons, *answer_displays]
         )
         
         last_btn.click(
             fn=on_last_click,
-            outputs=[question_display, answer_radio]
-        )
-        
-        save_btn.click(
-            fn=on_save_click,
-            inputs=[answer_radio],
-            outputs=[]
+            inputs=[current_question_state],
+            outputs=[question_display, current_question_state, *answer_buttons, *answer_displays]
         )
     
     return demo 
