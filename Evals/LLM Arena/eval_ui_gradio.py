@@ -90,22 +90,6 @@ def launch_evaluation_ui(config):
         conn.close()
         return "Result saved!"
     
-    def get_first_question():
-        """Get the first question (ungraded or graded)"""
-        if ungraded:
-            return ungraded[0]
-        elif graded:
-            return graded[0]
-        return None
-    
-    def get_last_question():
-        """Get the last question (graded or ungraded)"""
-        if graded:
-            return graded[-1]
-        elif ungraded:
-            return ungraded[-1]
-        return None
-    
     def get_default_question():
         """Get the default question to show"""
         if not ungraded:
@@ -126,14 +110,9 @@ def launch_evaluation_ui(config):
     # Create Gradio interface
     with gr.Blocks(title="LLM Arena: Human Evaluation") as demo:
         gr.Markdown(f"# LLM Arena: Human Evaluation")
-        #gr.Markdown(f"**Graded {graded_count} / {total}**")
         
         # State to track current question
         current_question_state = gr.State(current_question)
-        # Flag to prevent auto-navigation during manual navigation
-        navigation_flag = gr.State(False)
-        # Flag to track if we're currently navigating
-        is_navigating = gr.State(False)
         
         # Question display
         question_display = gr.Markdown(get_question_info(current_question))
@@ -165,8 +144,7 @@ def launch_evaluation_ui(config):
                         llm_name,
                         variant="primary" if is_selected else "secondary",
                         size="sm",
-                        min_width=30,
-                        scale=0.5
+                        min_width=30
                     )
                     answer_buttons.append(btn)
                     
@@ -180,6 +158,9 @@ def launch_evaluation_ui(config):
             """Handle when user clicks an answer button - save and move to next"""
             if button_index is None:
                 return question_display.value, current_q, *answer_buttons, *answer_displays
+            
+            # Get the current question's answer options
+            llm_names, answer_options = get_answers_display(current_q)
             
             # Get the selected answer
             selected_answer = answer_options[button_index]
@@ -206,8 +187,7 @@ def launch_evaluation_ui(config):
                             llm_names[i],
                             variant="primary" if is_selected else "secondary",
                             size="sm",
-                            min_width=30,
-                            scale=0.5
+                            min_width=30
                         )
                     )
                     # Remove LLM name from markdown text
@@ -221,13 +201,37 @@ def launch_evaluation_ui(config):
                     *new_displays
                 )
             else:
-                # No more questions, stay on current
-                return question_display.value, current_q, *answer_buttons, *answer_displays
+                # No more questions - update current question's buttons to show selection
+                llm_names, answer_options = get_answers_display(current_q)
+                selected_answer = get_selected_answer(current_q)
+                
+                # Create updated buttons for current question
+                updated_buttons = []
+                updated_displays = []
+                for i, option in enumerate(answer_options):
+                    is_selected = (option == selected_answer)
+                    updated_buttons.append(
+                        gr.Button(
+                            llm_names[i],
+                            variant="primary" if is_selected else "secondary",
+                            size="sm",
+                            min_width=30
+                        )
+                    )
+                    # Remove LLM name from markdown text
+                    answer_text = option.split(": ", 1)[1] if ": " in option else option
+                    updated_displays.append(gr.Markdown(answer_text))
+                
+                return (
+                    question_display.value,
+                    current_q,
+                    *updated_buttons,
+                    *updated_displays
+                )
         
         def on_first_click(current_q):
             # Go to the actual first question in the dataset
             first_question = data[0]
-            print(f"First button clicked. Going from question {data.index(current_q) + 1} to question 1")
             llm_names, answer_options = get_answers_display(first_question)
             selected_answer = get_selected_answer(first_question)
             
@@ -241,8 +245,7 @@ def launch_evaluation_ui(config):
                         llm_names[i],
                         variant="primary" if is_selected else "secondary",
                         size="sm",
-                        min_width=30,
-                        scale=0.5
+                        min_width=30
                     )
                 )
                 # Remove LLM name from markdown text
@@ -259,7 +262,6 @@ def launch_evaluation_ui(config):
         def on_last_click(current_q):
             # Go to the actual last question in the dataset
             last_question = data[-1]
-            print(f"Last button clicked. Going from question {data.index(current_q) + 1} to question {len(data)}")
             llm_names, answer_options = get_answers_display(last_question)
             selected_answer = get_selected_answer(last_question)
             
@@ -273,8 +275,7 @@ def launch_evaluation_ui(config):
                         llm_names[i],
                         variant="primary" if is_selected else "secondary",
                         size="sm",
-                        min_width=30,
-                        scale=0.5
+                        min_width=30
                     )
                 )
                 # Remove LLM name from markdown text
