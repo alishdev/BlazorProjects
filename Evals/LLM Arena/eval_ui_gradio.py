@@ -120,6 +120,8 @@ def launch_evaluation_ui(config):
         # Navigation buttons
         with gr.Row():
             first_btn = gr.Button("First", variant="secondary")
+            prev_btn = gr.Button("Prev", variant="secondary", interactive=False)
+            next_btn = gr.Button("Next", variant="secondary", interactive=False)
             last_btn = gr.Button("Last", variant="secondary")
         
         # Answer selection - each answer as an option
@@ -154,6 +156,19 @@ def launch_evaluation_ui(config):
                     answer_displays.append(answer_text)
         
         # Navigation functions
+        def update_button_states(current_q):
+            """Update the enabled/disabled state of navigation buttons"""
+            current_index = data.index(current_q)
+            selected_answer = get_selected_answer(current_q)
+            
+            # Prev button: disabled on first question
+            prev_enabled = current_index > 0
+            
+            # Next button: disabled on last question or if no answer selected
+            next_enabled = current_index < len(data) - 1 and selected_answer is not None
+            
+            return prev_enabled, next_enabled
+        
         def on_answer_click(button_index, current_q):
             """Handle when user clicks an answer button - save and move to next"""
             if button_index is None:
@@ -194,9 +209,14 @@ def launch_evaluation_ui(config):
                     answer_text = option.split(": ", 1)[1] if ": " in option else option
                     new_displays.append(gr.Markdown(answer_text))
                 
+                # Update button states
+                prev_enabled, next_enabled = update_button_states(next_question)
+                
                 return (
                     get_question_info(next_question),
                     next_question,
+                    gr.Button("Prev", variant="secondary", interactive=prev_enabled),
+                    gr.Button("Next", variant="secondary", interactive=next_enabled),
                     *new_buttons,
                     *new_displays
                 )
@@ -222,9 +242,14 @@ def launch_evaluation_ui(config):
                     answer_text = option.split(": ", 1)[1] if ": " in option else option
                     updated_displays.append(gr.Markdown(answer_text))
                 
+                # Update button states
+                prev_enabled, next_enabled = update_button_states(current_q)
+                
                 return (
                     question_display.value,
                     current_q,
+                    gr.Button("Prev", variant="secondary", interactive=prev_enabled),
+                    gr.Button("Next", variant="secondary", interactive=next_enabled),
                     *updated_buttons,
                     *updated_displays
                 )
@@ -252,9 +277,14 @@ def launch_evaluation_ui(config):
                 answer_text = option.split(": ", 1)[1] if ": " in option else option
                 new_displays.append(gr.Markdown(answer_text))
             
+            # Update button states
+            prev_enabled, next_enabled = update_button_states(first_question)
+            
             return (
                 get_question_info(first_question),
                 first_question,
+                gr.Button("Prev", variant="secondary", interactive=prev_enabled),
+                gr.Button("Next", variant="secondary", interactive=next_enabled),
                 *new_buttons,
                 *new_displays
             )
@@ -282,12 +312,97 @@ def launch_evaluation_ui(config):
                 answer_text = option.split(": ", 1)[1] if ": " in option else option
                 new_displays.append(gr.Markdown(answer_text))
             
+            # Update button states
+            prev_enabled, next_enabled = update_button_states(last_question)
+            
             return (
                 get_question_info(last_question),
                 last_question,
+                gr.Button("Prev", variant="secondary", interactive=prev_enabled),
+                gr.Button("Next", variant="secondary", interactive=next_enabled),
                 *new_buttons,
                 *new_displays
             )
+        
+        def on_prev_click(current_q):
+            # Go to the previous question in the dataset
+            current_index = data.index(current_q)
+            if current_index > 0:
+                prev_question = data[current_index - 1]
+                llm_names, answer_options = get_answers_display(prev_question)
+                selected_answer = get_selected_answer(prev_question)
+                
+                # Create buttons and displays for previous question
+                new_buttons = []
+                new_displays = []
+                for i, option in enumerate(answer_options):
+                    is_selected = (option == selected_answer)
+                    new_buttons.append(
+                        gr.Button(
+                            llm_names[i],
+                            variant="primary" if is_selected else "secondary",
+                            size="sm",
+                            min_width=30
+                        )
+                    )
+                    # Remove LLM name from markdown text
+                    answer_text = option.split(": ", 1)[1] if ": " in option else option
+                    new_displays.append(gr.Markdown(answer_text))
+                
+                # Update button states
+                prev_enabled, next_enabled = update_button_states(prev_question)
+                
+                return (
+                    get_question_info(prev_question),
+                    prev_question,
+                    gr.Button("Prev", variant="secondary", interactive=prev_enabled),
+                    gr.Button("Next", variant="secondary", interactive=next_enabled),
+                    *new_buttons,
+                    *new_displays
+                )
+            else:
+                # Already at first question, stay on current
+                return question_display.value, current_q, prev_btn, next_btn, *answer_buttons, *answer_displays
+        
+        def on_next_click(current_q):
+            # Go to the next question in the dataset
+            current_index = data.index(current_q)
+            if current_index < len(data) - 1:
+                next_question = data[current_index + 1]
+                llm_names, answer_options = get_answers_display(next_question)
+                selected_answer = get_selected_answer(next_question)
+                
+                # Create buttons and displays for next question
+                new_buttons = []
+                new_displays = []
+                for i, option in enumerate(answer_options):
+                    is_selected = (option == selected_answer)
+                    new_buttons.append(
+                        gr.Button(
+                            llm_names[i],
+                            variant="primary" if is_selected else "secondary",
+                            size="sm",
+                            min_width=30
+                        )
+                    )
+                    # Remove LLM name from markdown text
+                    answer_text = option.split(": ", 1)[1] if ": " in option else option
+                    new_displays.append(gr.Markdown(answer_text))
+                
+                # Update button states
+                prev_enabled, next_enabled = update_button_states(next_question)
+                
+                return (
+                    get_question_info(next_question),
+                    next_question,
+                    gr.Button("Prev", variant="secondary", interactive=prev_enabled),
+                    gr.Button("Next", variant="secondary", interactive=next_enabled),
+                    *new_buttons,
+                    *new_displays
+                )
+            else:
+                # Already at last question, stay on current
+                return question_display.value, current_q, prev_btn, next_btn, *answer_buttons, *answer_displays
         
         # Connect events
         def create_click_handler(button_index):
@@ -299,19 +414,31 @@ def launch_evaluation_ui(config):
             btn.click(
                 fn=create_click_handler(i),
                 inputs=[current_question_state],
-                outputs=[question_display, current_question_state, *answer_buttons, *answer_displays]
+                outputs=[question_display, current_question_state, prev_btn, next_btn, *answer_buttons, *answer_displays]
             )
         
         first_btn.click(
             fn=on_first_click,
             inputs=[current_question_state],
-            outputs=[question_display, current_question_state, *answer_buttons, *answer_displays]
+            outputs=[question_display, current_question_state, prev_btn, next_btn, *answer_buttons, *answer_displays]
         )
         
         last_btn.click(
             fn=on_last_click,
             inputs=[current_question_state],
-            outputs=[question_display, current_question_state, *answer_buttons, *answer_displays]
+            outputs=[question_display, current_question_state, prev_btn, next_btn, *answer_buttons, *answer_displays]
+        )
+        
+        prev_btn.click(
+            fn=on_prev_click,
+            inputs=[current_question_state],
+            outputs=[question_display, current_question_state, prev_btn, next_btn, *answer_buttons, *answer_displays]
+        )
+        
+        next_btn.click(
+            fn=on_next_click,
+            inputs=[current_question_state],
+            outputs=[question_display, current_question_state, prev_btn, next_btn, *answer_buttons, *answer_displays]
         )
     
     return demo 
