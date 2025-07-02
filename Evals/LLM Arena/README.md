@@ -42,7 +42,8 @@ Run the following commands in order:
    ```
 4. **Launch the human evaluation UI:**
    ```bash
-   streamlit run main.py launch-ui
+   ##streamlit run main.py launch-ui
+   python main.py eval --ui gradio
    ```
    - Follow the UI to grade answers and save results to the database.
 

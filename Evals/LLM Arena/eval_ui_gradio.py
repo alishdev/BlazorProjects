@@ -46,7 +46,7 @@ def launch_evaluation_ui(config):
     def get_question_info(question):
         """Get question information for display"""
         current_question_number = data.index(question) + 1
-        return f"Question {current_question_number}/{total}: {question['question_text']}"
+        return f"**Question {current_question_number}/{total}:**\n\n{question['question_text']}"
     
     def get_answers_display(question):
         """Get answers for display"""
@@ -126,15 +126,14 @@ def launch_evaluation_ui(config):
     # Create Gradio interface
     with gr.Blocks(title="LLM Arena: Human Evaluation") as demo:
         gr.Markdown(f"# LLM Arena: Human Evaluation")
-        gr.Markdown(f"**Graded {graded_count} / {total}**")
+        #gr.Markdown(f"**Graded {graded_count} / {total}**")
+        # Question display
+        question_display = gr.Markdown(get_question_info(current_question))
         
         # Navigation buttons
         with gr.Row():
             first_btn = gr.Button("First", variant="secondary")
             last_btn = gr.Button("Last", variant="secondary")
-        
-        # Question display
-        question_display = gr.Markdown(get_question_info(current_question))
         
         # Answer selection - each answer as an option
         llm_names, answer_options = get_answers_display(current_question)
@@ -148,7 +147,6 @@ def launch_evaluation_ui(config):
         
         # Save button
         save_btn = gr.Button("Select as Best", variant="primary")
-        status_output = gr.Textbox(label="Status", interactive=False)
         
         # Navigation functions
         def on_first_click():
@@ -158,10 +156,9 @@ def launch_evaluation_ui(config):
                 selected_answer = get_selected_answer(question)
                 return (
                     get_question_info(question),
-                    gr.Radio(choices=answer_options, value=selected_answer),
-                    ""
+                    gr.Radio(choices=answer_options, value=selected_answer)
                 )
-            return question_display.value, answer_radio.value, "No questions available."
+            return question_display.value, answer_radio.value
         
         def on_last_click():
             question = get_last_question()
@@ -170,10 +167,9 @@ def launch_evaluation_ui(config):
                 selected_answer = get_selected_answer(question)
                 return (
                     get_question_info(question),
-                    gr.Radio(choices=answer_options, value=selected_answer),
-                    ""
+                    gr.Radio(choices=answer_options, value=selected_answer)
                 )
-            return question_display.value, answer_radio.value, "No questions available."
+            return question_display.value, answer_radio.value
         
         def on_save_click(selected_answer):
             if not selected_answer:
@@ -185,18 +181,18 @@ def launch_evaluation_ui(config):
         # Connect events
         first_btn.click(
             fn=on_first_click,
-            outputs=[question_display, answer_radio, status_output]
+            outputs=[question_display, answer_radio]
         )
         
         last_btn.click(
             fn=on_last_click,
-            outputs=[question_display, answer_radio, status_output]
+            outputs=[question_display, answer_radio]
         )
         
         save_btn.click(
             fn=on_save_click,
             inputs=[answer_radio],
-            outputs=[status_output]
+            outputs=[]
         )
     
     return demo 
