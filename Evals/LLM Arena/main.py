@@ -4,6 +4,7 @@ from rag_builder import build_rag_systems
 from question_gen import generate_and_curate_questions
 from answer_gen import generate_answers
 from eval_ui import launch_evaluation_ui
+from eval_ui_gradio import launch_evaluation_ui as launch_evaluation_ui_gradio
 
 @click.group()
 def cli():
@@ -76,10 +77,16 @@ def generate_answers_cmd(llm):
     generate_answers(config)
 
 @cli.command()
-def eval():
+@click.option('--ui', default='streamlit', help='UI framework to use (streamlit or gradio)')
+def eval(ui):
     """Launch the evaluation UI."""
     config = load_config()
-    launch_evaluation_ui(config)
+    
+    if ui.lower() == 'gradio':
+        demo = launch_evaluation_ui_gradio(config)
+        demo.launch()
+    else:
+        launch_evaluation_ui(config)
 
 if __name__ == '__main__':
     cli() 

@@ -2,6 +2,7 @@ click
 pyyaml
 faiss-cpu
 streamlit
+gradio
 PyPDF2
 numpy
 
