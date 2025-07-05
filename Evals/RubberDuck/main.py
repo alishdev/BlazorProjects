@@ -28,15 +28,15 @@ class MindMeldApp:
     
     def setup_ui(self):
         """Setup the user interface"""
-        # Configure grid weights
-        self.root.grid_rowconfigure(1, weight=1)
+        # Configure grid weights - make chat area take full height
+        self.root.grid_rowconfigure(1, weight=1)  # Chat area gets all available space
         self.root.grid_columnconfigure(0, weight=1)
         self.root.grid_columnconfigure(1, weight=1)
         
         # Top - Project Bar
         self.setup_project_bar()
         
-        # Middle - Chat Panes
+        # Middle - Chat Panes (full height)
         self.setup_chat_panes()
         
         # Bottom - Prompt Area
@@ -71,9 +71,10 @@ class MindMeldApp:
     def setup_chat_panes(self):
         """Setup the dual chat windows"""
         chat_frame = ttk.Frame(self.root)
-        chat_frame.grid(row=1, column=0, columnspan=2, sticky="nsew", padx=10, pady=5)
+        chat_frame.grid(row=1, column=0, columnspan=2, sticky="nsew", padx=10, pady=(5, 10))
         chat_frame.grid_columnconfigure(0, weight=1)
         chat_frame.grid_columnconfigure(1, weight=1)
+        chat_frame.grid_rowconfigure(0, weight=1)  # Make chat windows take full height
         
         # LLM A Chat Window
         llm_a_frame = ttk.LabelFrame(chat_frame, text=self.llm_client.get_llm_name('A'))
@@ -85,7 +86,7 @@ class MindMeldApp:
             llm_a_frame,
             wrap=tk.WORD,
             width=50,
-            height=20,
+            height=1,  # Height will be determined by grid weight
             state=tk.DISABLED,
             font=("Arial", 18)  # Increased font size by 50% from 12 to 18
         )
@@ -101,7 +102,7 @@ class MindMeldApp:
             llm_b_frame,
             wrap=tk.WORD,
             width=50,
-            height=20,
+            height=1,  # Height will be determined by grid weight
             state=tk.DISABLED,
             font=("Arial", 18)  # Increased font size by 50% from 12 to 18
         )
