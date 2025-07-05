@@ -81,6 +81,12 @@ class MindMeldDemoApp:
         self.root.title("Mind Meld - Demo Version (No API Keys Required)")
         self.root.geometry("1200x800")
         
+        # Set the rubber duck icon
+        try:
+            self.root.iconphoto(True, tk.PhotoImage(file="rubber-duck-icon.png"))
+        except Exception as e:
+            print(f"Could not load icon: {e}")
+        
         # Initialize components
         self.db = DatabaseManager()
         self.llm_client = DemoLLMClient()
