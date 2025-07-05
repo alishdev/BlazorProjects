@@ -1,6 +1,6 @@
 streamlit run main.py eval
 
-1. do not preselect any options if there is no record in the database
-2. remove Select as Best button. Instead if user selects an option perform select as best function and move to the next question
+1. do not preselect any options if the question was not graded and if there is no corresponding record in the database.
+2. remove Select as Best button. Instead if user selects an option add the grade to the database and move to the next question. if the question was already graded and the user changes the option, then update the grade in the database and  move to the next question.
 3. add Prev and Next buttons. Prev button is disabled on first question. when user click on Prev button move to previous question. Next button is disabled on the last question. Next button is disabled if no options were selected. When user clicks on Next button move to the next question.
-4. when starting the application open the first question
+4. when starting the application always open the first question regardless what's in the database

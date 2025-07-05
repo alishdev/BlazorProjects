@@ -8,13 +8,13 @@ x5. Add dropdown for max tokens: 1000, 10000, 32000 and pass it in request
 7. Ask "list all reasons why having a chat bot is a bad idea"
 
 //// RAG eval - create a PRD to build the package
-1. Download docs for YMCA
-2. New program that use FAISS to build RAG system with different LLMs
-3. New program that creates questions based on prompt and RAG for different LLMs and saves them into csv
-4. Make one list from all questions
+x1. Download docs for YMCA
+x2. New program that use FAISS to build RAG system with different LLMs
+x3. New program that creates questions based on prompt and RAG for different LLMs and saves them into csv
+x4. Make one list from all questions
 5??. New program that grades questions using different LLMs
-6. Make all LLMs answer all questions and save them into Sqlite db
-7. In C# create a UI that will display questions and answer from different LLMs and let human select best answer
+x6. Make all LLMs answer all questions and save them into Sqlite db
+x7. In C# create a UI that will display questions and answer from different LLMs and let human select best answer
 8. Make a list of questions and best answers, find out which LLM is best for answering 
 
 //// Reviewer AI
@@ -22,6 +22,22 @@ x5. Add dropdown for max tokens: 1000, 10000, 32000 and pass it in request
 2. Generate questions from RAG
 2. Create a Reviewer AI which will review answers from other LLMs
 
+//// Manual work
+Read all messages in Camp Pro Collective Facebook
 
 ????
-Instead of automating n8n why LLM can not handle automation and reminders. How to make LLM to stay in background and do some tasks on schedule?
+Instead of automating n8n why LLM can not handle automation and reminders. 
+How to make LLM to stay in background and do some tasks on schedule?
+
+//// Personal assistant
+I need to have a helper to brainstorm some technical ideas, ala rubber duck. 
+Create a chat app that stores all conversations in the database and use a couple of reasoning LLM models 
+to answer each question so I can compare the results. 
+Also the tool will have a context of everything I was thinking about.
+
+//// tasks
+1. Find out how Adobe and other companies allow vibe coding with their software
+2. Find the name of the Admission officer who retired and doing AI
+
+///// Contact
+Christoph Guten Tog, Duke

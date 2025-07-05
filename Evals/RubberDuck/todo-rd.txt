@@ -1,0 +1,9 @@
+PRD:
+I want to build a personal assistant in python.
+I type things I want to discuss and the assistant helps me to brainstorm ideas and it should remember all previous discusssions.
+Help me to write product requirements document that I will give to a software developer to implement. 
+The assistant should have two chat interfaces and one prompt area.
+I type my question in a prompt area, and the assistant sends the history and my question to two LLMs.
+My question should appear in both chat interfaces, and responses from LLMs should appear in corresponding chat windows.
+All questions and responses should be stored in a Sqlite database.
+Create tables for each LLM and each record should be either my question or response from the LLM.
