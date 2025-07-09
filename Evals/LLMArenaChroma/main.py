@@ -5,6 +5,8 @@ from rag_builder import build_rag_systems
 from question_gen import generate_and_curate_questions
 from answer_gen import generate_answers
 from db import init_db
+from eval_ui import launch_evaluation_ui
+from eval_ui_gradio import launch_evaluation_ui as launch_evaluation_ui_gradio
 
 @click.group()
 def cli():
@@ -88,6 +90,23 @@ def run_all(config):
         print("\n[INFO] Complete evaluation pipeline finished successfully!")
     except Exception as e:
         print(f"[ERROR] Pipeline failed: {e}")
+
+@cli.command()
+@click.option('--config', default='config.yaml', help='Configuration file path')
+@click.option('--ui', default='streamlit', help='UI framework to use (streamlit or gradio)')
+def eval(config, ui):
+    """Launch the evaluation UI."""
+    try:
+        config_data = load_config(config)
+        print(f"[INFO] Launching evaluation UI with {ui}...")
+        
+        if ui.lower() == 'gradio':
+            demo = launch_evaluation_ui_gradio(config_data)
+            demo.launch()
+        else:
+            launch_evaluation_ui(config_data)
+    except Exception as e:
+        print(f"[ERROR] Failed to launch evaluation UI: {e}")
 
 if __name__ == '__main__':
     cli() 
