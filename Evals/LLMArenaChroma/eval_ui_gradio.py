@@ -108,8 +108,8 @@ def launch_evaluation_ui(config):
         return "No questions available."
     
     # Create Gradio interface
-    with gr.Blocks(title="LLM Arena: Human Evaluation") as demo:
-        gr.Markdown(f"# LLM Arena: Human Evaluation")
+    with gr.Blocks(title="LLM Arena Chroma: Human Evaluation") as demo:
+        gr.Markdown(f"# LLM Arena Chroma: Human Evaluation")
         
         # State to track current question
         current_question_state = gr.State(current_question)

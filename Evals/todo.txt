@@ -4,7 +4,7 @@ x2. Add python func to run prompt against all LLMs in PythonServer
 x3. Run for all models and display result in Evals
 x4. Save api keys in config file in PythonServer
 x5. Add dropdown for max tokens: 1000, 10000, 32000 and pass it in request
-6. Add button to merge all responses in one file and open filesavedialog
+x? 6. Add button to merge all responses in one file and open filesavedialog
 7. Ask "list all reasons why having a chat bot is a bad idea"
 
 //// RAG eval - create a PRD to build the package
@@ -37,8 +37,15 @@ xAlso the tool will have a context of everything I was thinking about.
 
 //// tasks
 1. Find out how Adobe and other companies allow vibe coding with their software
-2. Find the name of the Admission officer who retired and doing AI
-3. Test RAG FAISS vs Chroma db
+x2. Find the name of the Admission officer who retired and doing AI - Christoph Guten Tog, Duke
+x3. Test RAG FAISS vs Chroma db
 
 ///// Contact
 Christoph Guten Tog, Duke
+
+////// YMCA Brand voice
+Welcoming |  We’re open to all  and create spaces where you  can be, belong and become We believe our communities are stronger when everyone feels valued.  We bring people together, inviting them to share their diverse perspectives  and discover their shared passions. 
+Genuine |  We value who you  are and encourage you to be  true to yourself and others 
+Nurturing |  We’re with  you on your path to  reach your full potential We are approachable, down-to-earth and real. We foster environments where you feel comfortable being yourself and confident connecting with others. We recognize that everyone has personal strengths and challenges.  No matter where you are on your journey, we offer encouragement,  guidance and support. 
+Hopeful |  We believe in  your ability to inspire a  brighter tomorrow Determined |  We work relentlessly to strengthen communities, starting with you Together with you and your neighbors, we can make a meaningful and measurable difference in the lives of people and communities. We motivate people to join in, get involved and take action for the greater good. We believe that every person, family and neighborhood has the potential  to bring about positive change. And together, we have the power to do so  much more.
+ 
