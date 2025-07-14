@@ -1,56 +1,70 @@
-﻿using Microsoft.Extensions.Logging;
+using Librarian.Core;
 
-namespace Librarian.Crawl;
-
-public class FileCrawler
+namespace FileCrawler
 {
-    private readonly string _directoryPath;
-    private readonly ILogger<FileCrawler> _logger;
-
-    public FileCrawler(string directoryPath, ILogger<FileCrawler> logger)
+    public class FileCrawler : ICrawler
     {
-        _directoryPath = directoryPath;
-        _logger = logger;
-    }
-
-    public async Task CrawlDirectory()
-    {
-        try
+        public void Run(object parameter)
         {
-            _logger.LogInformation("Starting directory crawl at: {DirectoryPath}", _directoryPath);
-
-            if (!Directory.Exists(_directoryPath))
+            try
             {
-                _logger.LogError("Directory does not exist: {DirectoryPath}", _directoryPath);
-                return;
+                if (parameter == null)
+                {
+                    Console.WriteLine("Error: Parameter cannot be null");
+                    return;
+                }
+
+                if (parameter is not string directoryPath)
+                {
+                    Console.WriteLine($"Error: Parameter must be a string, received {parameter.GetType()}");
+                    return;
+                }
+
+                if (string.IsNullOrWhiteSpace(directoryPath))
+                {
+                    Console.WriteLine("Error: Directory path cannot be empty or whitespace");
+                    return;
+                }
+
+                if (!Directory.Exists(directoryPath))
+                {
+                    Console.WriteLine($"Error: Directory '{directoryPath}' does not exist");
+                    return;
+                }
+
+                Console.WriteLine($"FileCrawler started for directory: {directoryPath}");
+                
+                var files = Directory.GetFiles(directoryPath, "*", SearchOption.AllDirectories);
+                
+                Console.WriteLine($"Found {files.Length} files:");
+                
+                foreach (var file in files)
+                {
+                    try
+                    {
+                        var fileInfo = new FileInfo(file);
+                        Console.WriteLine($"File: {file} (Size: {fileInfo.Length} bytes, Modified: {fileInfo.LastWriteTime})");
+                    }
+                    catch (Exception fileEx)
+                    {
+                        Console.WriteLine($"Error processing file '{file}': {fileEx.Message}");
+                    }
+                }
+                
+                Console.WriteLine($"FileCrawler completed for directory: {directoryPath}");
             }
-
-            var files = Directory.GetFiles(_directoryPath);
-            _logger.LogInformation("Found {Count} files in directory", files.Length);
-
-            foreach (var file in files)
+            catch (UnauthorizedAccessException ex)
             {
-                _logger.LogDebug("Processing file: {FilePath}", file);
-                try
-                {
-                    var fileInfo = new FileInfo(file);
-                    _logger.LogInformation("File: {FileName}, Size: {Size} bytes, Last Modified: {LastModified}",
-                        fileInfo.Name,
-                        fileInfo.Length,
-                        fileInfo.LastWriteTime);
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogWarning(ex, "Error processing file: {FilePath}", file);
-                }
+                Console.WriteLine($"Access denied: {ex.Message}");
             }
-
-            _logger.LogInformation("Completed directory crawl at: {DirectoryPath}", _directoryPath);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error occurred while crawling directory: {DirectoryPath}", _directoryPath);
-            throw;
+            catch (DirectoryNotFoundException ex)
+            {
+                Console.WriteLine($"Directory not found: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Unexpected error in FileCrawler: {ex.Message}");
+            }
         }
     }
 }

@@ -1,0 +1,177 @@
+@page "/"
+@inject FileHierarchyService HierarchyService
+@inject FileContentService ContentService
+@inject IJSRuntime JSRuntime
+
+<PageTitle>File Viewer</PageTitle>
+
+<div class="file-viewer-container">
+    <div class="file-viewer-header">
+        <h1>Librarian File Viewer</h1>
+        <div class="toolbar">
+            <SfButton CssClass="e-primary" @onclick="RefreshHierarchy">
+                <span class="e-btn-icon e-icons e-refresh"></span>
+                Refresh
+            </SfButton>
+        </div>
+    </div>
+
+    <div class="file-viewer-content">
+        <div class="file-hierarchy-panel">
+            <div class="panel-header">
+                <h3>File Hierarchy</h3>
+            </div>
+            <div class="panel-body">
+                @if (isLoading)
+                {
+                    <div class="loading-indicator">
+                        <p>Loading file hierarchy...</p>
+                    </div>
+                }
+                else if (hierarchyItems != null && hierarchyItems.Any())
+                {
+                    <div class="tree-view">
+                        @foreach (var item in hierarchyItems)
+                        {
+                            <FileTreeNode Item="item" OnFileSelected="OnFileSelected" />
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="no-data">
+                        <p>No files found. Make sure file_hierarchy.json exists in C:\Projects\BlazorProjects\Librarian\Crawl</p>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div class="file-content-panel">
+            <div class="panel-header">
+                <h3>File Preview</h3>
+                @if (!string.IsNullOrEmpty(selectedFilePath))
+                {
+                    <div class="file-info">
+                        <span class="file-path">@selectedFilePath</span>
+                        <span class="file-type">@GetFileTypeDisplay(selectedFilePath)</span>
+                    </div>
+                }
+            </div>
+            <div class="panel-body">
+                @if (isLoadingContent)
+                {
+                    <div class="loading-indicator">
+                        <p>Loading file content...</p>
+                    </div>
+                }
+                else if (!string.IsNullOrEmpty(selectedFilePath))
+                {
+                    <div class="file-content">
+                        @if (ContentService.GetFileType(selectedFilePath) == "text" || 
+                             ContentService.GetFileType(selectedFilePath) == "json" ||
+                             ContentService.GetFileType(selectedFilePath) == "markdown")
+                        {
+                            <pre><code>@fileContent</code></pre>
+                        }
+                        else if (ContentService.GetFileType(selectedFilePath) == "image")
+                        {
+                            <div class="image-preview">
+                                <img src="@GetImagePath(selectedFilePath)" alt="@selectedFilePath" />
+                                <div class="image-info">
+                                    <p>@fileContent</p>
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="binary-file-info">
+                                <p>@fileContent</p>
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="no-selection">
+                        <p>Select a file from the hierarchy to view its content.</p>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private List<FileHierarchyItem>? hierarchyItems;
+    private string selectedFilePath = string.Empty;
+    private string fileContent = string.Empty;
+    private bool isLoading = true;
+    private bool isLoadingContent = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadHierarchy();
+    }
+
+    private async Task LoadHierarchy()
+    {
+        isLoading = true;
+        StateHasChanged();
+
+        try
+        {
+            hierarchyItems = await HierarchyService.GetFileHierarchyAsync();
+        }
+        catch (Exception ex)
+        {
+            await JSRuntime.InvokeVoidAsync("console.error", "Error loading hierarchy:", ex.Message);
+        }
+        finally
+        {
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task OnFileSelected(FileHierarchyItem item)
+    {
+        if (!item.IsFile) return;
+
+        selectedFilePath = item.Path;
+        isLoadingContent = true;
+        StateHasChanged();
+
+        try
+        {
+            fileContent = await ContentService.GetFileContentAsync(item.Path);
+        }
+        catch (Exception ex)
+        {
+            fileContent = $"Error loading file: {ex.Message}";
+            await JSRuntime.InvokeVoidAsync("console.error", "Error loading file content:", ex.Message);
+        }
+        finally
+        {
+            isLoadingContent = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task RefreshHierarchy()
+    {
+        HierarchyService.ClearCache();
+        await LoadHierarchy();
+    }
+
+    private string GetFileTypeDisplay(string filePath)
+    {
+        var type = ContentService.GetFileType(filePath);
+        return type.ToUpperInvariant();
+    }
+
+    private string GetImagePath(string filePath)
+    {
+        // For now, return a placeholder since we can't directly access file system images in Blazor
+        return $"data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTIxIDNINWMtMS4xIDAtMiAuOS0yIDJ2MTRjMCAxLjEuOSAyIDIgMmgxNmMxLjEgMCAyLS45IDItMlY1YzAtMS4xLS45LTItMi0yem0wIDE2SDVWNWgxNnYxNHptLTEwLTdoMnYyaC0yem0wIDRoMnYyaC0yem0wLThoMnYyaC0yem0tNCAwaDJ2Mkgxem0wIDRoMnYySDd6bTAgNGgydjJIN3ptOC04aDJ2MmgtMnptMCA0aDJ2MmgtMnptMCA0aDJ2MmgtMnoiIGZpbGw9IiM3NTc1NzUiLz4KPC9zdmc+";
+    }
+}

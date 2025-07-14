@@ -1,0 +1,36 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0-windows7.0</TargetFramework>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>Librarian.Scheduler</RootNamespace>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationHighDpiMode>PerMonitorV2</ApplicationHighDpiMode>
+    <StaticWebAssetProjectMode>Default</StaticWebAssetProjectMode>
+  </PropertyGroup>
+
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebView.WindowsForms" Version="8.0.40" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="8.0.0" />
+    <PackageReference Include="Syncfusion.Blazor.Grid" Version="24.1.41" />
+    <PackageReference Include="Syncfusion.Blazor.Buttons" Version="24.1.41" />
+    <PackageReference Include="Syncfusion.Blazor.DropDowns" Version="24.1.41" />
+    <PackageReference Include="Syncfusion.Blazor.Inputs" Version="24.1.41" />
+    <PackageReference Include="Syncfusion.Blazor.Popups" Version="24.1.41" />
+    <PackageReference Include="Syncfusion.Blazor.Themes" Version="24.1.41" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="wwwroot\**\*" CopyToOutputDirectory="Always" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Librarian.Core\Librarian.Core.csproj" />
+  </ItemGroup>
+
+</Project>
