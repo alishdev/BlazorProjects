@@ -1,0 +1,227 @@
+@page "/"
+@using Librarian.Scheduler.Models
+@using Librarian.Scheduler.Services
+@inject ConfigurationService ConfigService
+@inject IJSRuntime JSRuntime
+
+<PageTitle>Librarian Scheduler</PageTitle>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="mb-4">Librarian Crawler Scheduler</h1>
+            
+            <div class="mb-3">
+                <SfButton CssClass="e-primary" @onclick="ShowAddDialog">Add New Job</SfButton>
+                <SfButton CssClass="e-success ms-2" @onclick="RefreshJobs">Refresh</SfButton>
+            </div>
+
+            <SfGrid DataSource="@ScheduledJobs" AllowPaging="true" AllowSorting="true">
+                <GridPageSettings PageSize="10"></GridPageSettings>
+                <GridColumns>
+                    <GridColumn Field="@nameof(ScheduledJobModel.IsEnabled)" HeaderText="Enabled" Width="100">
+                        <Template>
+                            @{
+                                var job = (context as ScheduledJobModel)!;
+                            }
+                            <span class="badge @(job.IsEnabled ? "bg-success" : "bg-secondary")">
+                                @(job.IsEnabled ? "Yes" : "No")
+                            </span>
+                        </Template>
+                    </GridColumn>
+                    <GridColumn Field="@nameof(ScheduledJobModel.ScheduleDisplay)" HeaderText="Schedule" Width="200"></GridColumn>
+                    <GridColumn Field="@nameof(ScheduledJobModel.CrawlerTypeDisplay)" HeaderText="Crawler" Width="200"></GridColumn>
+                    <GridColumn Field="@nameof(ScheduledJobModel.Parameter)" HeaderText="Parameter" Width="300"></GridColumn>
+                    <GridColumn HeaderText="Actions" Width="150">
+                        <Template>
+                            @{
+                                var job = (context as ScheduledJobModel)!;
+                            }
+                            <SfButton CssClass="e-info e-small me-1" @onclick="() => EditJob(job)">Edit</SfButton>
+                            <SfButton CssClass="e-danger e-small" @onclick="() => DeleteJob(job)">Delete</SfButton>
+                        </Template>
+                    </GridColumn>
+                </GridColumns>
+            </SfGrid>
+        </div>
+    </div>
+</div>
+
+<SfDialog @bind-Visible="@IsDialogVisible" Header="@DialogTitle" Width="600px" Height="500px" IsModal="true">
+    <DialogTemplates>
+        <Content>
+            <div class="form-group mb-3">
+                <label class="form-label">Enabled</label>
+                <SfCheckBox @bind-Checked="@CurrentJob.IsEnabled"></SfCheckBox>
+            </div>
+            
+            <div class="form-group mb-3">
+                <label class="form-label">Schedule</label>
+                <SfDropDownList TValue="string" TItem="ScheduleOption" 
+                               DataSource="@ScheduleOptions" 
+                               @bind-Value="@SelectedSchedule"
+                               TextField="Display" ValueField="CronExpression">
+                </SfDropDownList>
+            </div>
+
+            @if (SelectedSchedule == "")
+            {
+                <div class="form-group mb-3">
+                    <label class="form-label">Custom Cron Expression</label>
+                    <SfTextBox @bind-Value="@CurrentJob.Schedule" Placeholder="0 */10 * * * ?"></SfTextBox>
+                </div>
+            }
+            
+            <div class="form-group mb-3">
+                <label class="form-label">Crawler</label>
+                <SfDropDownList TValue="string" TItem="CrawlerInfo" 
+                               DataSource="@AvailableCrawlers" 
+                               @bind-Value="@SelectedCrawlerKey"
+                               TextField="DisplayName" ValueField="TypeName">
+                </SfDropDownList>
+            </div>
+            
+            <div class="form-group mb-3">
+                <label class="form-label">Parameter</label>
+                <SfTextBox @bind-Value="@CurrentJob.Parameter" 
+                          Placeholder="C:\Temp or {&quot;ApiUrl&quot;: &quot;https://api.example.com&quot;}"
+                          Multiline="true" FloatLabelType="FloatLabelType.Auto">
+                </SfTextBox>
+            </div>
+        </Content>
+    </DialogTemplates>
+    <DialogButtons>
+        <DialogButton Content="Save" IsPrimary="true" OnClick="@SaveJob" />
+        <DialogButton Content="Cancel" OnClick="@CancelDialog" />
+    </DialogButtons>
+</SfDialog>
+
+@code {
+    private List<ScheduledJobModel> ScheduledJobs = new();
+    private List<CrawlerInfo> AvailableCrawlers = new();
+    private List<ScheduleOption> ScheduleOptions = new();
+    
+    private bool IsDialogVisible = false;
+    private string DialogTitle = "";
+    private ScheduledJobModel CurrentJob = new();
+    private string SelectedSchedule = "";
+    private string SelectedCrawlerKey = "";
+    private bool IsEditMode = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadData();
+    }
+
+    private async Task LoadData()
+    {
+        ScheduledJobs = await ConfigService.GetScheduledJobsAsync();
+        AvailableCrawlers = ConfigService.GetAvailableCrawlers();
+        ScheduleOptions = ConfigService.GetScheduleOptions();
+    }
+
+    private void ShowAddDialog()
+    {
+        IsEditMode = false;
+        DialogTitle = "Add New Job";
+        CurrentJob = new ScheduledJobModel { IsEnabled = true };
+        SelectedSchedule = "0 */10 * * * ?";
+        SelectedCrawlerKey = "";
+        IsDialogVisible = true;
+    }
+
+    private void EditJob(ScheduledJobModel job)
+    {
+        IsEditMode = true;
+        DialogTitle = "Edit Job";
+        CurrentJob = new ScheduledJobModel
+        {
+            Id = job.Id,
+            IsEnabled = job.IsEnabled,
+            Schedule = job.Schedule,
+            CrawlerAssembly = job.CrawlerAssembly,
+            CrawlerType = job.CrawlerType,
+            Parameter = job.Parameter
+        };
+        
+        var scheduleOption = ScheduleOptions.FirstOrDefault(s => s.CronExpression == job.Schedule);
+        SelectedSchedule = scheduleOption?.CronExpression ?? "";
+        SelectedCrawlerKey = job.CrawlerType;
+        IsDialogVisible = true;
+    }
+
+    private async Task DeleteJob(ScheduledJobModel job)
+    {
+        bool confirmed = await JSRuntime.InvokeAsync<bool>("confirm", $"Are you sure you want to delete the job '{job.CrawlerTypeDisplay}'?");
+        if (confirmed)
+        {
+            ScheduledJobs.RemoveAll(j => j.Id == job.Id);
+            await ConfigService.SaveScheduledJobsAsync(ScheduledJobs);
+            StateHasChanged();
+        }
+    }
+
+    private async Task SaveJob()
+    {
+        try
+        {
+            if (!string.IsNullOrEmpty(SelectedSchedule))
+            {
+                CurrentJob.Schedule = SelectedSchedule;
+            }
+
+            if (!string.IsNullOrEmpty(SelectedCrawlerKey))
+            {
+                var crawler = AvailableCrawlers.FirstOrDefault(c => c.TypeName == SelectedCrawlerKey);
+                if (crawler != null)
+                {
+                    CurrentJob.CrawlerType = crawler.TypeName;
+                    CurrentJob.CrawlerAssembly = crawler.AssemblyName;
+                }
+            }
+
+            if (IsEditMode)
+            {
+                var existingJob = ScheduledJobs.FirstOrDefault(j => j.Id == CurrentJob.Id);
+                if (existingJob != null)
+                {
+                    existingJob.IsEnabled = CurrentJob.IsEnabled;
+                    existingJob.Schedule = CurrentJob.Schedule;
+                    existingJob.CrawlerAssembly = CurrentJob.CrawlerAssembly;
+                    existingJob.CrawlerType = CurrentJob.CrawlerType;
+                    existingJob.Parameter = CurrentJob.Parameter;
+                    existingJob.ScheduleDisplay = ConfigService.GetScheduleOptions()
+                        .FirstOrDefault(s => s.CronExpression == CurrentJob.Schedule)?.Display ?? $"Custom: {CurrentJob.Schedule}";
+                    existingJob.CrawlerTypeDisplay = CurrentJob.CrawlerType.Split('.').LastOrDefault() ?? CurrentJob.CrawlerType;
+                }
+            }
+            else
+            {
+                CurrentJob.Id = ScheduledJobs.Count > 0 ? ScheduledJobs.Max(j => j.Id) + 1 : 1;
+                CurrentJob.ScheduleDisplay = ScheduleOptions
+                    .FirstOrDefault(s => s.CronExpression == CurrentJob.Schedule)?.Display ?? $"Custom: {CurrentJob.Schedule}";
+                CurrentJob.CrawlerTypeDisplay = CurrentJob.CrawlerType.Split('.').LastOrDefault() ?? CurrentJob.CrawlerType;
+                ScheduledJobs.Add(CurrentJob);
+            }
+
+            await ConfigService.SaveScheduledJobsAsync(ScheduledJobs);
+            IsDialogVisible = false;
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            await JSRuntime.InvokeVoidAsync("alert", $"Error saving job: {ex.Message}");
+        }
+    }
+
+    private void CancelDialog()
+    {
+        IsDialogVisible = false;
+    }
+
+    private async Task RefreshJobs()
+    {
+        await LoadData();
+        StateHasChanged();
+    }
+}

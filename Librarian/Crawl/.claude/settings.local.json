@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mkdir:*)",
+      "Bash(dotnet build:*)",
+      "Bash(powershell:*)",
+      "Bash(Remove-Item \"C:\\Projects\\BlazorProjects\\Librarian\\Crawl\\Librarian.Scheduler\\Components\\Routes.razor\" -Force)",
+      "Bash(rm:*)",
+      "Bash(dotnet clean:*)",
+      "Bash(dotnet run:*)",
+      "Bash(dotnet new:*)"
+    ],
+    "deny": []
+  }
+}
