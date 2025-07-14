@@ -1,0 +1,6 @@
+I want to build a software built in C#. help me to write product requirements document that I will give to a software developer to implement. 
+Requirements:
+1. First program must be a Windows service, called Librarian Crawler. It should start automatically when Windows starts.
+2. Librarian Crawler must have a built-in scheduler. Scheduler should be able to instantiate instances of classes inherited ICrawler interface. ICrawler interface must have one function called Run which accepts an object variable. Make sure that only one instance of each class can be instantiated with the same object variable. The schedule, the class name and the object parameter must be configured in appsettings.json file.
+3. Second program called Librarian Crawler Scheduler is a Blazor application which can run on Windows and Mac. The application is responsible for updating appsettings.json file of Librarian Crawler. For example, if I want to configure Librarian Crawler to read files in C:\Temp folder, the Scheduler app should display a dropdown where users can select how often to run the crawler, e.g. every 10 min, the module called File Crawler and C:\Temp folder as an object parameter. Use Syncfusion components when building UI.
+4. Create a C# dll called File Crawler which implements ICrawler interface. The Windows service should run File Crawler if it is configured to do so.
