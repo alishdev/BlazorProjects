@@ -1,0 +1,92 @@
+<ContentView x:Class="Librarian.FileViewer.Components.FileTreeNode"
+             xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:Librarian.FileViewer.Components">
+    
+    <ContentView.Resources>
+        <local:IconConverter x:Key="IconConverter"/>
+        <local:ToggleIconConverter x:Key="ToggleIconConverter"/>
+        <local:ToggleVisibilityConverter x:Key="ToggleVisibilityConverter"/>
+        <local:ChildrenVisibilityConverter x:Key="ChildrenVisibilityConverter"/>
+    </ContentView.Resources>
+    
+    <StackLayout>
+        <!-- Tree Node Header -->
+        <Grid x:Name="HeaderGrid" 
+              BackgroundColor="Transparent"
+              Padding="4,8">
+            <Grid.GestureRecognizers>
+                <TapGestureRecognizer Tapped="HeaderGrid_Tapped"/>
+            </Grid.GestureRecognizers>
+            
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            
+            <!-- Icon -->
+            <Label x:Name="IconTextBlock" 
+                   Grid.Column="0"
+                   Margin="4,0,6,0"
+                   FontSize="16"
+                   TextColor="#666666"
+                   VerticalOptions="Center">
+                <Label.Text>
+                    <MultiBinding Converter="{StaticResource IconConverter}">
+                        <Binding Path="Item.IsFile"/>
+                        <Binding Path="IsExpanded"/>
+                    </MultiBinding>
+                </Label.Text>
+            </Label>
+            
+            <!-- Text -->
+            <Label x:Name="NameTextBlock" 
+                   Grid.Column="1"
+                   Text="{Binding Item.Name}"
+                   FontSize="14"
+                   VerticalOptions="Center">
+                <Label.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="NameTextBlock_Tapped"/>
+                </Label.GestureRecognizers>
+                <Label.Style>
+                    <Style TargetType="Label">
+                        <Style.Triggers>
+                            <DataTrigger TargetType="Label" Binding="{Binding Item.IsFile}" Value="True">
+                                <Setter Property="TextColor" Value="#0066cc"/>
+                            </DataTrigger>
+                            <DataTrigger TargetType="Label" Binding="{Binding Item.IsFile}" Value="False">
+                                <Setter Property="TextColor" Value="#666666"/>
+                                <Setter Property="FontAttributes" Value="Bold"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Label.Style>
+            </Label>
+            
+            <!-- Toggle Arrow -->
+            <Label x:Name="ToggleTextBlock" 
+                   Grid.Column="2"
+                   Margin="4,0,0,0"
+                   FontSize="12"
+                   TextColor="#999999"
+                   VerticalOptions="Center"
+                   IsVisible="{Binding Item.IsFile, Converter={StaticResource ToggleVisibilityConverter}}">
+                <Label.Text>
+                    <Binding Path="IsExpanded" Converter="{StaticResource ToggleIconConverter}"/>
+                </Label.Text>
+            </Label>
+        </Grid>
+        
+        <!-- Children -->
+        <CollectionView x:Name="ChildrenItemsControl" 
+                       IsVisible="{Binding IsExpanded, Converter={StaticResource ChildrenVisibilityConverter}}"
+                       Margin="20,0,0,0">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <local:FileTreeNode Item="{Binding}" OnFileSelected="{Binding Source={RelativeSource AncestorType={x:Type local:FileTreeNode}}, Path=OnFileSelected}"/>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </StackLayout>
+</ContentView> 
