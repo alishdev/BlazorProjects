@@ -69,6 +69,7 @@
 		<PackageReference Include="Syncfusion.Blazor.RichTextEditor" Version="30.1.39" />
 		<PackageReference Include="Syncfusion.Blazor.SplitButtons" Version="30.1.39" />
 		<PackageReference Include="Syncfusion.Blazor.Buttons" Version="30.1.39" />
+		<PackageReference Include="Syncfusion.Maui.PdfViewer" Version="30.1.39" />
 	</ItemGroup>
 
 	<ItemGroup>

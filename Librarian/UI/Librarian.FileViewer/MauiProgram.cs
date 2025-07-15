@@ -1,6 +1,8 @@
 ﻿using Microsoft.Extensions.Logging;
 using Syncfusion.Blazor;
+using Syncfusion.Maui.PdfViewer;
 using Librarian.FileViewer.Services;
+using Syncfusion.Maui.Core.Hosting;
 
 namespace Librarian.FileViewer;
 
@@ -16,7 +18,8 @@ public static class MauiProgram
 			{
 				fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
 				fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
-			});
+			})
+			.ConfigureSyncfusionCore();
 
 		// Register Syncfusion license
 		Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("REMOVED_SYNCFUSION_LICENSE_KEY=");

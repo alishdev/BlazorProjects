@@ -1,4 +1,5 @@
 @page "/"
+@using Syncfusion.Maui.PdfViewer
 @inject FileHierarchyService HierarchyService
 @inject FileContentService ContentService
 @inject IJSRuntime JSRuntime
@@ -67,9 +68,18 @@
                 else if (!string.IsNullOrEmpty(selectedFilePath))
                 {
                     <div class="file-content">
-                        @if (ContentService.GetFileType(selectedFilePath) == "text" || 
-                             ContentService.GetFileType(selectedFilePath) == "json" ||
-                             ContentService.GetFileType(selectedFilePath) == "markdown")
+                        @if (ContentService.GetFileType(selectedFilePath) == "pdf")
+                        {
+                            <div class="pdf-viewer-container">
+                                <SfPdfViewer DocumentPath="@GetFullFilePath(selectedFilePath)"
+                                             Height="600px"
+                                             Width="100%">
+                                </SfPdfViewer>
+                            </div>
+                        }
+                        else if (ContentService.GetFileType(selectedFilePath) == "text" || 
+                                 ContentService.GetFileType(selectedFilePath) == "json" ||
+                                 ContentService.GetFileType(selectedFilePath) == "markdown")
                         {
                             <pre><code>@fileContent</code></pre>
                         }
@@ -174,4 +184,203 @@
         // For now, return a placeholder since we can't directly access file system images in Blazor
         return $"data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTIxIDNINWMtMS4xIDAtMiAuOS0yIDJ2MTRjMCAxLjEuOSAyIDIgMmgxNmMxLjEgMCAyLS45IDItMlY1YzAtMS4xLS45LTItMi0yem0wIDE2SDVWNWgxNnYxNHptLTEwLTdoMnYyaC0yem0wIDRoMnYyaC0yem0wLThoMnYyaC0yem0tNCAwaDJ2Mkgxem0wIDRoMnYySDd6bTAgNGgydjJIN3ptOC04aDJ2MmgtMnptMCA0aDJ2MmgtMnptMCA0aDJ2MmgtMnoiIGZpbGw9IiM3NTc1NzUiLz4KPC9zdmc+";
     }
+
+    private string GetFullFilePath(string filePath)
+    {
+        var basePath = @"C:\Projects\BlazorProjects\Librarian\Crawl";
+        return Path.Combine(basePath, filePath);
+    }
 }
+
+<style>
+    .file-viewer-container {
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        background-color: #f5f5f5;
+    }
+
+    .file-viewer-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 16px 24px;
+        background-color: #fff;
+        border-bottom: 1px solid #e0e0e0;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .file-viewer-header h1 {
+        margin: 0;
+        color: #333;
+        font-size: 24px;
+        font-weight: 600;
+    }
+
+    .toolbar {
+        display: flex;
+        gap: 12px;
+    }
+
+    .file-viewer-content {
+        display: flex;
+        flex: 1;
+        overflow: hidden;
+    }
+
+    .file-hierarchy-panel {
+        width: 300px;
+        background-color: #fff;
+        border-right: 1px solid #e0e0e0;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .file-content-panel {
+        flex: 1;
+        background-color: #fff;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .panel-header {
+        padding: 16px 24px;
+        border-bottom: 1px solid #e0e0e0;
+        background-color: #f8f9fa;
+    }
+
+    .panel-header h3 {
+        margin: 0 0 8px 0;
+        color: #333;
+        font-size: 18px;
+        font-weight: 600;
+    }
+
+    .file-info {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 12px;
+        color: #666;
+    }
+
+    .file-path {
+        font-family: monospace;
+        background-color: #f0f0f0;
+        padding: 2px 6px;
+        border-radius: 3px;
+        max-width: 300px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .file-type {
+        background-color: #007bff;
+        color: white;
+        padding: 2px 8px;
+        border-radius: 12px;
+        font-size: 10px;
+        font-weight: 500;
+        text-transform: uppercase;
+    }
+
+    .panel-body {
+        flex: 1;
+        overflow: auto;
+        padding: 16px;
+    }
+
+    .loading-indicator {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 200px;
+        color: #666;
+    }
+
+    .no-data, .no-selection {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 200px;
+        color: #666;
+        text-align: center;
+    }
+
+    .file-content {
+        height: 100%;
+        overflow: auto;
+    }
+
+    .file-content pre {
+        background-color: #f8f9fa;
+        border: 1px solid #e9ecef;
+        border-radius: 4px;
+        padding: 16px;
+        margin: 0;
+        overflow: auto;
+        font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+        font-size: 13px;
+        line-height: 1.5;
+        color: #333;
+    }
+
+    .file-content code {
+        background: none;
+        padding: 0;
+        color: inherit;
+    }
+
+    .image-preview {
+        text-align: center;
+        padding: 16px;
+    }
+
+    .image-preview img {
+        max-width: 100%;
+        max-height: 400px;
+        border: 1px solid #e0e0e0;
+        border-radius: 4px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .image-info {
+        margin-top: 16px;
+        padding: 12px;
+        background-color: #f8f9fa;
+        border-radius: 4px;
+        border: 1px solid #e9ecef;
+    }
+
+    .image-info p {
+        margin: 0;
+        color: #6c757d;
+        font-family: monospace;
+        font-size: 12px;
+        line-height: 1.4;
+    }
+
+    .binary-file-info {
+        padding: 16px;
+        background-color: #f8f9fa;
+        border-radius: 4px;
+        border: 1px solid #e9ecef;
+    }
+
+    .binary-file-info p {
+        margin: 0;
+        color: #6c757d;
+        font-family: monospace;
+        font-size: 12px;
+        line-height: 1.4;
+    }
+
+    .pdf-viewer-container {
+        width: 100%;
+        height: 600px;
+        border: 1px solid #e0e0e0;
+        border-radius: 4px;
+        overflow: hidden;
+    }
+</style>
