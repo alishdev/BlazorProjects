@@ -4,8 +4,7 @@ public partial class App : Application
 {
 	public App()
 	{
-        Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("REMOVED_SYNCFUSION_LICENSE_KEY=");
-        InitializeComponent();
+		InitializeComponent();
 	}
 
 	protected override Window CreateWindow(IActivationState? activationState)
