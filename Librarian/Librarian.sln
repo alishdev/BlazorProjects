@@ -29,6 +29,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{02EA681E-C
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestSyncfusionBlazorCursor", "TestSyncfusionBlazorCursor\TestSyncfusionBlazorCursor.csproj", "{260E3C10-FAA3-4670-8F6B-B5BE20114300}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestSyncfusionBlazorGemini", "Test\TestSyncfusionBlazorGemini\TestSyncfusionBlazorGemini.csproj", "{9DA32E91-73D6-4396-B602-6EF7E92D3FE2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestSyncfusionBlazorCopilot", "Test\TestSyncfusionBlazorCopilot\TestSyncfusionBlazorCopilot.csproj", "{5EAEC041-9661-4577-B768-0827D51102D9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -63,6 +67,14 @@ Global
 		{260E3C10-FAA3-4670-8F6B-B5BE20114300}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{260E3C10-FAA3-4670-8F6B-B5BE20114300}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{260E3C10-FAA3-4670-8F6B-B5BE20114300}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9DA32E91-73D6-4396-B602-6EF7E92D3FE2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9DA32E91-73D6-4396-B602-6EF7E92D3FE2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9DA32E91-73D6-4396-B602-6EF7E92D3FE2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9DA32E91-73D6-4396-B602-6EF7E92D3FE2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5EAEC041-9661-4577-B768-0827D51102D9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5EAEC041-9661-4577-B768-0827D51102D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5EAEC041-9661-4577-B768-0827D51102D9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5EAEC041-9661-4577-B768-0827D51102D9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -75,5 +87,10 @@ Global
 		{F3585F64-0505-40D6-90E9-928F3E676813} = {2A42A175-5155-4A6C-ACFA-56F71E1FEDFE}
 		{1DA35011-E0DE-E640-49ED-B18DC03BEE8D} = {698B19F0-03CF-4706-B963-07B8B7242CD8}
 		{260E3C10-FAA3-4670-8F6B-B5BE20114300} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{9DA32E91-73D6-4396-B602-6EF7E92D3FE2} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{5EAEC041-9661-4577-B768-0827D51102D9} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {161FDB27-BC68-4210-9618-A55AAA47CA50}
 	EndGlobalSection
 EndGlobal
