@@ -431,6 +431,9 @@ namespace TestSyncfusionBlazorCursor.Controllers
             {
                 var path = args.Path ?? "/";
                 Console.WriteLine($"FileManager requested path: '{path}'");
+                
+                // The File Manager might send relative paths, so we need to handle this
+                // For now, let's assume it's always sending the full path from root
                 var result = GetFileSystemItems(path);
                 Console.WriteLine($"Returning {((dynamic)result).files.Count} items");
                 return Ok(result);
@@ -527,6 +530,17 @@ namespace TestSyncfusionBlazorCursor.Controllers
                 }
             }
 
+            // If direct path lookup failed, try to find the item in the entire structure
+            if (node == null && pathParts.Length > 0)
+            {
+                Console.WriteLine($"Direct path lookup failed, searching entire structure for: {pathParts[pathParts.Length - 1]}");
+                node = FindNodeInStructure(_fileSystemData, pathParts[pathParts.Length - 1]);
+                if (node != null)
+                {
+                    Console.WriteLine($"Found node in structure, type: {node.GetType().Name}");
+                }
+            }
+
             Console.WriteLine($"Final node type: {node?.GetType().Name}");
 
             if (node == null)
@@ -551,7 +565,9 @@ namespace TestSyncfusionBlazorCursor.Controllers
             // Convert JsonElement to appropriate type if needed
             if (node is JsonElement jsonNode)
             {
+                Console.WriteLine($"Converting JsonElement with ValueKind: {jsonNode.ValueKind}");
                 node = ConvertJsonElement(jsonNode);
+                Console.WriteLine($"Converted to type: {node?.GetType().Name}");
             }
 
             // If at root, show top-level folders
@@ -561,7 +577,7 @@ namespace TestSyncfusionBlazorCursor.Controllers
                 {
                     items.Add(new
                     {
-                        name = item.Key,
+                        name = item.Key ?? "",
                         size = 0,
                         isFile = false,
                         dateModified = DateTime.Now,
@@ -582,7 +598,7 @@ namespace TestSyncfusionBlazorCursor.Controllers
                         // Subfolder
                         items.Add(new
                         {
-                            name = item.Key,
+                            name = item.Key ?? "",
                             size = 0,
                             isFile = false,
                             dateModified = DateTime.Now,
@@ -596,7 +612,7 @@ namespace TestSyncfusionBlazorCursor.Controllers
                         // Folder containing files (clicking this will show files)
                         items.Add(new
                         {
-                            name = item.Key,
+                            name = item.Key ?? "",
                             size = 0,
                             isFile = false,
                             dateModified = DateTime.Now,
@@ -612,16 +628,26 @@ namespace TestSyncfusionBlazorCursor.Controllers
                 Console.WriteLine($"Processing files list with {files.Count} files");
                 foreach (var file in files)
                 {
-                    items.Add(new
+                    var fileName = file?.ToString() ?? "";
+                    Console.WriteLine($"Processing file: '{fileName}', type: {file?.GetType().Name}");
+                    if (!string.IsNullOrEmpty(fileName))
                     {
-                        name = file.ToString(),
-                        size = 1024, // Mock size
-                        isFile = true,
-                        dateModified = DateTime.Now,
-                        dateCreated = DateTime.Now,
-                        hasChild = false,
-                        type = "File"
-                    });
+                        items.Add(new
+                        {
+                            name = fileName,
+                            size = 1024, // Mock size
+                            isFile = true,
+                            dateModified = DateTime.Now,
+                            dateCreated = DateTime.Now,
+                            hasChild = false,
+                            type = "File"
+                        });
+                        Console.WriteLine($"Added file: {fileName}");
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Skipping null or empty file name");
+                    }
                 }
             }
 
@@ -640,6 +666,40 @@ namespace TestSyncfusionBlazorCursor.Controllers
                     type = "Folder"
                 }
             };
+        }
+
+        private object FindNodeInStructure(Dictionary<string, object> structure, string targetName)
+        {
+            foreach (var item in structure)
+            {
+                if (item.Key == targetName)
+                {
+                    return item.Value;
+                }
+                
+                if (item.Value is Dictionary<string, object> subDict)
+                {
+                    var result = FindNodeInStructure(subDict, targetName);
+                    if (result != null)
+                    {
+                        return result;
+                    }
+                }
+                else if (item.Value is JsonElement jsonElement && jsonElement.ValueKind == JsonValueKind.Object)
+                {
+                    var convertedDict = new Dictionary<string, object>();
+                    foreach (var property in jsonElement.EnumerateObject())
+                    {
+                        convertedDict[property.Name] = ConvertJsonElement(property.Value);
+                    }
+                    var result = FindNodeInStructure(convertedDict, targetName);
+                    if (result != null)
+                    {
+                        return result;
+                    }
+                }
+            }
+            return null;
         }
 
         private object ConvertJsonElement(JsonElement element)
