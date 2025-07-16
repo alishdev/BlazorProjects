@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.14.36301.6 d17.14
+VisualStudioVersion = 17.14.36301.6
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Crawl", "Crawl", "{AD072733-442D-4320-8746-0A27BCA1A537}"
 	ProjectSection(SolutionItems) = preProject
@@ -24,6 +24,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LibrarianAPI", "API\LibrarianAPI\LibrarianAPI.csproj", "{F3585F64-0505-40D6-90E9-928F3E676813}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Librarian.FileViewer", "UI\Librarian.FileViewer\Librarian.FileViewer.csproj", "{1DA35011-E0DE-E640-49ED-B18DC03BEE8D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestSyncfusionBlazorCursor", "TestSyncfusionBlazorCursor\TestSyncfusionBlazorCursor.csproj", "{260E3C10-FAA3-4670-8F6B-B5BE20114300}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -55,6 +59,10 @@ Global
 		{1DA35011-E0DE-E640-49ED-B18DC03BEE8D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1DA35011-E0DE-E640-49ED-B18DC03BEE8D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1DA35011-E0DE-E640-49ED-B18DC03BEE8D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{260E3C10-FAA3-4670-8F6B-B5BE20114300}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{260E3C10-FAA3-4670-8F6B-B5BE20114300}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{260E3C10-FAA3-4670-8F6B-B5BE20114300}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{260E3C10-FAA3-4670-8F6B-B5BE20114300}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -66,5 +74,6 @@ Global
 		{5BD0C7CB-A804-48F3-A24B-BD17D54F664E} = {698B19F0-03CF-4706-B963-07B8B7242CD8}
 		{F3585F64-0505-40D6-90E9-928F3E676813} = {2A42A175-5155-4A6C-ACFA-56F71E1FEDFE}
 		{1DA35011-E0DE-E640-49ED-B18DC03BEE8D} = {698B19F0-03CF-4706-B963-07B8B7242CD8}
+		{260E3C10-FAA3-4670-8F6B-B5BE20114300} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 	EndGlobalSection
 EndGlobal

@@ -1,4 +1,4 @@
-using Librarian.Core;
+﻿using Librarian.Core;
 
 namespace FileCrawler
 {

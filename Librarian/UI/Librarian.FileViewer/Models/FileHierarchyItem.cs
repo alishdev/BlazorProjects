@@ -1,4 +1,4 @@
-namespace Librarian.FileViewer.Models;
+﻿namespace Librarian.FileViewer.Models;
 
 public class FileHierarchyItem
 {
@@ -11,4 +11,5 @@ public class FileHierarchyItem
     public List<FileHierarchyItem> Children { get; set; } = new();
     public string Extension => IsFile ? System.IO.Path.GetExtension(Name) : string.Empty;
     public bool HasChildren => Children.Any();
+    public bool IsExpanded { get; set; }
 }

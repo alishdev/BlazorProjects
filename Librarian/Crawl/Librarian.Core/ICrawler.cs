@@ -1,4 +1,4 @@
-namespace Librarian.Core
+﻿namespace Librarian.Core
 {
     public interface ICrawler
     {
