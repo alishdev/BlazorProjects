@@ -9,6 +9,7 @@
 	    <PackageReference Include="Syncfusion.Blazor.Layouts" Version="30.1.40" />
     <PackageReference Include="Syncfusion.Blazor.Navigations" Version="30.1.40" />
     <PackageReference Include="Syncfusion.Blazor.Themes" Version="30.1.40" />
+    <PackageReference Include="Syncfusion.Blazor.FileManager" Version="30.1.40" />
 </ItemGroup>
 
   
