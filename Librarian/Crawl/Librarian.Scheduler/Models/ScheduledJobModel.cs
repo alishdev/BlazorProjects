@@ -1,4 +1,4 @@
-namespace Librarian.Scheduler.Models
+﻿namespace Librarian.Scheduler.Models
 {
     public class ScheduledJobModel
     {

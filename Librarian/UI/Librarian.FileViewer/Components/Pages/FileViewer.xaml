@@ -2,7 +2,7 @@
              xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:Librarian.FileViewer.Components.Pages"
-             xmlns:components="clr-namespace:Librarian.FileViewer.Components"
+             xmlns:syncfusion="clr-namespace:Syncfusion.Maui.TreeView;assembly=Syncfusion.Maui.TreeView"
              Title="Librarian File Viewer">
 
     <ContentPage.Resources>
@@ -11,6 +11,50 @@
         <local:ToggleVisibilityConverter x:Key="ToggleVisibilityConverter"/>
         <local:ChildrenVisibilityConverter x:Key="ChildrenVisibilityConverter"/>
         <local:FileTypeDisplayConverter x:Key="FileTypeDisplayConverter"/>
+        
+        <!-- TreeView Item Template -->
+        <DataTemplate x:Key="TreeViewItemTemplate">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                
+                <!-- Icon -->
+                <Label Grid.Column="0" 
+                       Margin="4,0,6,0"
+                       FontSize="16"
+                       TextColor="#666666"
+                       VerticalOptions="Center">
+                    <Label.Text>
+                        <MultiBinding Converter="{StaticResource IconConverter}">
+                            <Binding Path="IsFile"/>
+                            <Binding Path="IsExpanded"/>
+                        </MultiBinding>
+                    </Label.Text>
+                </Label>
+                
+                <!-- Text -->
+                <Label Grid.Column="1" 
+                       Text="{Binding Name}"
+                       FontSize="14"
+                       VerticalOptions="Center">
+                    <Label.Style>
+                        <Style TargetType="Label">
+                            <Style.Triggers>
+                                <DataTrigger TargetType="Label" Binding="{Binding IsFile}" Value="True">
+                                    <Setter Property="TextColor" Value="#0066cc"/>
+                                </DataTrigger>
+                                <DataTrigger TargetType="Label" Binding="{Binding IsFile}" Value="False">
+                                    <Setter Property="TextColor" Value="#666666"/>
+                                    <Setter Property="FontAttributes" Value="Bold"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Label.Style>
+                </Label>
+            </Grid>
+        </DataTemplate>
     </ContentPage.Resources>
 
     <Grid>
@@ -66,15 +110,25 @@
                 </Border>
 
                 <!-- Tree View -->
-                <ScrollView Grid.Row="1">
-                    <CollectionView x:Name="TreeItemsControl">
+                <Grid Grid.Row="1">
+                    <CollectionView x:Name="TreeItemsControl"
+                                   BackgroundColor="LightBlue"
+                                   SelectionChanged="TreeView_NodeTapped">
                         <CollectionView.ItemTemplate>
                             <DataTemplate>
-                                <components:FileTreeNode Item="{Binding}" OnFileSelected="{Binding Source={RelativeSource AncestorType={x:Type local:FileViewer}}, Path=OnFileSelected}"/>
+                                <Label Text="{Binding Name}" 
+                                       Padding="10"
+                                       BackgroundColor="White"
+                                       Margin="5"/>
                             </DataTemplate>
                         </CollectionView.ItemTemplate>
                     </CollectionView>
-                </ScrollView>
+                    <Label Text="CollectionView should appear here" 
+                           HorizontalOptions="Center" 
+                           VerticalOptions="Center"
+                           TextColor="Red"
+                           IsVisible="False"/>
+                </Grid>
             </Grid>
 
             <!-- File Content Panel -->

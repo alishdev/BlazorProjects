@@ -1,4 +1,4 @@
-namespace LibrarianAPI.Models;
+﻿namespace LibrarianAPI.Models;
 
 public class ChatRequest
 {

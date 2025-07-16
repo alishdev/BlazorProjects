@@ -1,4 +1,4 @@
-namespace Librarian.FileViewer.Services;
+﻿namespace Librarian.FileViewer.Services;
 
 public class FileContentService
 {

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
@@ -10,6 +10,7 @@ using Microsoft.Maui.Dispatching;
 using Microsoft.Maui.Graphics;
 using Librarian.FileViewer.Models;
 using Librarian.FileViewer.Services;
+using Syncfusion.Maui.TreeView;
 
 namespace Librarian.FileViewer.Components.Pages
 {
@@ -20,7 +21,9 @@ namespace Librarian.FileViewer.Components.Pages
         private List<FileHierarchyItem> _hierarchyItems;
         private string _selectedFilePath = string.Empty;
 
-        public Action<FileHierarchyItem> OnFileSelected => FileTreeNode_OnFileSelected;
+        public List<FileHierarchyItem> HierarchyItems => _hierarchyItems ?? new List<FileHierarchyItem>();
+
+
 
         public FileViewer()
         {
@@ -36,6 +39,13 @@ namespace Librarian.FileViewer.Components.Pages
             {
                 _hierarchyItems = await _hierarchyService.GetFileHierarchyAsync();
                 TreeItemsControl.ItemsSource = _hierarchyItems;
+                
+                // Debug info
+                System.Diagnostics.Debug.WriteLine($"Loaded {_hierarchyItems?.Count ?? 0} items");
+                if (_hierarchyItems != null && _hierarchyItems.Any())
+                {
+                    System.Diagnostics.Debug.WriteLine($"First item: {_hierarchyItems.First().Name}");
+                }
             }
             catch (Exception ex)
             {
@@ -43,13 +53,22 @@ namespace Librarian.FileViewer.Components.Pages
             }
         }
 
-        private async void FileTreeNode_OnFileSelected(FileHierarchyItem item)
+        private async void TreeView_NodeTapped(object sender, SelectionChangedEventArgs e)
         {
-            if (!item.IsFile) return;
+            // Handle node tapping
+            if (e.CurrentSelection.FirstOrDefault() is FileHierarchyItem item)
+            {
+                if (!item.IsFile) return;
 
-            _selectedFilePath = item.Path;
-            UpdateFileInfo(item);
-            await LoadFileContentAsync(item);
+                _selectedFilePath = item.Path;
+                UpdateFileInfo(item);
+                await LoadFileContentAsync(item);
+            }
+        }
+
+        private void TreeView_NodeExpanded(object sender, EventArgs e)
+        {
+            // Handle node expansion if needed
         }
 
         private void UpdateFileInfo(FileHierarchyItem item)

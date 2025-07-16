@@ -1,4 +1,4 @@
-using Librarian.Core;
+﻿using Librarian.Core;
 using Librarian.Scheduler.Models;
 using System.Reflection;
 using System.Text.Json;

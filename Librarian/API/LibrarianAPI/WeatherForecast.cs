@@ -1,4 +1,4 @@
-namespace LibrarianAPI;
+﻿namespace LibrarianAPI;
 
 public class WeatherForecast
 {
