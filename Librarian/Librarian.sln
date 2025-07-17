@@ -33,6 +33,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestSyncfusionBlazorGemini"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestSyncfusionBlazorCopilot", "Test\TestSyncfusionBlazorCopilot\TestSyncfusionBlazorCopilot.csproj", "{5EAEC041-9661-4577-B768-0827D51102D9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SyncfusionBlazorManual", "Test\SyncfusionBlazorManual\SyncfusionBlazorManual.csproj", "{48849195-25FA-451D-BEA6-1A1EB287C4DC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -75,6 +77,10 @@ Global
 		{5EAEC041-9661-4577-B768-0827D51102D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5EAEC041-9661-4577-B768-0827D51102D9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5EAEC041-9661-4577-B768-0827D51102D9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{48849195-25FA-451D-BEA6-1A1EB287C4DC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{48849195-25FA-451D-BEA6-1A1EB287C4DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{48849195-25FA-451D-BEA6-1A1EB287C4DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{48849195-25FA-451D-BEA6-1A1EB287C4DC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -89,6 +95,7 @@ Global
 		{260E3C10-FAA3-4670-8F6B-B5BE20114300} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 		{9DA32E91-73D6-4396-B602-6EF7E92D3FE2} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 		{5EAEC041-9661-4577-B768-0827D51102D9} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{48849195-25FA-451D-BEA6-1A1EB287C4DC} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {161FDB27-BC68-4210-9618-A55AAA47CA50}
