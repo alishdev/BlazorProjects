@@ -20,7 +20,184 @@ namespace SyncfusionBlazorManual.FileManagerService
             this.GetData();
         }
 
-        public FileManagerResponse GetFiles()
+        public FileManagerResponse GetFiles(string path)
+        {
+            return GetHierarchicalFiles(path);
+        }
+
+        public FileManagerResponse GetHierarchicalFiles(string path)
+        {
+            // Create a sample hierarchical file structure
+            FileManagerResponse response = new FileManagerResponse();
+            
+            // Create a list to hold files and folders
+            List<FileManagerDirectoryContent> files = new List<FileManagerDirectoryContent>();
+            
+            // Root folder - Documents
+            FileManagerDirectoryContent documentsFolder = new FileManagerDirectoryContent
+            {
+                Name = "Documents",
+                IsFile = false,
+                HasChild = true,
+                FilterPath = "/",
+                Type = "",
+                Size = 0,
+                DateModified = DateTime.Now,
+                DateCreated = DateTime.Now
+            };
+            files.Add(documentsFolder);
+            
+            // Root folder - Images
+            FileManagerDirectoryContent imagesFolder = new FileManagerDirectoryContent
+            {
+                Name = "Images",
+                IsFile = false,
+                HasChild = true,
+                FilterPath = "/",
+                Type = "",
+                Size = 0,
+                DateModified = DateTime.Now,
+                DateCreated = DateTime.Now
+            };
+            files.Add(imagesFolder);
+            
+            // File in root
+            FileManagerDirectoryContent rootFile = new FileManagerDirectoryContent
+            {
+                Name = "README.txt",
+                IsFile = true,
+                HasChild = false,
+                FilterPath = "/",
+                Type = ".txt",
+                Size = 2048,
+                DateModified = DateTime.Now,
+                DateCreated = DateTime.Now
+            };
+            files.Add(rootFile);
+            
+            // Subfolder in Documents
+            FileManagerDirectoryContent reportsFolder = new FileManagerDirectoryContent
+            {
+                Name = "Reports",
+                IsFile = false,
+                HasChild = true,
+                FilterPath = "/Documents/",
+                Type = "",
+                Size = 0,
+                DateModified = DateTime.Now,
+                DateCreated = DateTime.Now
+            };
+            files.Add(reportsFolder);
+            
+            // File in Documents folder
+            FileManagerDirectoryContent docFile = new FileManagerDirectoryContent
+            {
+                Name = "Project_Plan.docx",
+                IsFile = true,
+                HasChild = false,
+                FilterPath = "/Documents/",
+                Type = ".docx",
+                Size = 35840,
+                DateModified = DateTime.Now,
+                DateCreated = DateTime.Now
+            };
+            files.Add(docFile);
+            
+            // File in Reports subfolder
+            FileManagerDirectoryContent reportFile = new FileManagerDirectoryContent
+            {
+                Name = "Annual_Report.pdf",
+                IsFile = true,
+                HasChild = false,
+                FilterPath = "/Documents/Reports/",
+                Type = ".pdf",
+                Size = 1024000,
+                DateModified = DateTime.Now,
+                DateCreated = DateTime.Now
+            };
+            files.Add(reportFile);
+            
+            // Files in Images folder
+            FileManagerDirectoryContent imageFile1 = new FileManagerDirectoryContent
+            {
+                Name = "Logo.png",
+                IsFile = true,
+                HasChild = false,
+                FilterPath = "/Images/",
+                Type = ".png",
+                Size = 51200,
+                DateModified = DateTime.Now,
+                DateCreated = DateTime.Now
+            };
+            files.Add(imageFile1);
+            
+            FileManagerDirectoryContent imageFile2 = new FileManagerDirectoryContent
+            {
+                Name = "Banner.jpg",
+                IsFile = true,
+                HasChild = false,
+                FilterPath = "/Images/",
+                Type = ".jpg",
+                Size = 204800,
+                DateModified = DateTime.Now,
+                DateCreated = DateTime.Now
+            };
+            files.Add(imageFile2);
+            
+            // Assign files to response
+            response.Files = files;
+            
+            // Set current working directory
+            response.CWD = new FileManagerDirectoryContent
+            {
+                Name = "Files",
+                Path = "/",
+                Size = 0,
+                IsFile = false,
+                HasChild = true,
+                Type = "",
+                FilterPath = "/"
+            };
+
+            if (path == "/")
+            {
+                Console.WriteLine("+++++++++++");
+                Console.WriteLine($"path = {path}");
+                foreach (var aa in response.Files)
+                {
+                    Console.WriteLine($"Name = {aa.Name}, Parent = {aa.ParentId}, FilterPath = {aa.FilterPath}");
+                }
+                
+                response.Files = response.Files.Where(a => a.FilterPath == "/");
+                return response;
+            }
+            else
+            {
+                Console.WriteLine("+++++++++++");
+                Console.WriteLine($"path = {path}");
+                
+                // now find current directory
+                foreach (var bb in response.Files)
+                {
+                    Console.WriteLine($". {bb.FilterPath + bb.Name + "/"}");
+                    if (bb.FilterPath + bb.Name + "/" == path)
+                        response.CWD = bb;
+                }
+                
+                var ff = response.Files.Where(a => a.FilterPath.StartsWith(path));
+                foreach (var aa in ff)
+                {
+                    Console.WriteLine($"Name = {aa.Name}, Parent = {aa.ParentId}, FilterPath = {aa.FilterPath}");
+                }
+                response.Files = ff;
+                
+                //response.CWD = response.Files.FirstOrDefault(a => a.FilterPath + a.Name + "/" == path);
+                
+                return response;
+            }
+        }
+
+        public FileManagerResponse GetFiles2()
         {
             FileManagerResponse response = new FileManagerResponse();
             response.CWD = new FileManagerDirectoryContent()

@@ -44,7 +44,7 @@ namespace SyncfusionBlazorManual.Controllers
                     case "read":
                         // Path - Current path; ShowHiddenItems - Boolean value to show/hide hidden items.
                         //return this.operation.ToCamelCase(this.operation.GetFiles(null, args.ShowHiddenItems));
-                        return this.operation.ToCamelCase(service.GetFiles());
+                        return this.operation.ToCamelCase(service.GetFiles(args.Path));
                     case "delete":
                         // Path - Current path where the folder to be deleted; Names - Name of the files to be deleted
                         return this.operation.ToCamelCase(this.operation.Delete(args.Path, args.Names));
