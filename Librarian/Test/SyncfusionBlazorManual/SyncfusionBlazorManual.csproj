@@ -6,9 +6,11 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 <ItemGroup>
+	    <PackageReference Include="Syncfusion.Blazor.FileManager" Version="30.1.40" />
 	    <PackageReference Include="Syncfusion.Blazor.Layouts" Version="30.1.40" />
     <PackageReference Include="Syncfusion.Blazor.Navigations" Version="30.1.40" />
     <PackageReference Include="Syncfusion.Blazor.Themes" Version="30.1.40" />
+    <PackageReference Include="Syncfusion.EJ2.AspNet.Core" Version="30.1.40" />
 </ItemGroup>
 
   
