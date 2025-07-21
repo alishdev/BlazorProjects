@@ -8,8 +8,13 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 builder.Services.AddSyncfusionBlazor();
+builder.Services.AddControllers();
+
 
 var app = builder.Build();
+app.UseRouting();
+app.MapControllers();
+
 //Register Syncfusion license https://help.syncfusion.com/common/essential-studio/licensing/how-to-generate
 Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("REMOVED_SYNCFUSION_LICENSE_KEY=");
 
