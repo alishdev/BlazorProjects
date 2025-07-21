@@ -1,0 +1,43 @@
+﻿@page "/speechtotext-features"
+@rendermode InteractiveServer
+@using Syncfusion.Blazor.Inputs
+<PageTitle>Speech To Text</PageTitle>
+<h2>Speech To Text</h2>
+<br/>
+<div id = "ControlRegion">
+  <div class="speechToText-container">
+   <SfSpeechToText ID="speechToText" Language="en-US" AllowInterimResults="true" ShowTooltip="true" ButtonSettings="@buttonSettings" @bind-Transcript="@transcript"></SfSpeechToText>
+   <SfTextArea ID=textareaInst @bind-Value="@transcript" Width="600px" RowCount="5" Placeholder="Spoken words will be displayed here.." CssClass="e-outline" ShowClearButton="true" ResizeMode="Resize.None"></SfTextArea>
+  </div>
+</div>
+<br/>
+<div>
+  <h3>Selected Features:</h3>
+    <ul class="ulstyle">
+      <li class="list"> Language - English,US</li>
+      <li class="list"> Interim Results</li>
+      <li class="list"> Show Tooltip</li>
+      <li class="list"> Button Settings</li>
+      <li class="list"> Theme - Tailwind</li>
+    </ul>
+</div>
+<br/>
+<style>
+    .speechToText-container {
+        width: 800px;
+        gap: 10px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin: 0 auto;
+		padding: 10px;
+    }
+</style>
+@code {
+    private string transcript = string.Empty;
+    private SpeechToTextButtonSettings buttonSettings = new SpeechToTextButtonSettings
+        {
+            Text = "Start Listening",
+            StopStateText = "Stop Listening"
+        };
+}

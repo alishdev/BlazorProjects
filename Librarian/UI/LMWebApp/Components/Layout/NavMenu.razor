@@ -1,0 +1,144 @@
+﻿@implements IDisposable
+
+@inject NavigationManager NavigationManager
+
+<div class="top-row ps-3 navbar navbar-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="">LMWebApp</a>
+    </div>
+</div>
+
+<input type="checkbox" title="Navigation menu" class="navbar-toggler" />
+
+<div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
+    <nav class="flex-column">
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
+            </NavLink>
+        </div>
+
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="counter">
+                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Counter
+            </NavLink>
+        </div>
+
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="weather">
+                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Weather
+            </NavLink>
+        </div>
+		
+			<div class="nav-item px-3">
+ 	<NavLink class="nav-link" href="datagrid-features">
+ 	<span class="syncfusion-blazor-icons syncfusion-blazor-icon-datagrid" aria-hidden="true"></span><span class="displayText">DataGrid</span>
+ 	</NavLink>
+ 	</div>
+	<div class="nav-item px-3">
+ 	<NavLink class="nav-link" href="pdfviewer2-features">
+ 	<span class="syncfusion-blazor-icons syncfusion-blazor-icon-pdfviewer" aria-hidden="true"></span><span class="displayText">PDF Viewer 2</span>
+ 	</NavLink>
+ 	</div>
+	<div class="nav-item px-3">
+ 	<NavLink class="nav-link" href="speeddial-features">
+ 	<span class="syncfusion-blazor-icons syncfusion-blazor-icon-speeddial" aria-hidden="true"></span><span class="displayText">Speed Dial</span>
+ 	</NavLink>
+ 	</div>
+	<div class="nav-item px-3">
+ 	<NavLink class="nav-link" href="dialog-features">
+ 	<span class="syncfusion-blazor-icons syncfusion-blazor-icon-dialog" aria-hidden="true"></span><span class="displayText">Dialog</span>
+ 	</NavLink>
+ 	</div>
+	<div class="nav-item px-3">
+ 	<NavLink class="nav-link" href="fileupload-features">
+ 	<span class="syncfusion-blazor-icons syncfusion-blazor-icon-fileupload" aria-hidden="true"></span><span class="displayText">File Upload</span>
+ 	</NavLink>
+ 	</div>
+	<div class="nav-item px-3">
+ 	<NavLink class="nav-link" href="appbar-features">
+ 	<span class="syncfusion-blazor-icons syncfusion-blazor-icon-appbar" aria-hidden="true"></span><span class="displayText">AppBar</span>
+ 	</NavLink>
+ 	</div>
+	<div class="nav-item px-3">
+ 	<NavLink class="nav-link" href="sidebar-features">
+ 	<span class="syncfusion-blazor-icons syncfusion-blazor-icon-sidebar" aria-hidden="true"></span><span class="displayText">Sidebar</span>
+ 	</NavLink>
+ 	</div>
+	<div class="nav-item px-3">
+ 	<NavLink class="nav-link" href="message-features">
+ 	<span class="syncfusion-blazor-icons syncfusion-blazor-icon-message" aria-hidden="true"></span><span class="displayText">Message</span>
+ 	</NavLink>
+ 	</div>
+	<div class="nav-item px-3">
+ 	<NavLink class="nav-link" href="chatui-features">
+ 	<span class="syncfusion-blazor-icons syncfusion-blazor-icon-chatui" aria-hidden="true"></span><span class="displayText">Chat UI</span>
+ 	</NavLink>
+ 	</div>
+	<div class="nav-item px-3">
+ 	<NavLink class="nav-link" href="speechtotext-features">
+ 	<span class="syncfusion-blazor-icons syncfusion-blazor-icon-speechtotext" aria-hidden="true"></span><span class="displayText">Speech To Text</span>
+ 	</NavLink>
+ 	</div>
+
+
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="auth">
+                <span class="bi bi-lock-nav-menu" aria-hidden="true"></span> Auth Required
+            </NavLink>
+        </div>
+
+        <AuthorizeView>
+            <Authorized>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="Account/Manage">
+                        <span class="bi bi-person-fill-nav-menu" aria-hidden="true"></span> @context.User.Identity?.Name
+                    </NavLink>
+                </div>
+                <div class="nav-item px-3">
+                    <form action="Account/Logout" method="post">
+                        <AntiforgeryToken />
+                        <input type="hidden" name="ReturnUrl" value="@currentUrl" />
+                        <button type="submit" class="nav-link">
+                            <span class="bi bi-arrow-bar-left-nav-menu" aria-hidden="true"></span> Logout
+                        </button>
+                    </form>
+                </div>
+            </Authorized>
+            <NotAuthorized>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="Account/Register">
+                        <span class="bi bi-person-nav-menu" aria-hidden="true"></span> Register
+                    </NavLink>
+                </div>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="Account/Login">
+                        <span class="bi bi-person-badge-nav-menu" aria-hidden="true"></span> Login
+                    </NavLink>
+                </div>
+            </NotAuthorized>
+        </AuthorizeView>
+    </nav>
+</div>
+
+@code {
+    private string? currentUrl;
+
+    protected override void OnInitialized()
+    {
+        currentUrl = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
+        NavigationManager.LocationChanged += OnLocationChanged;
+    }
+
+    private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        currentUrl = NavigationManager.ToBaseRelativePath(e.Location);
+        StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        NavigationManager.LocationChanged -= OnLocationChanged;
+    }
+}
+
