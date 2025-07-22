@@ -1,0 +1,91 @@
+﻿@page "/chatui-features"
+@rendermode InteractiveServer
+@using Syncfusion.Blazor.InteractiveChat
+<PageTitle>Chat UI</PageTitle>
+<h2>Chat UI</h2>
+<br />
+<div id = "ControlRegion">
+   <SfChatUI ShowTimeBreak="true" User="CurrentUser" Messages="messages" ShowHeader="true" ShowFooter="true" ShowTimestamp="true" AutoScrollToBottom="true" TimestampFormat="MM/dd hh:mm tt" >
+   </SfChatUI>
+</div>
+@code {
+    private UserModel CurrentUser;
+    private UserModel User1;
+    private List<ChatMessage> messages = new List<ChatMessage>();
+    protected override void OnInitialized()
+    {
+        CurrentUser = new UserModel()
+        {
+            User = "Alice",
+            ID = "admin",
+        };
+        User1 = new UserModel()
+        {
+                User = "Michale Suyama",
+                ID = "user1",
+        };
+        messages = new List<ChatMessage>()
+        {
+            new ChatMessage()
+            {
+                ID="1",
+                Text = "Hey Michale, Charlie! Seen the latest posts in the Design Community? Amazing projects!",
+                Timestamp = new DateTime(2024,10,25,7,30,0),
+                Author = new UserModel()
+                {
+                    ID = "admin",
+                    User = "Alice"
+                }
+            },
+            new ChatMessage()
+            {
+                 ID="2",
+                Text = "Hi Alice! Yes, Dana’s new UI design is incredible.",
+                Timestamp = new DateTime(2024,10,25,8,0,0),
+                Author = new UserModel()
+                {
+                    ID = "user1",
+                    User = "Michale Suyama",
+                    AvatarBgColor = "#bacbe4"
+                }
+            },
+            new ChatMessage()
+            {
+                 ID="3",
+                Text = "Hey! I loved Dana’s use of color. Frank’s typography guide was great too.",
+                Timestamp = new DateTime(2024,10,25,11,0,0),
+                Author = new UserModel()
+                {
+                    ID = "user2",
+                    User = "Charlie",
+                    AvatarBgColor = "#e6cdde",
+                }
+            },
+            new ChatMessage()
+            {
+                 ID="4",
+                Text = "Absolutely! Any new community events planned?",
+                Timestamp = new DateTime(2024,10,26,11,0,0),
+                Author = new UserModel()
+                {
+                    ID = "admin",
+                    User = "Alice"
+                }
+            }
+        };
+    }
+}
+<br/>
+<div>
+  <h3>Selected Features:</h3>
+    <ul class="ulstyle">
+      <li class="list"> Show Time Stamp</li>
+      <li class="list"> Show Time Break</li>
+      <li class="list"> Show Header</li>
+      <li class="list"> Show Footer</li>
+      <li class="list"> Auto Scroll To Bottom</li>
+      <li class="list"> Time Stamp Format - MM/dd hh:mm tt</li>
+      <li class="list"> Theme - Bootstrap5.3</li>
+    </ul>
+</div>
+<br/>
