@@ -1,0 +1,64 @@
+@using Syncfusion.Blazor.Navigations
+@using Syncfusion.Blazor.Buttons
+
+<div id="wrapper">
+    <SfSidebar Width="220px" DockSize="72px" EnableDock="true" Position="@Position" Target="#wrapper" @ref="sidebar" @bind-IsOpen="SidebarToggle" HtmlAttributes="@htmlAttribute">
+        <ChildContent>
+            <div class="dock">
+                <ul>
+                    <!--<li class="sidebar-item" id="toggle" @onclick="@Toggle">
+                        <span class="e-icons expand"></span>
+                        <span class="e-text" title="menu">Menu</span>
+                    </li>-->
+                    <li class="sidebar-item">
+                        <span class="e-icons home"></span>
+                        <span class="e-text" title="home">Home</span>
+                    </li>
+                    <li class="sidebar-item">
+                        <span class="e-icons profile"></span>
+                        <span class="e-text" title="profile">Profile</span>
+                    </li>
+                    <li class="sidebar-item">
+                        <span class="e-icons info"></span>
+                        <span class="e-text" title="info">Info</span>
+                    </li>
+                    <li class="sidebar-item">
+                        <span class="e-icons settings"></span>
+                        <span class="e-text" title="settings">Settings</span>
+                    </li>
+                </ul>
+            </div>
+        </ChildContent>
+    </SfSidebar>
+</div>
+
+@code {
+    public SfSidebar? sidebar;
+    public string Leftbtn = "Left";
+    private SidebarPosition Position { get; set; }
+    public bool SidebarToggle = false;
+    
+    public void Toggle()
+    {
+        Console.WriteLine("Sidebar Toggle called, current state: " + SidebarToggle);
+        SidebarToggle = !SidebarToggle;
+        Console.WriteLine("Sidebar Toggle new state: " + SidebarToggle);
+        StateHasChanged();
+    }
+    
+    public void PositionChange(Syncfusion.Blazor.Buttons.ChangeArgs<string> args)
+    {
+        if (args.Value == "Left")
+        {
+            this.Position = SidebarPosition.Left;
+        }
+        else
+        {
+            this.Position = SidebarPosition.Right;
+        }
+    }
+    Dictionary<string, object> htmlAttribute = new Dictionary<string, object>()
+    {
+        {"class", "dockSidebar" }
+    };
+} 
