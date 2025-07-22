@@ -6,13 +6,13 @@
 <PageTitle>Todo - LMWebApp</PageTitle>
 
 <h2>Todo</h2>
-<div id = "ControlRegion">
-<SfGrid  ID="Grid" DataSource="@Orders"  @ref="Grid" AllowPaging="true" AllowFiltering="true" AllowReordering="true"  AllowGrouping="true" AllowExcelExport="true" AllowSelection="true"
-              AllowSorting="true" Toolbar="@(new List<string>() { "Add", "Edit", "Delete", "Cancel", "Update", "CsvExport","Search"})" Height="315" Width="900">        
+<div class="grid-container">
+    <SfGrid ID="Grid" DataSource="@Orders" @ref="Grid" AllowPaging="true" AllowFiltering="true" AllowReordering="true" AllowGrouping="true" AllowExcelExport="true" AllowSelection="true"
+            AllowSorting="true" Toolbar="@(new List<string>() { "Add", "Edit", "Delete", "Cancel", "Update", "CsvExport","Search"})" Height="100%" Width="100%">        
         <GridEditSettings AllowAdding="true" AllowEditing="true" AllowDeleting="true" Mode="Syncfusion.Blazor.Grids.EditMode.Normal"></GridEditSettings>
         <GridFilterSettings Type="Syncfusion.Blazor.Grids.FilterType.FilterBar"></GridFilterSettings>
-    <GridPageSettings PageSizes="true"></GridPageSettings>
-	<GridSelectionSettings Type="Syncfusion.Blazor.Grids.SelectionType.Multiple"></GridSelectionSettings>
+        <GridPageSettings PageSizes="true"></GridPageSettings>
+        <GridSelectionSettings Type="Syncfusion.Blazor.Grids.SelectionType.Multiple"></GridSelectionSettings>
         <GridEvents OnToolbarClick="ToolbarClick" TValue="Order"></GridEvents>
         <GridColumns>
             <GridColumn Type='Syncfusion.Blazor.Grids.ColumnType.CheckBox' Width="50"></GridColumn>
@@ -24,6 +24,15 @@
         </GridColumns>
     </SfGrid>
 </div>
+
+<style>
+    .grid-container {
+        width: 100%;
+        height: calc(100vh - 200px); /* Adjust for header, padding, and margins */
+        margin: 0;
+        padding: 0;
+    }
+</style>
 
 @code {
     public List<Order>? Orders { get; set; }
