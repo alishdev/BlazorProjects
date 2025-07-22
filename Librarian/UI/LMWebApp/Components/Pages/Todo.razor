@@ -1,28 +1,45 @@
 @page "/Todo"
 @page "/"
 @rendermode InteractiveServer
+@using Syncfusion.Blazor
 @using Syncfusion.Blazor.Grids
+@using Syncfusion.Blazor.Popups
+@using Syncfusion.Blazor.Buttons
 
 <PageTitle>Todo - LMWebApp</PageTitle>
 
 <h2>Todo</h2>
 <div class="grid-container">
-    <SfGrid ID="Grid" DataSource="@Orders" @ref="Grid" AllowPaging="true" AllowFiltering="true" AllowReordering="true" AllowGrouping="true" AllowExcelExport="true" AllowSelection="true"
-            AllowSorting="true" Toolbar="@(new List<string>() { "Add", "Edit", "Delete", "Cancel", "Update", "CsvExport","Search"})" Height="100%" Width="100%">        
-        <GridEditSettings AllowAdding="true" AllowEditing="true" AllowDeleting="true" Mode="Syncfusion.Blazor.Grids.EditMode.Normal"></GridEditSettings>
+    <SfGrid ID="Grid" DataSource="@Notes" @ref="Grid" AllowPaging="true" AllowFiltering="true" AllowReordering="true" AllowGrouping="false" AllowExcelExport="true" AllowSelection="true"
+            AllowSorting="true" Toolbar="@(new List<string>() { "Review", "CsvExport","Search"})" Height="100%" Width="100%">        
+        <GridEditSettings AllowAdding="false" AllowEditing="true" AllowDeleting="false" Mode="Syncfusion.Blazor.Grids.EditMode.Normal"></GridEditSettings>
         <GridFilterSettings Type="Syncfusion.Blazor.Grids.FilterType.FilterBar"></GridFilterSettings>
         <GridPageSettings PageSizes="true"></GridPageSettings>
-        <GridSelectionSettings Type="Syncfusion.Blazor.Grids.SelectionType.Multiple"></GridSelectionSettings>
-        <GridEvents OnToolbarClick="ToolbarClick" TValue="Order"></GridEvents>
+        <GridSelectionSettings Type="Syncfusion.Blazor.Grids.SelectionType.Single"></GridSelectionSettings>
+        <GridEvents OnToolbarClick="ToolbarClick" TValue="TodoNote"></GridEvents>
         <GridColumns>
-            <GridColumn Type='Syncfusion.Blazor.Grids.ColumnType.CheckBox' Width="50"></GridColumn>
-            <GridColumn Field=@nameof(Order.OrderID) HeaderText="Order ID" IsPrimaryKey="true" ValidationRules="@(new ValidationRules{ Required=true })" TextAlign="Syncfusion.Blazor.Grids.TextAlign.Right" Width="120"></GridColumn>
-            <GridColumn Field=@nameof(Order.CustomerID) HeaderText="Customer Name" ValidationRules="@(new ValidationRules{ Required=true })" Width="120"></GridColumn>
-            <GridColumn Field=@nameof(Order.OrderDate) HeaderText=" Order Date" EditType="EditType.DatePickerEdit" Format="d" TextAlign="Syncfusion.Blazor.Grids.TextAlign.Right" Width="130" Type="Syncfusion.Blazor.Grids.ColumnType.Date"></GridColumn>
-            <GridColumn Field=@nameof(Order.Freight) HeaderText="Freight" Format="C2" TextAlign="Syncfusion.Blazor.Grids.TextAlign.Right" EditType="EditType.NumericEdit" Width="120"></GridColumn>
-            <GridColumn Field=@nameof(Order.ShipCountry) HeaderText="Ship Country" EditType="EditType.DropDownEdit" Width="150"></GridColumn>
+            <GridColumn Field=@nameof(TodoNote.NoteID) HeaderText="ID" IsPrimaryKey="true" ValidationRules="@(new ValidationRules{ Required=true })" TextAlign="Syncfusion.Blazor.Grids.TextAlign.Right" Width="60"></GridColumn>
+            <GridColumn Field=@nameof(TodoNote.NoteDate) HeaderText="Date" EditType="EditType.DatePickerEdit" Format="d" TextAlign="Syncfusion.Blazor.Grids.TextAlign.Right" Width="90" Type="Syncfusion.Blazor.Grids.ColumnType.Date"></GridColumn>
+            <GridColumn Field=@nameof(TodoNote.Category) HeaderText="Category" ValidationRules="@(new ValidationRules{ Required=true })" Width="150"></GridColumn>
+            <GridColumn Field=@nameof(TodoNote.Text) HeaderText="Note" Format="C2" TextAlign="Syncfusion.Blazor.Grids.TextAlign.Left" EditType="EditType.NumericEdit"></GridColumn>
         </GridColumns>
     </SfGrid>
+    
+<!-- dialog hidden-->
+    <SfDialog @bind-Visible="isReviewVisible" Width="500px"  EnableResize="true" IsModal="true" ShowCloseIcon="true">
+        <DialogTemplates>
+            <Header> Review To Do </Header>
+            <Content> <p>@CurrentNote.Text</p> </Content>
+        </DialogTemplates>
+        <DialogButtons>
+            <DialogButton IsPrimary="true" OnClick="@OnOk">
+                Approve
+            </DialogButton>
+            <DialogButton IsPrimary="false" OnClick="@OnCancel">
+                Reject
+            </DialogButton>
+        </DialogButtons>
+    </SfDialog>
 </div>
 
 <style>
@@ -35,18 +52,39 @@
 </style>
 
 @code {
-    public List<Order>? Orders { get; set; }
-    SfGrid<Order>? Grid;
+    public List<TodoNote>? Notes { get; set; }
+    SfGrid<TodoNote>? Grid;
     protected override void OnInitialized()
     {
-        Orders = Enumerable.Range(1, 75).Select(x => new Order()
+        Notes = new List<TodoNote>();
+        Notes.Add(new TodoNote()
         {
-            OrderID = 1000 + x,
-            CustomerID = (new string[] { "ALFKI", "ANANTR", "ANTON", "BLONP", "BOLID" })[new Random().Next(5)],
-            Freight = 2.1 * x,
-            OrderDate = DateTime.Now.AddDays(-x),
-            ShipCountry = (new string[] { "USA", "UK", "CHINA", "RUSSIA", "INDIA" })[new Random().Next(5)]
-        }).ToList();
+            NoteID = 1,
+            Category = "Document",
+            NoteDate = DateTime.Now.AddDays(-1),
+            Text = $"'YMCA Hours' document has conflicts"
+        });
+        Notes.Add(new TodoNote()
+        {
+            NoteID = 2,
+            Category = "Document",
+            NoteDate = DateTime.Now.AddDays(-1),
+            Text = $"'YMCA Locations' document has conflicts"
+        });
+        Notes.Add(new TodoNote()
+        {
+            NoteID = 3,
+            Category = "Communcations",
+            NoteDate = DateTime.Now.AddDays(-1),
+            Text = $"Review response to member"
+        });
+        Notes.Add(new TodoNote()
+        {
+            NoteID = 4,
+            Category = "Users",
+            NoteDate = DateTime.Now.AddDays(-1),
+            Text = $"Update user information"
+        });
     }
     public void ToolbarClick(Syncfusion.Blazor.Navigations.ClickEventArgs args)
     {
@@ -54,13 +92,39 @@
         {
             this.Grid?.ExportToCsvAsync();
         }
+        else if (args.Item.Id == "Grid_Review")
+        {
+            if (Grid.SelectedRecords != null && Grid.SelectedRecords.Count > 0)
+            {
+                CurrentNote = Grid.SelectedRecords[0];
+                OnReview();
+            }
+        }
     }
-    public class Order
+    public class TodoNote
     {
-        public int? OrderID { get; set; }
-        public string? CustomerID { get; set; }
-        public DateTime? OrderDate { get; set; }
-        public double? Freight { get; set; }
-        public string? ShipCountry { get; set; }
+        public int? NoteID { get; set; }
+        public string? Text { get; set; }
+        public DateTime? NoteDate { get; set; }
+        public string? Category { get; set; }
+    }
+    
+    // dialog features
+    private bool isReviewVisible { get; set; } = false;
+    public TodoNote CurrentNote { get; set; }
+    
+    private void OnReview()
+    {
+        this.isReviewVisible = true;   
+    }
+    
+    private void OnOk()
+    {
+        this.isReviewVisible = false;   
+    }
+    
+    private void OnCancel()
+    {
+        this.isReviewVisible = false;   
     }
 }

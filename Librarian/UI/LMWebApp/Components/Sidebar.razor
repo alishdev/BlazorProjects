@@ -46,17 +46,6 @@
         StateHasChanged();
     }
     
-    public void PositionChange(Syncfusion.Blazor.Buttons.ChangeArgs<string> args)
-    {
-        if (args.Value == "Left")
-        {
-            this.Position = SidebarPosition.Left;
-        }
-        else
-        {
-            this.Position = SidebarPosition.Right;
-        }
-    }
     Dictionary<string, object> htmlAttribute = new Dictionary<string, object>()
     {
         {"class", "dockSidebar" }
