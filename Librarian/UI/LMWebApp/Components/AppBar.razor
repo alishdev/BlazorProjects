@@ -1,0 +1,43 @@
+@using Syncfusion.Blazor.Navigations
+@using Syncfusion.Blazor.Inputs
+@using Syncfusion.Blazor.Buttons
+
+<SfAppBar Mode="AppBarMode.Regular" ColorMode="AppBarColor.Dark" IsSticky="true">
+    <SfButton CssClass="e-inherit" IconCss="e-icons e-menu" @onclick="OnHamburgerClick"></SfButton>
+    <AppBarSpacer></AppBarSpacer>
+    <SfButton CssClass="e-inherit" Content="FREE TRIAL"></SfButton>
+</SfAppBar>
+
+@code {
+    [Parameter]
+    public EventCallback OnSidebarToggle { get; set; }
+
+    private async Task OnHamburgerClick()
+    {
+        Console.WriteLine("Hamburger button clicked!");
+        await OnSidebarToggle.InvokeAsync();
+    }
+}
+
+<style>
+    .appbar-section {
+        height: 220px;
+        width: 800px;
+        overflow-y: scroll;
+    }
+    #ControlRegion{
+            margin:0 auto;
+            width:800px;
+    }
+    .ulstyle {
+        margin: 0px;
+        padding-left: 20px;
+        display: inline-block;
+    }
+    .list {
+        float: left;
+        line-height: 20px;
+        margin: 10px;
+        min-width: 230px;
+    }
+</style> 
