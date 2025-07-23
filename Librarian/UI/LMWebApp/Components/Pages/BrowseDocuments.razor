@@ -1,4 +1,7 @@
 ﻿@page "/browse-documents"
+@using Syncfusion.EJ2.Notifications
+@using Syncfusion.Blazor.Popups
+@using Syncfusion.Blazor.SfPdfViewer
 
 @rendermode InteractiveServer
 @inject IJSRuntime JSRuntime
@@ -7,14 +10,6 @@
 
 <h2>Browse documents</h2>
 
-@if (hasError)
-{
-    <div class="alert alert-danger">
-        <h4>Error loading FileManager</h4>
-        <p>@errorMessage</p>
-    </div>
-}
-
 <div class="grid-container">
     <SfFileManager TValue="FileManagerDirectoryContent" Width="100%" Height="100%">
         <FileManagerAjaxSettings Url="/api/FileManager/FileOperations"
@@ -22,7 +17,30 @@
                                  DownloadUrl="/api/FileManager/Download"
                                  GetImageUrl="/api/FileManager/GetImage">
         </FileManagerAjaxSettings>
+        <FileManagerToolbarSettings ToolbarItems="@Items"> </FileManagerToolbarSettings>
+        <FileManagerEvents TValue="FileManagerDirectoryContent" 
+                           ToolbarCreated="ToolbarCreate" 
+                           ToolbarItemClicked="ToolbarClicked" 
+                           FileSelection="OnFileSelect">
+        </FileManagerEvents>
     </SfFileManager>
+    
+    <!-- dialog hidden-->
+    <SfDialog @bind-Visible="isFileViewVisible" Width="800px"  EnableResize="true" IsModal="true" ShowCloseIcon="true">
+        <DialogTemplates>
+            <Header> File to view: </Header>
+            <Content>
+                <p>@CurrentFileName</p>
+                <SfPdfViewer2 Width="100%" Height="100%" DocumentPath="@DocumentPath">
+                </SfPdfViewer2>
+            </Content>
+        </DialogTemplates>
+        <DialogButtons>
+            <DialogButton IsPrimary="true" OnClick="@OnOk">
+                Close
+            </DialogButton>
+        </DialogButtons>
+    </SfDialog>
 </div>
 
 <style>
@@ -35,23 +53,129 @@
 </style>
 
 @code {
-    private bool hasError = false;
-    private string errorMessage = "";
     
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    private List<ToolBarItemModel> Items = new List<ToolBarItemModel>()
     {
-        if (firstRender)
+        new ToolBarItemModel() { Name="NewFolder"},
+        new ToolBarItemModel() { Name = "Upload"},
+        new ToolBarItemModel() { Name = "Cut"},
+        new ToolBarItemModel() { Name = "Copy"},
+        new ToolBarItemModel() { Name = "Paste"},
+        new ToolBarItemModel() { Name = "Delete"},
+        new ToolBarItemModel() { Name = "Download"},
+        new ToolBarItemModel() { Name = "Rename"},
+        new ToolBarItemModel() { Name = "SortBy"},
+        new ToolBarItemModel() { Name = "Refresh"},
+        new ToolBarItemModel() { Name = "Selection"},
+        new ToolBarItemModel() { Name = "View"},
+        new ToolBarItemModel() { Name = "Details"}
+    };
+    
+    private List<ToolBarItemModel> FileSelectedItems = new List<ToolBarItemModel>()
+    {
+        new ToolBarItemModel() { Name = "Cut"},
+        new ToolBarItemModel() { Name = "Copy"},
+        new ToolBarItemModel() { Name = "Paste"},
+        new ToolBarItemModel() { Name = "Delete"},
+        new ToolBarItemModel() { Name = "Download"},
+        new ToolBarItemModel() { Name = "Rename"},
+        new ToolBarItemModel() { Name = "View"},
+        new ToolBarItemModel() {  Name = "Show", Text = "Show", TooltipText ="Show Contents", PrefixIcon="e-icons e-reading-view" }
+    };
+    
+    private List<ToolBarItemModel> FolderSelectedItems = new List<ToolBarItemModel>()
+    {
+        new ToolBarItemModel() { Name="NewFolder"},
+        new ToolBarItemModel() { Name = "Upload"},
+        new ToolBarItemModel() { Name = "Cut"},
+        new ToolBarItemModel() { Name = "Copy"},
+        new ToolBarItemModel() { Name = "Paste"},
+        new ToolBarItemModel() { Name = "Delete"},
+        new ToolBarItemModel() { Name = "Download"},
+        new ToolBarItemModel() { Name = "Rename"},
+        new ToolBarItemModel() { Name = "SortBy"},
+        new ToolBarItemModel() { Name = "Refresh"},
+        new ToolBarItemModel() { Name = "Selection"},
+        new ToolBarItemModel() { Name = "View"},
+        new ToolBarItemModel() { Name = "Details"}
+    };
+
+
+    // Add your custom button during toolbar creation
+    public void ToolbarCreate(ToolbarCreateEventArgs args)
+    {
+        args.Items.AddRange(new List<ToolBarItemModel>()
         {
-            try
+            new ToolBarItemModel()
             {
-                await JSRuntime.InvokeVoidAsync("console.log", "FileManager component rendered");
+                Text = "Open",
+                PrefixIcon = "e-icons e-fe-tick",
+                TooltipText = "Open document",
             }
-            catch (Exception ex)
+        });
+    }
+
+    private FileManagerDirectoryContent GetFileDetails(object obj)
+    {
+        if (obj == null)
+            return null;
+        if (obj is FileManagerDirectoryContent)
+            return obj as FileManagerDirectoryContent;
+        if (obj is List<FileManagerDirectoryContent>)
+            return (obj as List<FileManagerDirectoryContent>)[0];
+        if (obj is FileManagerDirectoryContent[])
+            return (obj as FileManagerDirectoryContent[])[0];
+        return null;
+    }
+
+    // Handle file selection event to update the toolbar items
+    public void OnFileSelect(FileSelectionEventArgs<FileManagerDirectoryContent> args)
+    {
+        FileManagerDirectoryContent fileDetails = GetFileDetails(args.FileDetails);
+        if (fileDetails != null)
+        {
+            // Check if the selected item is a file or folder
+            bool isFile = !fileDetails.IsFile ? false : true;
+            
+            // Update toolbar items based on selection
+            Items = isFile ? FileSelectedItems: FolderSelectedItems;
+        }
+    }
+    
+    // handle custom toolbar buttons, such as view pdf
+    public async Task ToolbarClicked(ToolbarClickEventArgs<FileManagerDirectoryContent> args) {
+        if(args.Item.Text == "Show") {
+            // Handle custom button click event
+            FileManagerDirectoryContent fileDetails = GetFileDetails(args.FileDetails);
+            if (fileDetails != null)
             {
-                hasError = true;
-                errorMessage = ex.Message;
-                StateHasChanged();
+                await LoadPDF();
+                OnViewFile(fileDetails.Name);
             }
         }
+    }
+    
+    // dialog features
+    private bool isFileViewVisible { get; set; } = false;
+    private string CurrentFileName{ get; set; } = null;
+    private void OnViewFile(string filename)
+    {
+        CurrentFileName = filename;
+        this.isFileViewVisible = true;   
+    }
+    
+    private void OnOk()
+    {
+        this.isFileViewVisible = false;   
+    }
+    
+    // pdf
+    public string DocumentPath { get; set; } = "";
+    
+    public async Task LoadPDF()
+    {
+        string base64String = "JVBERi0xLjQKJYCAgIAKMSAwIG9iago8PC9UeXBlIC9DYXRhbG9nIC9QYWdlcyAyIDAgUiA+PgplbmRvYmoKMiAwIG9iago8PC9UeXBlIC9QYWdlcyAvS2lkcyBbOCAwIFIgXSAvQ291bnQgMSAvTWVkaWFCb3ggWzAgMCA1OTYgODQyIF0gL1Jlc291cmNlcyAzIDAgUiA+PgplbmRvYmoKMyAwIG9iago8PC9YT2JqZWN0IDw8LzEgMTAgMCBSIC8yIDExIDAgUiAvMyAxMyAwIFIgLzQgMTQgMCBSIC81IDE1IDAgUiAvNiAxNiAwIFIgLzcgOSAwIFIgLzggMTcgMCBSIC85IDE4IDAgUiA+PiAvRm9udCA8PC8xIDUgMCBSIC8yIDQgMCBSID4+IC9FeHRHU3RhdGUgPDwvMSAxOSAwIFIgPj4gPj4KZW5kb2JqCjQgMCBvYmoKPDwvVHlwZSAvRm9udCAvU3VidHlwZSAvVHlwZTEgL0Jhc2VGb250IC9UaW1lcy1Sb21hbiAvRW5jb2RpbmcgL1dpbkFuc2lFbmNvZGluZyA+PgplbmRvYmoKNSAwIG9iago8PC9UeXBlIC9Gb250IC9TdWJ0eXBlIC9UeXBlMSAvQmFzZUZvbnQgL1RpbWVzLUJvbGQgL0VuY29kaW5nIC9XaW5BbnNpRW5jb2RpbmcgPj4KZW5kb2JqCjYgMCBvYmoKPDwvTW9kRGF0ZSAoRDoyMDIzMDUwNTE0MjE1OC0wMycwMCcpIC9DcmVhdGlvbkRhdGUgKEQ6MjAyMzA1MDUxNDIxNTgtMDMnMDAnKSAvQ3JlYXRvciAoRGFuZmVTaGFycCAwLjguNS4wIC0gaHR0cHM6Ly9naXRodWIuY29tL1NpbHZlckNhcmQvRGFuZmVTaGFycCkgL1RpdGxlIChEQU5GRSBcKERvY3VtZW50byBhdXhpbGlhciBkYSBORmVcKSkgL1Byb2R1Y2VyIChQREYgQ2xvd24gZm9yIC5ORVQgMC4xLjIuMCkgPj4KZW5kb2JqCjcgMCBvYmoKPDwvRmlsdGVyIC9GbGF0ZURlY29kZSAvTGVuZ3RoIDM3NiA+PgpzdHJlYW0KeNp9k81u00AQx+9+ijnCIZOd3fnaYykpQipCUKt3KAEVkbhNgvLAvAhjGxVj5MrSarQ7v/nPlx8bghQf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BCiIyJKLTyO9N5+8VYRiYaeeGCzkN7VVDFTmsCca2WprYL0Z5XQICPJOTfNJLAaNFx8hb9RD/dnVy66HWQ9tSov5I+R31WS1KFNYbsySIkExwIQJHWuOf0Vq9CEeke081UO7/+rheTlv6/al6kZUAaZLWI+R5ddHrUOhEPkinJGsP8K1816f4gi5FPuz2TA6F30AjshaBwcfr2dqYKMxCvk7i1hVXT9A7nPVlf4TpGZYtfs+neodlHw0BXWbogSLNpK19ylOq9TArIFrZyJBo3HG+hsVjXgUR5r/o8VzYkZs4Rttroql8vIbCmVuZHN0cmVhbQplbmRvYmoKMTggMCBvYmoKPDwvVHlwZSAvWE9iamVjdCAvU3VidHlwZSAvRm9ybSAvQkJveCBbMCAwIDU2Ni45MjkxNCA2NS40NDY4NSBdIC9SZXNvdXJjZXMgPDwvRm9udCA8PC8xIDUgMCBSIC8yIDQgMCBSID4+ID4+IC9GaWx0ZXIgL0ZsYXRlRGVjb2RlIC9MZW5ndGggMjkxID4+CnN0cmVhbQp42qWQwU6DQBCG7/sUc9RDx5ldlgI3SmlCYkstpHcsW4MR1hJMH9En8H1cUg800cToTjKHP3/2++c/CUKp4SzuGDSUR3ESDORm3DOFrJX24NBe6TQKBOVZLMqJ7EskxYH7phU3y3iZFxAvsyTLN3FW3EL5LNJSPLhxLP+apbTEUBEzzJjQZ8Xhb6GMygu+oLu0SHd7R4Y4h1VWJPkUqzRhQB57QMjuaMkaQ/cC0D76oQwl9OabcNI1RM71r2jZZpXv1vH7R1pAkq+39+k63ZSxS3zVjPwZPkf6M7w7IiS2G/rm8a3pBhPByvZtBbWB1+qpak032AgW9sUMFhZVd6j6xiLA1tRNbUfb3nR1FQETeZqnkS9dXvbYsD8PXcPTRgvn+gQKZW5kc3RyZWFtCmVuZG9iagoxOSAwIG9iago8PC9jYSAwLjMgPj4KZW5kb2JqCnhyZWYKMCAyMAowMDAwMDAwMDAwIDY1NTM1IGYNCjAwMDAwMDAwMTUgMDAwMDAgbg0KMDAwMDAwMDA2MyAwMDAwMCBuDQowMDAwMDAwMTYyIDAwMDAwIG4NCjAwMDAwMDAzNDAgMDAwMDAgbg0KMDAwMDAwMDQzOCAwMDAwMCBuDQowMDAwMDAwNTM1IDAwMDAwIG4NCjAwMDAwMDA3ODcgMDAwMDAgbg0KMDAwMDAwMTIzNCAwMDAwMCBuDQowMDAwMDAxMzMzIDAwMDAwIG4NCjAwMDAwMDIzODQgMDAwMDAgbg0KMDAwMDAwMzA4MCAwMDAwMCBuDQowMDAwMDA0NDM0IDAwMDAwIG4NCjAwMDAwMDUxMDcgMDAwMDAgbg0KMDAwMDAwNjAwMSAwMDAwMCBuDQowMDAwMDA2Mzk5IDAwMDAwIG4NCjAwMDAwMDcxMDAgMDAwMDAgbg0KMDAwMDAwNzg5NSAwMDAwMCBuDQowMDAwMDA4MzUyIDAwMDAwIG4NCjAwMDAwMDg4MjIgMDAwMDAgbg0KdHJhaWxlcgo8PC9Sb290IDEgMCBSIC9JbmZvIDYgMCBSIC9JRCBbPDlkMGZhYThkMTg5NzM1MjI1YmYxZWNkYTFlYTRiZTY1PiA8OWQwZmFhOGQxODk3MzUyMjViZjFlY2RhMWVhNGJlNjU+IF0gL1NpemUgMjAgPj4Kc3RhcnR4cmVmCjg4NTEKJSVFT0YNCg==";
+        //await viewer.LoadAsync("data:application/pdf;base64," + base64String, null);
+        DocumentPath = "data:application/pdf;base64," + base64String;
     }
 }
