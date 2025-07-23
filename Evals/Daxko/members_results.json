@@ -1,0 +1,406 @@
+{
+  "total": 10,
+  "has_more_records": true,
+  "members": [
+    {
+      "platform": "operations",
+      "client_id": "9001",
+      "first_name": "Amanda",
+      "middle_name": "",
+      "last_name": "Datillo",
+      "date_of_birth": "1980-01-01T00:00:00",
+      "gender": "Male",
+      "member_id": "0160016-01",
+      "barcode": "016001601",
+      "membership_type": "Adult",
+      "is_primary_member": true,
+      "active": true,
+      "join_date": "2025-07-08T00:00:00",
+      "most_recent_join_date": "2025-07-08T00:00:00",
+      "phones": [
+        {
+          "type": "home",
+          "phone": "(205) 123-3321"
+        }
+      ],
+      "emails": [],
+      "addresses": [
+        {
+          "type": "home",
+          "address": "123 Daxko Dr",
+          "address2": "",
+          "city": "Homewood",
+          "state": "AL",
+          "zip_code": "35222",
+          "country": ""
+        }
+      ],
+      "last_updated_utc": "2025-07-22T16:09:36Z",
+      "additional_details": {
+        "unit_id": "0160016"
+      }
+    },
+    {
+      "platform": "operations",
+      "client_id": "9001",
+      "first_name": "John",
+      "middle_name": "",
+      "last_name": "Smith",
+      "date_of_birth": "2011-07-17T00:00:00",
+      "gender": "Male",
+      "member_id": "2058692-03",
+      "barcode": "205869203",
+      "membership_type": "Single-Parent Household",
+      "is_primary_member": false,
+      "active": true,
+      "join_date": "2018-07-17T00:00:00",
+      "most_recent_join_date": "2018-07-17T00:00:00",
+      "phones": [
+        {
+          "type": "home",
+          "phone": "(322) 322-2332"
+        }
+      ],
+      "emails": [],
+      "addresses": [
+        {
+          "type": "home",
+          "address": "123",
+          "address2": "Daxko Way",
+          "city": "Birmingham",
+          "state": "AL",
+          "zip_code": "35123",
+          "country": ""
+        }
+      ],
+      "last_updated_utc": "2025-07-21T20:07:47Z",
+      "additional_details": {
+        "unit_id": "2058692"
+      }
+    },
+    {
+      "platform": "operations",
+      "client_id": "9001",
+      "first_name": "Johnnie",
+      "middle_name": "J",
+      "last_name": "Smith",
+      "date_of_birth": "1943-07-20T00:00:00",
+      "gender": "Female",
+      "member_id": "3053009-01",
+      "barcode": "800010117",
+      "membership_type": "Senior Adult (65+)",
+      "is_primary_member": true,
+      "active": true,
+      "join_date": "2011-08-15T00:00:00",
+      "most_recent_join_date": "2011-08-15T00:00:00",
+      "phones": [
+        {
+          "type": "home",
+          "phone": "(865) 524-4848"
+        }
+      ],
+      "emails": [],
+      "addresses": [
+        {
+          "type": "home",
+          "address": "202 Grata Rd",
+          "address2": "",
+          "city": "Knoxville",
+          "state": "TN",
+          "zip_code": "37914-3752",
+          "country": ""
+        }
+      ],
+      "last_updated_utc": "2025-07-21T20:07:47Z",
+      "additional_details": {
+        "unit_id": "3053009"
+      }
+    },
+    {
+      "platform": "operations",
+      "client_id": "9001",
+      "first_name": "John",
+      "middle_name": "",
+      "last_name": "Smith",
+      "date_of_birth": "1983-11-14T00:00:00",
+      "gender": "Male",
+      "member_id": "0258842-01",
+      "barcode": "025884201",
+      "membership_type": "Adult - Annual",
+      "is_primary_member": true,
+      "active": true,
+      "join_date": "2019-11-12T00:00:00",
+      "most_recent_join_date": "2019-11-12T00:00:00",
+      "phones": [
+        {
+          "type": "home",
+          "phone": "(123) 123-1234"
+        }
+      ],
+      "emails": [],
+      "addresses": [
+        {
+          "type": "home",
+          "address": "123 fake st",
+          "address2": "",
+          "city": "Fake",
+          "state": "CT",
+          "zip_code": "32475",
+          "country": ""
+        }
+      ],
+      "last_updated_utc": "2025-07-21T20:07:47Z",
+      "additional_details": {
+        "unit_id": "0258842"
+      }
+    },
+    {
+      "platform": "operations",
+      "client_id": "9001",
+      "first_name": "John",
+      "middle_name": "",
+      "last_name": "Smith",
+      "date_of_birth": "1980-01-10T00:00:00",
+      "gender": "Male",
+      "member_id": "2058513-01",
+      "barcode": "205851301",
+      "membership_type": "Single-Parent Household",
+      "is_primary_member": true,
+      "active": true,
+      "join_date": "2016-09-20T00:00:00",
+      "most_recent_join_date": "2016-09-20T00:00:00",
+      "phones": [],
+      "emails": [
+        {
+          "type": "primary",
+          "email": "johnsmith@gmail.com"
+        }
+      ],
+      "addresses": [
+        {
+          "type": "home",
+          "address": "123 Jones Street",
+          "address2": "",
+          "city": "Hoover",
+          "state": "TN",
+          "zip_code": "35243",
+          "country": ""
+        }
+      ],
+      "last_updated_utc": "2025-07-21T20:07:47Z",
+      "additional_details": {
+        "unit_id": "2058513"
+      }
+    },
+    {
+      "platform": "operations",
+      "client_id": "9001",
+      "first_name": "John",
+      "middle_name": "",
+      "last_name": "Smith",
+      "date_of_birth": "2018-04-04T00:00:00",
+      "gender": "Female",
+      "member_id": "0159486-03",
+      "barcode": "015948603",
+      "membership_type": "Household",
+      "is_primary_member": false,
+      "active": true,
+      "join_date": "2023-12-18T00:00:00",
+      "most_recent_join_date": "2023-12-18T00:00:00",
+      "phones": [
+        {
+          "type": "home",
+          "phone": "(206) 123-4124"
+        }
+      ],
+      "emails": [],
+      "addresses": [
+        {
+          "type": "home",
+          "address": "156 Daxko Drive",
+          "address2": "",
+          "city": "Birmingham",
+          "state": "AL",
+          "zip_code": "35222",
+          "country": ""
+        }
+      ],
+      "last_updated_utc": "2025-07-21T20:07:47Z",
+      "additional_details": {
+        "unit_id": "0159486"
+      }
+    },
+    {
+      "platform": "operations",
+      "client_id": "9001",
+      "first_name": "John",
+      "middle_name": "",
+      "last_name": "Smith",
+      "date_of_birth": "1910-01-01T00:00:00",
+      "gender": "Male",
+      "member_id": "2057508-01",
+      "barcode": "205750801",
+      "membership_type": "Individual - Annual",
+      "is_primary_member": true,
+      "active": true,
+      "join_date": "2013-04-09T00:00:00",
+      "most_recent_join_date": "2013-04-09T00:00:00",
+      "phones": [
+        {
+          "type": "home",
+          "phone": "(555) 555-5555"
+        }
+      ],
+      "emails": [
+        {
+          "type": "primary",
+          "email": "jsmith@daxko.com"
+        }
+      ],
+      "addresses": [
+        {
+          "type": "home",
+          "address": "105 Pine Lane",
+          "address2": "",
+          "city": "Birmingham",
+          "state": "AL",
+          "zip_code": "35209",
+          "country": ""
+        }
+      ],
+      "last_updated_utc": "2025-07-21T20:07:47Z",
+      "additional_details": {
+        "unit_id": "2057508"
+      }
+    },
+    {
+      "platform": "operations",
+      "client_id": "9001",
+      "first_name": "Savage",
+      "middle_name": "",
+      "last_name": "Sumit",
+      "date_of_birth": "1981-05-26T00:00:00",
+      "gender": "Female",
+      "member_id": "2040865-02",
+      "barcode": "204086502",
+      "membership_type": "Household",
+      "is_primary_member": true,
+      "active": true,
+      "join_date": "2014-02-18T00:00:00",
+      "most_recent_join_date": "2014-02-18T00:00:00",
+      "phones": [
+        {
+          "type": "home",
+          "phone": "(865) 661-9093"
+        }
+      ],
+      "emails": [
+        {
+          "type": "primary",
+          "email": "sumit.bisht@daxko.com"
+        }
+      ],
+      "addresses": [
+        {
+          "type": "home",
+          "address": "607 Banks Ave",
+          "address2": "",
+          "city": "Knoxville",
+          "state": "TN",
+          "zip_code": "37917-4309",
+          "country": ""
+        }
+      ],
+      "last_updated_utc": "2025-07-21T09:08:22Z",
+      "additional_details": {
+        "unit_id": "2040865"
+      }
+    },
+    {
+      "platform": "operations",
+      "client_id": "9001",
+      "first_name": "Rowdy",
+      "middle_name": "",
+      "last_name": "Rohit",
+      "date_of_birth": "1988-05-06T00:00:00",
+      "gender": "Male",
+      "member_id": "2040865-01",
+      "barcode": "100046932",
+      "membership_type": "Household",
+      "is_primary_member": false,
+      "active": true,
+      "join_date": "2010-02-24T00:00:00",
+      "most_recent_join_date": "2010-02-24T00:00:00",
+      "phones": [
+        {
+          "type": "home",
+          "phone": "(865) 661-9093"
+        }
+      ],
+      "emails": [
+        {
+          "type": "primary",
+          "email": "rohit.s@daxko.com"
+        }
+      ],
+      "addresses": [
+        {
+          "type": "home",
+          "address": "607 Banks Ave",
+          "address2": "",
+          "city": "Knoxville",
+          "state": "TN",
+          "zip_code": "37917-4309",
+          "country": ""
+        }
+      ],
+      "last_updated_utc": "2025-07-21T09:08:22Z",
+      "additional_details": {
+        "unit_id": "2040865"
+      }
+    },
+    {
+      "platform": "operations",
+      "client_id": "9001",
+      "first_name": "Alvaro",
+      "middle_name": "",
+      "last_name": "Cervantes",
+      "date_of_birth": "1980-01-12T00:00:00",
+      "gender": "Male",
+      "member_id": "0159067-01",
+      "barcode": "015906701",
+      "membership_type": "Couple",
+      "is_primary_member": false,
+      "active": true,
+      "join_date": "2022-02-17T00:00:00",
+      "most_recent_join_date": "2022-02-17T00:00:00",
+      "phones": [
+        {
+          "type": "home",
+          "phone": "(205) 470-8116"
+        }
+      ],
+      "emails": [
+        {
+          "type": "primary",
+          "email": "jennymillershampo@gmail.com"
+        }
+      ],
+      "addresses": [
+        {
+          "type": "home",
+          "address": "234 Daxko Drive",
+          "address2": "",
+          "city": "Homewood",
+          "state": "AL",
+          "zip_code": "35209",
+          "country": ""
+        }
+      ],
+      "last_updated_utc": "2025-07-18T18:07:32Z",
+      "additional_details": {
+        "unit_id": "0159067"
+      }
+    }
+  ]
+}

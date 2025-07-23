@@ -1,0 +1,327 @@
+@page "/members"
+@rendermode InteractiveServer
+@using Syncfusion.Blazor
+@using Syncfusion.Blazor.Grids
+@using Syncfusion.Blazor.Popups
+@using Syncfusion.Blazor.Buttons
+@using Syncfusion.Blazor.Notifications
+@using LMWebApp.Models
+@using LMWebApp.Services
+@inject IDaxkoServiceProvider DaxkoService
+
+<PageTitle>Daxko Members</PageTitle>
+
+<h2>Daxko Members</h2>
+<div class="grid-container">
+    @if (isLoading)
+    {
+        <div class="skeleton-container">
+            <SfSkeleton CssClass="skeletonRectangle" Shape=SkeletonType.Rectangle Width="100%" Height="50px"></SfSkeleton>
+            <SfSkeleton CssClass="skeletonRectangle" Shape=SkeletonType.Rectangle Width="100%" Height="40px"></SfSkeleton>
+            <SfSkeleton CssClass="skeletonRectangle" Shape=SkeletonType.Rectangle Width="100%" Height="40px"></SfSkeleton>
+            <SfSkeleton CssClass="skeletonRectangle" Shape=SkeletonType.Rectangle Width="100%" Height="40px"></SfSkeleton>
+            <SfSkeleton CssClass="skeletonRectangle" Shape=SkeletonType.Rectangle Width="100%" Height="40px"></SfSkeleton>
+            <SfSkeleton CssClass="skeletonRectangle" Shape=SkeletonType.Rectangle Width="100%" Height="40px"></SfSkeleton>
+            <SfSkeleton CssClass="skeletonRectangle" Shape=SkeletonType.Rectangle Width="100%" Height="40px"></SfSkeleton>
+            <SfSkeleton CssClass="skeletonRectangle" Shape=SkeletonType.Rectangle Width="100%" Height="40px"></SfSkeleton>
+        </div>
+    }
+    else
+    {
+        <SfGrid ID="Grid" DataSource="@Members" @ref="Grid" AllowPaging="true" AllowFiltering="true" AllowReordering="true" AllowGrouping="false" AllowExcelExport="true" AllowSelection="true"
+                AllowSorting="true" Toolbar="@(new List<string>() { "Details", "CsvExport","Search"})" Height="100%" Width="100%">        
+            <GridEditSettings AllowAdding="false" AllowEditing="true" AllowDeleting="false" Mode="Syncfusion.Blazor.Grids.EditMode.Normal"></GridEditSettings>
+            <GridFilterSettings Type="Syncfusion.Blazor.Grids.FilterType.FilterBar"></GridFilterSettings>
+            <GridPageSettings PageSizes="true"></GridPageSettings>
+            <GridSelectionSettings Type="Syncfusion.Blazor.Grids.SelectionType.Single"></GridSelectionSettings>
+            <GridEvents OnToolbarClick="ToolbarClick" TValue="DaxkoMember"></GridEvents>
+            <GridColumns>
+                <GridColumn Field=@nameof(DaxkoMember.MemberId) HeaderText="Member ID" IsPrimaryKey="true" ValidationRules="@(new ValidationRules{ Required=true })" TextAlign="Syncfusion.Blazor.Grids.TextAlign.Right" Width="120"></GridColumn>
+                <GridColumn Field=@nameof(DaxkoMember.FirstName) HeaderText="First Name" ValidationRules="@(new ValidationRules{ Required=true })" Width="120"></GridColumn>
+                <GridColumn Field=@nameof(DaxkoMember.LastName) HeaderText="Last Name" ValidationRules="@(new ValidationRules{ Required=true })" Width="120"></GridColumn>
+                <GridColumn Field=@nameof(DaxkoMember.MembershipType) HeaderText="Membership Type" ValidationRules="@(new ValidationRules{ Required=true })" Width="150"></GridColumn>
+                <GridColumn Field=@nameof(DaxkoMember.Gender) HeaderText="Gender" ValidationRules="@(new ValidationRules{ Required=true })" Width="80"></GridColumn>
+                <GridColumn Field=@nameof(DaxkoMember.DateOfBirth) HeaderText="Date of Birth" EditType="EditType.DatePickerEdit" Format="d" TextAlign="Syncfusion.Blazor.Grids.TextAlign.Right" Width="100" Type="Syncfusion.Blazor.Grids.ColumnType.Date"></GridColumn>
+                <GridColumn Field=@nameof(DaxkoMember.JoinDate) HeaderText="Join Date" EditType="EditType.DatePickerEdit" Format="d" TextAlign="Syncfusion.Blazor.Grids.TextAlign.Right" Width="100" Type="Syncfusion.Blazor.Grids.ColumnType.Date"></GridColumn>
+                <GridColumn Field=@nameof(DaxkoMember.Active) HeaderText="Active" EditType="EditType.BooleanEdit" TextAlign="Syncfusion.Blazor.Grids.TextAlign.Center" Width="80" Type="Syncfusion.Blazor.Grids.ColumnType.Boolean"></GridColumn>
+                <GridColumn Field=@nameof(DaxkoMember.IsPrimaryMember) HeaderText="Primary Member" EditType="EditType.BooleanEdit" TextAlign="Syncfusion.Blazor.Grids.TextAlign.Center" Width="120" Type="Syncfusion.Blazor.Grids.ColumnType.Boolean"></GridColumn>
+            </GridColumns>
+        </SfGrid>
+    }
+    
+<!-- dialog hidden-->
+    <SfDialog @bind-Visible="isReviewVisible" Width="800px" Height="600px" EnableResize="true" IsModal="true" ShowCloseIcon="true">
+        <DialogTemplates>
+            <Header> Member Details - @(CurrentMember?.FirstName ?? "") @(CurrentMember?.LastName ?? "") </Header>
+            <Content>
+                @if (CurrentMember != null)
+                {
+                    <div class="member-details">
+                        <div class="detail-section">
+                            <h4>Basic Information</h4>
+                            <div class="detail-row">
+                                <span class="label">Member ID:</span>
+                                <span class="value">@CurrentMember.MemberId</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="label">Barcode:</span>
+                                <span class="value">@CurrentMember.Barcode</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="label">Name:</span>
+                                <span class="value">@CurrentMember.FirstName @CurrentMember.MiddleName @CurrentMember.LastName</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="label">Gender:</span>
+                                <span class="value">@CurrentMember.Gender</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="label">Date of Birth:</span>
+                                <span class="value">@CurrentMember.DateOfBirth.ToString("MM/dd/yyyy")</span>
+                            </div>
+                        </div>
+
+                        <div class="detail-section">
+                            <h4>Membership Information</h4>
+                            <div class="detail-row">
+                                <span class="label">Membership Type:</span>
+                                <span class="value">@CurrentMember.MembershipType</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="label">Primary Member:</span>
+                                <span class="value">@(CurrentMember.IsPrimaryMember ? "Yes" : "No")</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="label">Active:</span>
+                                <span class="value">@(CurrentMember.Active ? "Yes" : "No")</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="label">Join Date:</span>
+                                <span class="value">@CurrentMember.JoinDate.ToString("MM/dd/yyyy")</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="label">Most Recent Join:</span>
+                                <span class="value">@CurrentMember.MostRecentJoinDate.ToString("MM/dd/yyyy")</span>
+                            </div>
+                        </div>
+
+                        @if (CurrentMember.Phones != null && CurrentMember.Phones.Any())
+                        {
+                            <div class="detail-section">
+                                <h4>Phone Numbers (@CurrentMember.Phones.Count)</h4>
+                                @foreach (var phone in CurrentMember.Phones)
+                                {
+                                    <div class="detail-row">
+                                        <span class="label">@phone.Type:</span>
+                                        <span class="value">@phone.Phone</span>
+                                    </div>
+                                }
+                            </div>
+                        }
+
+                        @if (CurrentMember.Emails != null && CurrentMember.Emails.Any())
+                        {
+                            <div class="detail-section">
+                                <h4>Email Addresses (@CurrentMember.Emails.Count)</h4>
+                                @foreach (var email in CurrentMember.Emails)
+                                {
+                                    <div class="detail-row">
+                                        <span class="label">@email.Type:</span>
+                                        <span class="value">@email.Email</span>
+                                    </div>
+                                }
+                            </div>
+                        }
+
+                        @if (CurrentMember.Addresses != null && CurrentMember.Addresses.Any())
+                        {
+                            <div class="detail-section">
+                                <h4>Addresses (@CurrentMember.Addresses.Count)</h4>
+                                @foreach (var address in CurrentMember.Addresses)
+                                {
+                                    <div class="detail-row">
+                                        <span class="label">@address.Type Address:</span>
+                                        <span class="value">
+                                            @address.Address
+                                            @if (!string.IsNullOrEmpty(address.Address2))
+                                            {
+                                                <br />@address.Address2
+                                            }
+                                            <br />@address.City, @address.State @address.ZipCode
+                                            @if (!string.IsNullOrEmpty(address.Country))
+                                            {
+                                                <br />@address.Country
+                                            }
+                                        </span>
+                                    </div>
+                                }
+                            </div>
+                        }
+
+                        <div class="detail-section">
+                            <h4>Additional Information</h4>
+                            <div class="detail-row">
+                                <span class="label">Platform:</span>
+                                <span class="value">@CurrentMember.Platform</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="label">Client ID:</span>
+                                <span class="value">@CurrentMember.ClientId</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="label">Unit ID:</span>
+                                <span class="value">@CurrentMember.AdditionalDetails.UnitId</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="label">Last Updated:</span>
+                                <span class="value">@CurrentMember.LastUpdatedUtc.ToString("MM/dd/yyyy HH:mm UTC")</span>
+                            </div>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <p>No member selected.</p>
+                }
+            </Content>
+        </DialogTemplates>
+        <DialogButtons>
+            <DialogButton IsPrimary="true" OnClick="@OnOk">
+                Close
+            </DialogButton>
+        </DialogButtons>
+    </SfDialog>
+</div>
+
+<style>
+    .grid-container {
+        width: 100%;
+        height: calc(100vh - 200px); /* Adjust for header, padding, and margins */
+        margin: 0;
+        padding: 0;
+    }
+    
+    .skeleton-container {
+        width: 100%;
+        height: 100%;
+        padding: 10px;
+    }
+    
+    .skeleton-container .e-skeleton {
+        margin-bottom: 10px;
+    }
+
+    /* Dialog content styles */
+    .member-details {
+        max-height: 500px;
+        overflow-y: auto;
+        padding: 10px;
+    }
+
+    .detail-section {
+        margin-bottom: 20px;
+        border-bottom: 1px solid #e0e0e0;
+        padding-bottom: 15px;
+    }
+
+    .detail-section:last-child {
+        border-bottom: none;
+    }
+
+    .detail-section h4 {
+        color: #333;
+        margin-bottom: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        border-bottom: 2px solid #007bff;
+        padding-bottom: 5px;
+    }
+
+    .detail-row {
+        display: flex;
+        margin-bottom: 8px;
+        align-items: flex-start;
+    }
+
+    .detail-row .label {
+        font-weight: 600;
+        min-width: 120px;
+        color: #555;
+        margin-right: 10px;
+    }
+
+    .detail-row .value {
+        flex: 1;
+        color: #333;
+        word-wrap: break-word;
+    }
+
+    /* Responsive adjustments */
+    @@media (max-width: 768px) {
+        .detail-row {
+            flex-direction: column;
+        }
+        
+        .detail-row .label {
+            min-width: auto;
+            margin-bottom: 5px;
+        }
+    }
+</style>
+
+@code {
+    public List<DaxkoMember>? Members { get; set; }
+    SfGrid<DaxkoMember>? Grid;
+    private bool isLoading = true;
+    
+    protected override async Task OnInitializedAsync()
+    {
+        isLoading = true;
+        
+        // Initialize the Daxko service with authentication
+        var initSuccess = await DaxkoService.InitAsync();
+        if (initSuccess)
+        {
+            Members = await DaxkoService.GetMembersAsync();
+        }
+        else
+        {
+            // Fallback to sample data if initialization fails
+            Members = new List<DaxkoMember>();
+        }
+        
+        isLoading = false;
+        StateHasChanged();
+    }
+    
+    public void ToolbarClick(Syncfusion.Blazor.Navigations.ClickEventArgs args)
+    {
+        if (args.Item.Id == "Grid_csvexport")
+        {
+            this.Grid?.ExportToCsvAsync();
+        }
+        else if (args.Item.Id == "Grid_Details")
+        {
+            if (Grid.SelectedRecords != null && Grid.SelectedRecords.Count > 0)
+            {
+                CurrentMember = Grid.SelectedRecords[0];
+                OnReview();
+            }
+        }
+    }
+    
+    // dialog features
+    private bool isReviewVisible { get; set; } = false;
+    public DaxkoMember? CurrentMember { get; set; }
+    
+    private void OnReview()
+    {
+        this.isReviewVisible = true;   
+    }
+    
+    private async Task OnOk()
+    {
+        this.isReviewVisible = false;   
+    }
+    
+} 

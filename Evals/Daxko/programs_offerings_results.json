@@ -1,0 +1,942 @@
+{
+  "total": 21,
+  "limit": 10,
+  "offerings": [
+    {
+      "id": "SES997294",
+      "type": "session",
+      "name": "Youth Basketball League - U7",
+      "description": "Players will develop both individual skills and team skills in this fun, fast-paced program for all levels. 5 - 6 years",
+      "start_date": "2025-06-09T00:00:00.0000000",
+      "end_date": "2025-08-04T00:00:00.0000000",
+      "program": {
+        "id": "TMP35362",
+        "type": "standard",
+        "name": "Youth Basketball - League",
+        "description": ""
+      },
+      "locations": [
+        {
+          "id": "B339",
+          "name": "Downtown Center",
+          "type": "branch"
+        }
+      ],
+      "categories": [
+        {
+          "id": "TAG8456",
+          "name": "Basketball"
+        },
+        {
+          "id": "TAG9192",
+          "name": "Youth Sports"
+        }
+      ],
+      "groups": [
+        {
+          "id": "FG224",
+          "name": "Member",
+          "rate": {
+            "min_amount": 277.2,
+            "max_amount": 277.2,
+            "frequency": "flat",
+            "unit": "",
+            "description": "$277.20"
+          }
+        },
+        {
+          "id": "FG225",
+          "name": "Non-Member",
+          "rate": {
+            "min_amount": 364.56,
+            "max_amount": 364.56,
+            "frequency": "flat",
+            "unit": "",
+            "description": "$364.56"
+          }
+        }
+      ],
+      "restrictions": {
+        "genders": [
+          {
+            "id": "M",
+            "name": "Male"
+          },
+          {
+            "id": "F",
+            "name": "Female"
+          }
+        ]
+      },
+      "times": [
+        {
+          "start": "10:00",
+          "end": "11:00"
+        }
+      ],
+      "days_offered": [
+        {
+          "id": "3",
+          "name": "Wednesday"
+        },
+        {
+          "id": "6",
+          "name": "Saturday"
+        }
+      ],
+      "highlights": [],
+      "registration": {
+        "start": "2024-12-01T00:00:00.0000000",
+        "end": "2026-03-31T23:30:00.0000000",
+        "state": "open"
+      },
+      "score": 0
+    },
+    {
+      "id": "SES985840",
+      "type": "session",
+      "name": "Youth Basketball League - U11",
+      "description": "Players will develop both individual skills and team skills in this fun, fast-paced program for all levels. 9-10 year olds.",
+      "start_date": "2025-06-09T00:00:00.0000000",
+      "end_date": "2025-08-04T00:00:00.0000000",
+      "program": {
+        "id": "TMP35362",
+        "type": "standard",
+        "name": "Youth Basketball - League",
+        "description": ""
+      },
+      "locations": [
+        {
+          "id": "B339",
+          "name": "Downtown Center",
+          "type": "branch"
+        }
+      ],
+      "categories": [
+        {
+          "id": "TAG8456",
+          "name": "Basketball"
+        },
+        {
+          "id": "TAG9192",
+          "name": "Youth Sports"
+        }
+      ],
+      "groups": [
+        {
+          "id": "FG224",
+          "name": "Member",
+          "rate": {
+            "min_amount": 265.65,
+            "max_amount": 265.65,
+            "frequency": "flat",
+            "unit": "",
+            "description": "$265.65"
+          }
+        },
+        {
+          "id": "FG225",
+          "name": "Non-Member",
+          "rate": {
+            "min_amount": 349.37,
+            "max_amount": 349.37,
+            "frequency": "flat",
+            "unit": "",
+            "description": "$349.37"
+          }
+        }
+      ],
+      "restrictions": {
+        "genders": [
+          {
+            "id": "M",
+            "name": "Male"
+          },
+          {
+            "id": "F",
+            "name": "Female"
+          }
+        ]
+      },
+      "times": [
+        {
+          "start": "10:00",
+          "end": "11:00"
+        }
+      ],
+      "days_offered": [
+        {
+          "id": "2",
+          "name": "Tuesday"
+        },
+        {
+          "id": "6",
+          "name": "Saturday"
+        }
+      ],
+      "highlights": [],
+      "registration": {
+        "start": "2024-12-01T00:00:00.0000000",
+        "end": "2026-03-31T23:30:00.0000000",
+        "state": "open"
+      },
+      "score": 0
+    },
+    {
+      "id": "SES982272",
+      "type": "session",
+      "name": "Summer Flag Football - 2025",
+      "description": "This skills-driven sport offers friendly competition and a focus to develop the skills fundamental not only to play the sport, but also to be successful in the community through commitment, dedication and sportsmanship. Our goal is to cultivate our youth into becoming outstanding people just as much as helping them become outstanding players. Flag football is fun for everyone!",
+      "start_date": "2025-06-01T00:00:00.0000000",
+      "end_date": "2025-08-15T00:00:00.0000000",
+      "program": {
+        "id": "TMP27570",
+        "type": "standard",
+        "name": "Youth Football",
+        "description": ""
+      },
+      "locations": [
+        {
+          "id": "B339",
+          "name": "Downtown Center",
+          "type": "branch"
+        }
+      ],
+      "categories": [
+        {
+          "id": "TAG14205",
+          "name": "Football"
+        },
+        {
+          "id": "TAG9192",
+          "name": "Youth Sports"
+        }
+      ],
+      "groups": [
+        {
+          "id": "FG224",
+          "name": "Member",
+          "rate": {
+            "min_amount": 120,
+            "max_amount": 120,
+            "frequency": "flat",
+            "unit": "",
+            "description": "$120.00"
+          }
+        },
+        {
+          "id": "FG225",
+          "name": "Non-Member",
+          "rate": {
+            "min_amount": 150,
+            "max_amount": 150,
+            "frequency": "flat",
+            "unit": "",
+            "description": "$150.00"
+          }
+        }
+      ],
+      "restrictions": {
+        "genders": [
+          {
+            "id": "M",
+            "name": "Male"
+          },
+          {
+            "id": "F",
+            "name": "Female"
+          }
+        ],
+        "dob": {
+          "start": "2011-06-02T00:00:00.0000000",
+          "end": "2017-06-01T00:00:00.0000000"
+        },
+        "age": {
+          "start": 8,
+          "end": 13
+        }
+      },
+      "times": [
+        {
+          "start": "18:00",
+          "end": "19:15"
+        }
+      ],
+      "days_offered": [
+        {
+          "id": "2",
+          "name": "Tuesday"
+        }
+      ],
+      "highlights": [],
+      "registration": {
+        "start": "2024-08-01T00:00:00.0000000",
+        "end": "2025-12-31T23:30:00.0000000",
+        "state": "open"
+      },
+      "score": 0
+    },
+    {
+      "id": "SES966945",
+      "type": "session",
+      "name": "Youth Basketball League - U9",
+      "description": "",
+      "start_date": "2025-06-09T00:00:00.0000000",
+      "end_date": "2025-08-04T00:00:00.0000000",
+      "program": {
+        "id": "TMP35362",
+        "type": "standard",
+        "name": "Youth Basketball - League",
+        "description": ""
+      },
+      "locations": [
+        {
+          "id": "B339",
+          "name": "Downtown Center",
+          "type": "branch"
+        }
+      ],
+      "categories": [
+        {
+          "id": "TAG8456",
+          "name": "Basketball"
+        },
+        {
+          "id": "TAG9192",
+          "name": "Youth Sports"
+        }
+      ],
+      "groups": [
+        {
+          "id": "FG224",
+          "name": "Member",
+          "rate": {
+            "min_amount": 50,
+            "max_amount": 50,
+            "frequency": "flat",
+            "unit": "",
+            "description": "$50.00"
+          }
+        },
+        {
+          "id": "FG225",
+          "name": "Non-Member",
+          "rate": {
+            "min_amount": 75,
+            "max_amount": 75,
+            "frequency": "flat",
+            "unit": "",
+            "description": "$75.00"
+          }
+        }
+      ],
+      "restrictions": {
+        "genders": [
+          {
+            "id": "M",
+            "name": "Male"
+          },
+          {
+            "id": "F",
+            "name": "Female"
+          }
+        ]
+      },
+      "times": [
+        {
+          "start": "10:00",
+          "end": "11:00"
+        }
+      ],
+      "days_offered": [
+        {
+          "id": "6",
+          "name": "Saturday"
+        }
+      ],
+      "highlights": [],
+      "registration": {
+        "start": "2024-12-01T00:00:00.0000000",
+        "end": "2026-03-31T23:30:00.0000000",
+        "state": "open"
+      },
+      "score": 0
+    },
+    {
+      "id": "SES1030328",
+      "type": "session",
+      "name": "Free - State Required",
+      "description": "",
+      "start_date": "2025-05-15T00:00:00.0000000",
+      "end_date": "2026-04-30T00:00:00.0000000",
+      "program": {
+        "id": "TMP39196",
+        "type": "standard",
+        "name": "Food Nutrition",
+        "description": ""
+      },
+      "locations": [
+        {
+          "id": "S1923",
+          "name": "Hampton Park Elementary School",
+          "type": "site"
+        }
+      ],
+      "categories": [
+        {
+          "id": "TAG14940",
+          "name": "Health Workshops"
+        },
+        {
+          "id": "TAG8848",
+          "name": "Wellness"
+        }
+      ],
+      "groups": [
+        {
+          "id": "FG224",
+          "name": "Member",
+          "rate": {
+            "min_amount": 0,
+            "max_amount": 0,
+            "frequency": "flat",
+            "unit": "",
+            "description": "$0.00"
+          }
+        },
+        {
+          "id": "FG225",
+          "name": "Non-Member",
+          "rate": {
+            "min_amount": 0,
+            "max_amount": 0,
+            "frequency": "flat",
+            "unit": "",
+            "description": "$0.00"
+          }
+        },
+        {
+          "id": "FG279",
+          "name": "Other",
+          "rate": {
+            "min_amount": 0,
+            "max_amount": 0,
+            "frequency": "flat",
+            "unit": "",
+            "description": "$0.00"
+          }
+        }
+      ],
+      "restrictions": {
+        "genders": [
+          {
+            "id": "M",
+            "name": "Male"
+          },
+          {
+            "id": "F",
+            "name": "Female"
+          }
+        ]
+      },
+      "times": [],
+      "days_offered": [
+        {
+          "id": "1",
+          "name": "Monday"
+        },
+        {
+          "id": "2",
+          "name": "Tuesday"
+        },
+        {
+          "id": "3",
+          "name": "Wednesday"
+        },
+        {
+          "id": "4",
+          "name": "Thursday"
+        },
+        {
+          "id": "5",
+          "name": "Friday"
+        }
+      ],
+      "highlights": [],
+      "registration": {
+        "start": "2025-05-14T00:00:00.0000000",
+        "end": "2026-04-30T23:59:00.0000000",
+        "state": "open"
+      },
+      "score": 0
+    },
+    {
+      "id": "SES1030327",
+      "type": "session",
+      "name": "Healthy Living",
+      "description": "",
+      "start_date": "2025-05-15T00:00:00.0000000",
+      "end_date": "2026-04-30T00:00:00.0000000",
+      "program": {
+        "id": "TMP39196",
+        "type": "standard",
+        "name": "Food Nutrition",
+        "description": ""
+      },
+      "locations": [
+        {
+          "id": "S1736",
+          "name": "Blackhawk Primary School",
+          "type": "site"
+        }
+      ],
+      "categories": [
+        {
+          "id": "TAG14940",
+          "name": "Health Workshops"
+        },
+        {
+          "id": "TAG8848",
+          "name": "Wellness"
+        }
+      ],
+      "groups": [
+        {
+          "id": "FG224",
+          "name": "Member",
+          "rate": {
+            "min_amount": 10,
+            "max_amount": 10,
+            "frequency": "flat",
+            "unit": "",
+            "description": "$10.00"
+          }
+        },
+        {
+          "id": "FG225",
+          "name": "Non-Member",
+          "rate": {
+            "min_amount": 10,
+            "max_amount": 10,
+            "frequency": "flat",
+            "unit": "",
+            "description": "$10.00"
+          }
+        },
+        {
+          "id": "FG279",
+          "name": "Other",
+          "rate": {
+            "min_amount": 10,
+            "max_amount": 10,
+            "frequency": "flat",
+            "unit": "",
+            "description": "$10.00"
+          }
+        }
+      ],
+      "restrictions": {
+        "genders": [
+          {
+            "id": "M",
+            "name": "Male"
+          },
+          {
+            "id": "F",
+            "name": "Female"
+          }
+        ]
+      },
+      "times": [
+        {
+          "start": "08:00",
+          "end": "09:00"
+        }
+      ],
+      "days_offered": [
+        {
+          "id": "5",
+          "name": "Friday"
+        }
+      ],
+      "highlights": [],
+      "registration": {
+        "start": "2025-05-14T00:00:00.0000000",
+        "end": "2026-04-30T23:59:00.0000000",
+        "state": "open"
+      },
+      "score": 0
+    },
+    {
+      "id": "SES1027930",
+      "type": "session",
+      "name": "Fall Flag Football - 2025",
+      "description": "This skills-driven sport offers friendly competition and a focus to develop the skills fundamental not only to play the sport, but also to be successful in the community through commitment, dedication and sportsmanship. Our goal is to cultivate our youth into becoming outstanding people just as much as helping them become outstanding players. Flag football is fun for everyone!",
+      "start_date": "2025-09-15T00:00:00.0000000",
+      "end_date": "2025-12-15T00:00:00.0000000",
+      "program": {
+        "id": "TMP27570",
+        "type": "standard",
+        "name": "Youth Football",
+        "description": ""
+      },
+      "locations": [
+        {
+          "id": "B339",
+          "name": "Downtown Center",
+          "type": "branch"
+        }
+      ],
+      "categories": [
+        {
+          "id": "TAG14205",
+          "name": "Football"
+        },
+        {
+          "id": "TAG9192",
+          "name": "Youth Sports"
+        }
+      ],
+      "groups": [
+        {
+          "id": "FG224",
+          "name": "Member",
+          "rate": {
+            "min_amount": 120,
+            "max_amount": 120,
+            "frequency": "flat",
+            "unit": "",
+            "description": "$120.00"
+          }
+        },
+        {
+          "id": "FG225",
+          "name": "Non-Member",
+          "rate": {
+            "min_amount": 150,
+            "max_amount": 150,
+            "frequency": "flat",
+            "unit": "",
+            "description": "$150.00"
+          }
+        }
+      ],
+      "restrictions": {
+        "genders": [
+          {
+            "id": "M",
+            "name": "Male"
+          },
+          {
+            "id": "F",
+            "name": "Female"
+          }
+        ],
+        "dob": {
+          "start": "2011-09-16T00:00:00.0000000",
+          "end": "2017-09-15T00:00:00.0000000"
+        },
+        "age": {
+          "start": 8,
+          "end": 13
+        }
+      },
+      "times": [
+        {
+          "start": "17:30",
+          "end": "18:45"
+        }
+      ],
+      "days_offered": [
+        {
+          "id": "4",
+          "name": "Thursday"
+        }
+      ],
+      "highlights": [],
+      "registration": {
+        "start": "2024-08-01T00:00:00.0000000",
+        "end": "2025-12-31T23:30:00.0000000",
+        "state": "open"
+      },
+      "score": 0
+    },
+    {
+      "id": "SES1027920",
+      "type": "session",
+      "name": "Boys (6-8)",
+      "description": "",
+      "start_date": "2025-09-01T00:00:00.0000000",
+      "end_date": "2025-12-31T00:00:00.0000000",
+      "program": {
+        "id": "TMP35052",
+        "type": "standard",
+        "name": "Youth Soccer",
+        "description": ""
+      },
+      "locations": [
+        {
+          "id": "B339",
+          "name": "Downtown Center",
+          "type": "branch"
+        }
+      ],
+      "categories": [
+        {
+          "id": "TAG13800",
+          "name": "Youth Soccer"
+        },
+        {
+          "id": "TAG9192",
+          "name": "Youth Sports"
+        }
+      ],
+      "groups": [
+        {
+          "id": "FG224",
+          "name": "Member",
+          "rate": {
+            "min_amount": 50,
+            "max_amount": 50,
+            "frequency": "flat",
+            "unit": "",
+            "description": "$50.00"
+          }
+        },
+        {
+          "id": "FG225",
+          "name": "Non-Member",
+          "rate": {
+            "min_amount": 75,
+            "max_amount": 75,
+            "frequency": "flat",
+            "unit": "",
+            "description": "$75.00"
+          }
+        }
+      ],
+      "restrictions": {
+        "genders": [
+          {
+            "id": "M",
+            "name": "Male"
+          }
+        ],
+        "dob": {
+          "start": "2016-09-02T00:00:00.0000000",
+          "end": "2019-09-01T00:00:00.0000000"
+        },
+        "age": {
+          "start": 6,
+          "end": 8
+        }
+      },
+      "times": [
+        {
+          "start": "16:30",
+          "end": "17:15"
+        }
+      ],
+      "days_offered": [
+        {
+          "id": "2",
+          "name": "Tuesday"
+        }
+      ],
+      "highlights": [],
+      "registration": {
+        "start": "2025-03-18T07:00:00.0000000",
+        "end": "2026-05-31T19:00:00.0000000",
+        "state": "open"
+      },
+      "score": 0
+    },
+    {
+      "id": "SES1015163",
+      "type": "session",
+      "name": "Guest Passes 2025",
+      "description": "",
+      "start_date": "2025-02-18T00:00:00.0000000",
+      "end_date": "2025-12-28T00:00:00.0000000",
+      "program": {
+        "id": "TMP38725",
+        "type": "standard",
+        "name": "Guest Passes - Fox Family",
+        "description": ""
+      },
+      "locations": [
+        {
+          "id": "B344",
+          "name": "Fox Family Club",
+          "type": "branch"
+        }
+      ],
+      "categories": [
+        {
+          "id": "TAG14747",
+          "name": "Guest Pass"
+        }
+      ],
+      "groups": [
+        {
+          "id": "FG224",
+          "name": "Member",
+          "rate": {
+            "min_amount": 0,
+            "max_amount": 0,
+            "frequency": "flat",
+            "unit": "",
+            "description": "$0.00"
+          }
+        },
+        {
+          "id": "FG225",
+          "name": "Non-Member",
+          "rate": {
+            "min_amount": 0,
+            "max_amount": 0,
+            "frequency": "flat",
+            "unit": "",
+            "description": "$0.00"
+          }
+        },
+        {
+          "id": "FG279",
+          "name": "Other",
+          "rate": {
+            "min_amount": 0,
+            "max_amount": 0,
+            "frequency": "flat",
+            "unit": "",
+            "description": "$0.00"
+          }
+        }
+      ],
+      "restrictions": {
+        "genders": [
+          {
+            "id": "M",
+            "name": "Male"
+          },
+          {
+            "id": "F",
+            "name": "Female"
+          }
+        ]
+      },
+      "times": [],
+      "days_offered": [],
+      "highlights": [],
+      "registration": {
+        "start": "2025-02-01T00:00:00.0000000",
+        "end": "2025-11-30T23:59:00.0000000",
+        "state": "open"
+      },
+      "score": 0
+    },
+    {
+      "id": "SES1009740",
+      "type": "session",
+      "name": "Tennis Clinic - Fall",
+      "description": "",
+      "start_date": "2025-08-01T00:00:00.0000000",
+      "end_date": "2026-01-28T00:00:00.0000000",
+      "program": {
+        "id": "TMP13965",
+        "type": "standard",
+        "name": "Adult Clinics",
+        "description": ""
+      },
+      "locations": [
+        {
+          "id": "B338",
+          "name": "Vestavia Family Center",
+          "type": "branch"
+        }
+      ],
+      "categories": [
+        {
+          "id": "TAG8454",
+          "name": "Adult Clinics"
+        },
+        {
+          "id": "TAG8457",
+          "name": "Adult Sports"
+        }
+      ],
+      "groups": [
+        {
+          "id": "FG224",
+          "name": "Member",
+          "rate": {
+            "min_amount": 100,
+            "max_amount": 100,
+            "frequency": "flat",
+            "unit": "",
+            "description": "$100.00"
+          }
+        },
+        {
+          "id": "FG225",
+          "name": "Non-Member",
+          "rate": {
+            "min_amount": 150,
+            "max_amount": 150,
+            "frequency": "flat",
+            "unit": "",
+            "description": "$150.00"
+          }
+        },
+        {
+          "id": "FG279",
+          "name": "Other",
+          "rate": {
+            "min_amount": 200,
+            "max_amount": 200,
+            "frequency": "flat",
+            "unit": "",
+            "description": "$200.00"
+          }
+        }
+      ],
+      "restrictions": {
+        "genders": [
+          {
+            "id": "M",
+            "name": "Male"
+          },
+          {
+            "id": "F",
+            "name": "Female"
+          }
+        ]
+      },
+      "times": [
+        {
+          "start": "10:00",
+          "end": "11:00"
+        }
+      ],
+      "days_offered": [
+        {
+          "id": "6",
+          "name": "Saturday"
+        }
+      ],
+      "highlights": [],
+      "registration": {
+        "start": "2025-01-01T00:00:00.0000000",
+        "end": "2025-12-31T23:30:00.0000000",
+        "state": "open"
+      },
+      "score": 0
+    }
+  ],
+  "after": "WyIwIiwiU0VTMTAwOTc0MCJd",
+  "links": [
+    {
+      "rel": "next",
+      "href": "/programs/offerings/search?limit=10&offset=0&after=WyIwIiwiU0VTMTAwOTc0MCJd"
+    }
+  ]
+}
