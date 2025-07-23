@@ -1,0 +1,57 @@
+﻿@page "/browse-documents"
+
+@rendermode InteractiveServer
+@inject IJSRuntime JSRuntime
+
+<PageTitle>Browse documents</PageTitle>
+
+<h2>Browse documents</h2>
+
+@if (hasError)
+{
+    <div class="alert alert-danger">
+        <h4>Error loading FileManager</h4>
+        <p>@errorMessage</p>
+    </div>
+}
+
+<div class="grid-container">
+    <SfFileManager TValue="FileManagerDirectoryContent" Width="100%" Height="100%">
+        <FileManagerAjaxSettings Url="/api/FileManager/FileOperations"
+                                 UploadUrl="/api/FileManager/Upload"
+                                 DownloadUrl="/api/FileManager/Download"
+                                 GetImageUrl="/api/FileManager/GetImage">
+        </FileManagerAjaxSettings>
+    </SfFileManager>
+</div>
+
+<style>
+    .grid-container {
+        width: 100%;
+        height: calc(100vh - 200px); /* Adjust for header, padding, and margins */
+        margin: 0;
+        padding: 0;
+    }
+</style>
+
+@code {
+    private bool hasError = false;
+    private string errorMessage = "";
+    
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                await JSRuntime.InvokeVoidAsync("console.log", "FileManager component rendered");
+            }
+            catch (Exception ex)
+            {
+                hasError = true;
+                errorMessage = ex.Message;
+                StateHasChanged();
+            }
+        }
+    }
+}

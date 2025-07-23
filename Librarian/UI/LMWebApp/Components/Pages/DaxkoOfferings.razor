@@ -1,0 +1,386 @@
+﻿@page "/offerings"
+@rendermode InteractiveServer
+@using Syncfusion.Blazor
+@using Syncfusion.Blazor.Grids
+@using Syncfusion.Blazor.Popups
+@using Syncfusion.Blazor.Buttons
+@using Syncfusion.Blazor.Notifications
+@using LMWebApp.Models
+@using LMWebApp.Services
+@inject IDaxkoServiceProvider DaxkoService
+
+<PageTitle>Daxko Offerings</PageTitle>
+
+<h2>Daxko Offerings</h2>
+<div class="grid-container">
+    @if (isLoading)
+    {
+        <div class="skeleton-container">
+            <SfSkeleton CssClass="skeletonRectangle" Shape=SkeletonType.Rectangle Width="100%" Height="50px"></SfSkeleton>
+            <SfSkeleton CssClass="skeletonRectangle" Shape=SkeletonType.Rectangle Width="100%" Height="40px"></SfSkeleton>
+            <SfSkeleton CssClass="skeletonRectangle" Shape=SkeletonType.Rectangle Width="100%" Height="40px"></SfSkeleton>
+            <SfSkeleton CssClass="skeletonRectangle" Shape=SkeletonType.Rectangle Width="100%" Height="40px"></SfSkeleton>
+            <SfSkeleton CssClass="skeletonRectangle" Shape=SkeletonType.Rectangle Width="100%" Height="40px"></SfSkeleton>
+            <SfSkeleton CssClass="skeletonRectangle" Shape=SkeletonType.Rectangle Width="100%" Height="40px"></SfSkeleton>
+            <SfSkeleton CssClass="skeletonRectangle" Shape=SkeletonType.Rectangle Width="100%" Height="40px"></SfSkeleton>
+            <SfSkeleton CssClass="skeletonRectangle" Shape=SkeletonType.Rectangle Width="100%" Height="40px"></SfSkeleton>
+        </div>
+    }
+    else
+    {
+        <SfGrid ID="Grid" DataSource="@Offerings" @ref="Grid" AllowPaging="true" AllowFiltering="true" AllowReordering="true" AllowGrouping="false" AllowExcelExport="true" AllowSelection="true"
+                AllowSorting="true" Toolbar="@(new List<string>() { "Details", "CsvExport","Search"})" Height="100%" Width="100%">        
+            <GridEditSettings AllowAdding="false" AllowEditing="true" AllowDeleting="false" Mode="Syncfusion.Blazor.Grids.EditMode.Normal"></GridEditSettings>
+            <GridFilterSettings Type="Syncfusion.Blazor.Grids.FilterType.FilterBar"></GridFilterSettings>
+            <GridPageSettings PageSizes="true"></GridPageSettings>
+            <GridSelectionSettings Type="Syncfusion.Blazor.Grids.SelectionType.Single"></GridSelectionSettings>
+            <GridEvents OnToolbarClick="ToolbarClick" TValue="DaxkoOffering"></GridEvents>
+            <GridColumns>
+                <GridColumn Field=@nameof(DaxkoOffering.Id) HeaderText="ID" IsPrimaryKey="true" ValidationRules="@(new ValidationRules{ Required=true })" TextAlign="Syncfusion.Blazor.Grids.TextAlign.Right" Width="60"></GridColumn>
+                <GridColumn Field=@nameof(DaxkoOffering.Name) HeaderText="Offering Name" ValidationRules="@(new ValidationRules{ Required=true })" Width="150"></GridColumn>
+                <GridColumn Field=@nameof(DaxkoOffering.Description) HeaderText="Offering Description" ValidationRules="@(new ValidationRules{ Required=true })" Width="150"></GridColumn>
+                <GridColumn Field=@nameof(DaxkoOffering.Type) HeaderText="Offering Type" ValidationRules="@(new ValidationRules{ Required=true })" Width="150"></GridColumn>
+                <GridColumn Field=@nameof(DaxkoOffering.StartDate) HeaderText="Offering Start Date" EditType="EditType.DatePickerEdit" Format="d" TextAlign="Syncfusion.Blazor.Grids.TextAlign.Right" Width="90" Type="Syncfusion.Blazor.Grids.ColumnType.Date"></GridColumn>
+                <GridColumn Field=@nameof(DaxkoOffering.EndDate) HeaderText="Offering End Date" EditType="EditType.DatePickerEdit" Format="d" TextAlign="Syncfusion.Blazor.Grids.TextAlign.Right" Width="90" Type="Syncfusion.Blazor.Grids.ColumnType.Date"></GridColumn>
+            </GridColumns>
+        </SfGrid>
+    }
+    
+<!-- dialog hidden-->
+    <SfDialog @bind-Visible="isReviewVisible" Width="800px" Height="600px" EnableResize="true" IsModal="true" ShowCloseIcon="true">
+        <DialogTemplates>
+            <Header> Offering Details - @(CurrentOffering?.Name ?? "N/A") </Header>
+            <Content>
+                @if (CurrentOffering != null)
+                {
+                    <div class="offering-details">
+                        <div class="detail-section">
+                            <h4>Basic Information</h4>
+                            <div class="detail-row">
+                                <span class="label">ID:</span>
+                                <span class="value">@CurrentOffering.Id</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="label">Name:</span>
+                                <span class="value">@CurrentOffering.Name</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="label">Type:</span>
+                                <span class="value">@CurrentOffering.Type</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="label">Description:</span>
+                                <span class="value">@CurrentOffering.Description</span>
+                            </div>
+                        </div>
+
+                        <div class="detail-section">
+                            <h4>Dates</h4>
+                            <div class="detail-row">
+                                <span class="label">Start Date:</span>
+                                <span class="value">@CurrentOffering.StartDate.ToString("MM/dd/yyyy")</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="label">End Date:</span>
+                                <span class="value">@CurrentOffering.EndDate.ToString("MM/dd/yyyy")</span>
+                            </div>
+                        </div>
+
+                        @if (CurrentOffering.DaxkoProgram != null && !string.IsNullOrEmpty(CurrentOffering.DaxkoProgram.Name))
+                        {
+                            <div class="detail-section">
+                                <h4>Program Information</h4>
+                                <div class="detail-row">
+                                    <span class="label">Program ID:</span>
+                                    <span class="value">@CurrentOffering.DaxkoProgram.Id</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="label">Program Name:</span>
+                                    <span class="value">@CurrentOffering.DaxkoProgram.Name</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="label">Program Type:</span>
+                                    <span class="value">@CurrentOffering.DaxkoProgram.Type</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="label">Program Description:</span>
+                                    <span class="value">@CurrentOffering.DaxkoProgram.Description</span>
+                                </div>
+                            </div>
+                        }
+
+                        @if (CurrentOffering.Locations != null && CurrentOffering.Locations.Any())
+                        {
+                            <div class="detail-section">
+                                <h4>Locations (@CurrentOffering.Locations.Count)</h4>
+                                @foreach (var location in CurrentOffering.Locations)
+                                {
+                                    <div class="detail-row">
+                                        <span class="label">@location.Name:</span>
+                                        <span class="value">@location.Type (ID: @location.Id)</span>
+                                    </div>
+                                }
+                            </div>
+                        }
+
+                        @if (CurrentOffering.Categories != null && CurrentOffering.Categories.Any())
+                        {
+                            <div class="detail-section">
+                                <h4>Categories (@CurrentOffering.Categories.Count)</h4>
+                                @foreach (var category in CurrentOffering.Categories)
+                                {
+                                    <div class="detail-row">
+                                        <span class="label">@category.Name:</span>
+                                        <span class="value">ID: @category.Id</span>
+                                    </div>
+                                }
+                            </div>
+                        }
+
+                        @if (CurrentOffering.Groups != null && CurrentOffering.Groups.Any())
+                        {
+                            <div class="detail-section">
+                                <h4>Groups (@CurrentOffering.Groups.Count)</h4>
+                                @foreach (var group in CurrentOffering.Groups)
+                                {
+                                    <div class="detail-row">
+                                        <span class="label">@group.Name:</span>
+                                        <span class="value">
+                                            @if (group.DaxkoRate != null)
+                                            {
+                                                <span>@group.DaxkoRate.MinAmount - @group.DaxkoRate.MaxAmount @group.DaxkoRate.Unit (@group.DaxkoRate.Frequency)</span>
+                                            }
+                                            else
+                                            {
+                                                <span>ID: @group.Id</span>
+                                            }
+                                        </span>
+                                    </div>
+                                }
+                            </div>
+                        }
+
+                        @if (CurrentOffering.Times != null && CurrentOffering.Times.Any())
+                        {
+                            <div class="detail-section">
+                                <h4>Time Slots (@CurrentOffering.Times.Count)</h4>
+                                @foreach (var time in CurrentOffering.Times)
+                                {
+                                    <div class="detail-row">
+                                        <span class="label">@time.Start - @time.End</span>
+                                    </div>
+                                }
+                            </div>
+                        }
+
+                        @if (CurrentOffering.DaysOffered != null && CurrentOffering.DaysOffered.Any())
+                        {
+                            <div class="detail-section">
+                                <h4>Days Offered (@CurrentOffering.DaysOffered.Count)</h4>
+                                @foreach (var day in CurrentOffering.DaysOffered)
+                                {
+                                    <div class="detail-row">
+                                        <span class="label">@day.Name:</span>
+                                        <span class="value">ID: @day.Id</span>
+                                    </div>
+                                }
+                            </div>
+                        }
+
+                        @if (CurrentOffering.Highlights != null && CurrentOffering.Highlights.Any())
+                        {
+                            <div class="detail-section">
+                                <h4>Highlights (@CurrentOffering.Highlights.Count)</h4>
+                                <ul class="highlights-list">
+                                    @foreach (var highlight in CurrentOffering.Highlights)
+                                    {
+                                        <li>@highlight</li>
+                                    }
+                                </ul>
+                            </div>
+                        }
+
+                        @if (CurrentOffering.DaxkoRegistration != null)
+                        {
+                            <div class="detail-section">
+                                <h4>Registration</h4>
+                                <div class="detail-row">
+                                    <span class="label">Registration Start:</span>
+                                    <span class="value">@CurrentOffering.DaxkoRegistration.Start.ToString("MM/dd/yyyy")</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="label">Registration End:</span>
+                                    <span class="value">@CurrentOffering.DaxkoRegistration.End.ToString("MM/dd/yyyy")</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="label">State:</span>
+                                    <span class="value">@CurrentOffering.DaxkoRegistration.State</span>
+                                </div>
+                            </div>
+                        }
+
+                        <div class="detail-section">
+                            <h4>Additional Information</h4>
+                            <div class="detail-row">
+                                <span class="label">Score:</span>
+                                <span class="value">@CurrentOffering.Score</span>
+                            </div>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <p>No offering selected.</p>
+                }
+            </Content>
+        </DialogTemplates>
+        <DialogButtons>
+            <DialogButton IsPrimary="true" OnClick="@OnOk">
+                Close
+            </DialogButton>
+        </DialogButtons>
+    </SfDialog>
+</div>
+
+<style>
+    .grid-container {
+        width: 100%;
+        height: calc(100vh - 200px); /* Adjust for header, padding, and margins */
+        margin: 0;
+        padding: 0;
+    }
+    
+    .skeleton-container {
+        width: 100%;
+        height: 100%;
+        padding: 10px;
+    }
+    
+    .skeleton-container .e-skeleton {
+        margin-bottom: 10px;
+    }
+
+    /* Dialog content styles */
+    .offering-details {
+        max-height: 500px;
+        overflow-y: auto;
+        padding: 10px;
+    }
+
+    .detail-section {
+        margin-bottom: 20px;
+        border-bottom: 1px solid #e0e0e0;
+        padding-bottom: 15px;
+    }
+
+    .detail-section:last-child {
+        border-bottom: none;
+    }
+
+    .detail-section h4 {
+        color: #333;
+        margin-bottom: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        border-bottom: 2px solid #007bff;
+        padding-bottom: 5px;
+    }
+
+    .detail-row {
+        display: flex;
+        margin-bottom: 8px;
+        align-items: flex-start;
+    }
+
+    .detail-row .label {
+        font-weight: 600;
+        min-width: 120px;
+        color: #555;
+        margin-right: 10px;
+    }
+
+    .detail-row .value {
+        flex: 1;
+        color: #333;
+        word-wrap: break-word;
+    }
+
+    .highlights-list {
+        margin: 0;
+        padding-left: 20px;
+    }
+
+    .highlights-list li {
+        margin-bottom: 5px;
+        color: #333;
+    }
+
+    /* Responsive adjustments */
+    @@media (max-width: 768px) {
+        .detail-row {
+            flex-direction: column;
+        }
+        
+        .detail-row .label {
+            min-width: auto;
+            margin-bottom: 5px;
+        }
+    }
+</style>
+
+@code {
+    public List<DaxkoOffering>? Offerings { get; set; }
+    SfGrid<DaxkoOffering>? Grid;
+    private bool isLoading = true;
+    
+    protected override async Task OnInitializedAsync()
+    {
+        isLoading = true;
+        
+        // Initialize the Daxko service with authentication
+        var initSuccess = await DaxkoService.InitAsync();
+        if (initSuccess)
+        {
+            Offerings = await DaxkoService.GetOfferingsAsync();
+        }
+        else
+        {
+            // Fallback to sample data if initialization fails
+            Offerings = new List<DaxkoOffering>();
+        }
+        
+        isLoading = false;
+        StateHasChanged();
+    }
+    
+    public void ToolbarClick(Syncfusion.Blazor.Navigations.ClickEventArgs args)
+    {
+        if (args.Item.Id == "Grid_csvexport")
+        {
+            this.Grid?.ExportToCsvAsync();
+        }
+        else if (args.Item.Id == "Grid_Details")
+        {
+            if (Grid.SelectedRecords != null && Grid.SelectedRecords.Count > 0)
+            {
+                CurrentOffering = Grid.SelectedRecords[0];
+                OnReview();
+            }
+        }
+    }
+    
+    // dialog features
+    private bool isReviewVisible { get; set; } = false;
+    public DaxkoOffering? CurrentOffering { get; set; }
+    
+    private void OnReview()
+    {
+        this.isReviewVisible = true;   
+    }
+    
+    private async Task OnOk()
+    {
+        this.isReviewVisible = false;   
+    }
+    
+}

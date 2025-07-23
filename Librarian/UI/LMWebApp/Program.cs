@@ -1,6 +1,7 @@
 ﻿using LMWebApp.Components;
 using LMWebApp.Components.Account;
 using LMWebApp.Data;
+using LMWebApp.Services;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -17,12 +18,13 @@ builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddScoped<IdentityUserAccessor>();
 builder.Services.AddScoped<IdentityRedirectManager>();
 builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
+builder.Services.AddControllers();
 
 builder.Services.AddAuthentication(options =>
     {
         options.DefaultScheme = IdentityConstants.ApplicationScheme;
         options.DefaultSignInScheme = IdentityConstants.ExternalScheme;
-    })
+    })  
     .AddIdentityCookies();
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
@@ -36,10 +38,21 @@ builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.Requ
     .AddDefaultTokenProviders();
 
 builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
+builder.Services.AddHttpClient<IDaxkoServiceProvider, DaxkoServiceProvider>();
+builder.Services.AddScoped<IDaxkoServiceProvider, DaxkoServiceProvider>();
 
 var app = builder.Build();
+
 //Register Syncfusion license https://help.syncfusion.com/common/essential-studio/licensing/how-to-generate
-Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("REMOVED_SYNCFUSION_LICENSE_KEY=");
+try
+{
+    Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("REMOVED_SYNCFUSION_LICENSE_KEY=");
+    Console.WriteLine("Syncfusion license registered successfully");
+}
+catch (Exception ex)
+{
+    Console.WriteLine($"Error registering Syncfusion license: {ex.Message}");
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -54,9 +67,12 @@ else
 }
 
 app.UseHttpsRedirection();
-
-
+app.UseStaticFiles();
+app.UseRouting();
 app.UseAntiforgery();
+
+// Map controllers before Razor components
+app.MapControllers();
 
 app.MapStaticAssets();
 app.MapRazorComponents<App>()

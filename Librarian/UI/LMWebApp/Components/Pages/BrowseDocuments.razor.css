@@ -1,0 +1,31 @@
+
+    .panetext {
+        font-size: 11px;
+    }
+    #pane-heading {
+        font-size: 14px;
+        margin-bottom: 4px;
+    }
+    .pane1 {
+        margin: 20px auto;
+        max-width: 440px;
+    }
+    .control-section {
+        min-height: 70px;
+        margin-bottom: 15px;
+        margin-top: 10px;
+        padding-top:50px;
+        padding-bottom:50px;
+    }
+    .ulstyle {
+        margin: 0px;
+        padding-left: 20px;
+        display: inline-block;
+    }
+    .list {
+    float: left;
+    line-height: 20px;
+    margin: 10px;
+    min-width: 280px;
+    }
+
