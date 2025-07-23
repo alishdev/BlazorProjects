@@ -8,6 +8,7 @@ using System.IO;
 using Syncfusion.EJ2.FileManager.Base;
 using ErrorDetails = Syncfusion.Blazor.FileManager.ErrorDetails;
 using FileManagerDirectoryContent = Syncfusion.EJ2.FileManager.Base.FileManagerDirectoryContent;
+using System.Text.Json;
 
 namespace LMWebApp.FileManagerService
 {
@@ -18,6 +19,127 @@ namespace LMWebApp.FileManagerService
         public FileManagerService()
         {
             this.GetData();
+        }
+
+        public List<FileManagerDirectoryContent> LoadFileHierarchyFromJson()
+        {
+            List<FileManagerDirectoryContent> files = new List<FileManagerDirectoryContent>();
+            
+            try
+            {
+                // Read the JSON file
+                string jsonPath = Path.Combine(Directory.GetCurrentDirectory(), "Services", "file_hierarchy.json");
+                if (!File.Exists(jsonPath))
+                {
+                    Console.WriteLine($"File not found: {jsonPath}");
+                    return files;
+                }
+                
+                string jsonContent = File.ReadAllText(jsonPath);
+                var jsonData = JsonSerializer.Deserialize<Dictionary<string, object>>(jsonContent);
+                
+                if (jsonData != null)
+                {
+                    ProcessJsonNode(jsonData, "/", files, "0");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error loading file hierarchy: {ex.Message}");
+            }
+            
+            return files;
+        }
+        
+        private void ProcessJsonNode(Dictionary<string, object> node, string currentPath, List<FileManagerDirectoryContent> files, string parentId)
+        {
+            int idCounter = files.Count + 1;
+            
+            foreach (var kvp in node)
+            {
+                string name = kvp.Key;
+                object value = kvp.Value;
+                string id = idCounter.ToString();
+                
+                if (value is JsonElement element)
+                {
+                    if (element.ValueKind == JsonValueKind.Array)
+                    {
+                        // This is a folder containing files
+                        var fileArray = element.EnumerateArray();
+                        var fileList = new List<string>();
+                        foreach (var file in fileArray)
+                        {
+                            fileList.Add(file.GetString() ?? "");
+                        }
+                        
+                        // Create folder
+                        FileManagerDirectoryContent folder = new FileManagerDirectoryContent
+                        {
+                            Name = name,
+                            IsFile = false,
+                            HasChild = fileList.Count > 0,
+                            FilterPath = currentPath,
+                            Type = "",
+                            Size = 0,
+                            DateModified = DateTime.Now,
+                            DateCreated = DateTime.Now,
+                            Id = id,
+                            ParentId = parentId
+                        };
+                        files.Add(folder);
+                        
+                        // Create files in this folder
+                        foreach (string fileName in fileList)
+                        {
+                            idCounter++;
+                            FileManagerDirectoryContent file = new FileManagerDirectoryContent
+                            {
+                                Name = fileName,
+                                IsFile = true,
+                                HasChild = false,
+                                FilterPath = currentPath + name + "/",
+                                Type = Path.GetExtension(fileName),
+                                Size = 1024, // Default size
+                                DateModified = DateTime.Now,
+                                DateCreated = DateTime.Now,
+                                Id = idCounter.ToString(),
+                                ParentId = id
+                            };
+                            files.Add(file);
+                        }
+                    }
+                    else if (element.ValueKind == JsonValueKind.Object)
+                    {
+                        // This is a folder containing subfolders
+                        var subNode = JsonSerializer.Deserialize<Dictionary<string, object>>(element.GetRawText());
+                        
+                        // Create folder
+                        FileManagerDirectoryContent folder = new FileManagerDirectoryContent
+                        {
+                            Name = name,
+                            IsFile = false,
+                            HasChild = true,
+                            FilterPath = currentPath,
+                            Type = "",
+                            Size = 0,
+                            DateModified = DateTime.Now,
+                            DateCreated = DateTime.Now,
+                            Id = id,
+                            ParentId = parentId
+                        };
+                        files.Add(folder);
+                        
+                        // Process subfolders recursively
+                        if (subNode != null)
+                        {
+                            ProcessJsonNode(subNode, currentPath + name + "/", files, id);
+                        }
+                    }
+                }
+                
+                idCounter++;
+            }
         }
 
         public FileManagerResponse GetFiles(string path)
@@ -33,6 +155,7 @@ namespace LMWebApp.FileManagerService
             // Create a list to hold files and folders
             List<FileManagerDirectoryContent> files = new List<FileManagerDirectoryContent>();
             
+            /*
             // Root folder - Documents
             FileManagerDirectoryContent documentsFolder = new FileManagerDirectoryContent
             {
@@ -145,7 +268,9 @@ namespace LMWebApp.FileManagerService
             files.Add(imageFile2);
             
             // Assign files to response
-            response.Files = files;
+            response.Files = files;*/
+
+            response.Files = LoadFileHierarchyFromJson();
             
             // Set current working directory
             response.CWD = new FileManagerDirectoryContent
@@ -187,7 +312,7 @@ namespace LMWebApp.FileManagerService
                 var ff = response.Files.Where(a => a.FilterPath.StartsWith(path));
                 foreach (var aa in ff)
                 {
-                    Console.WriteLine($"Name = {aa.Name}, Parent = {aa.ParentId}, FilterPath = {aa.FilterPath}");
+                    Console.WriteLine($"{aa.Id}. Name = {aa.Name}, Parent = {aa.ParentId}, FilterPath = {aa.FilterPath}");
                 }
                 response.Files = ff;
                 
@@ -197,63 +322,6 @@ namespace LMWebApp.FileManagerService
             }
         }
 
-        public FileManagerResponse GetFiles2()
-        {
-            FileManagerResponse response = new FileManagerResponse();
-            response.CWD = new FileManagerDirectoryContent()
-            {
-                Name = "Files",
-                //Path = "",
-                FilterPath = "Files",
-                Id = "0",
-                Size = 0L,
-                IsFile = true,
-                DateModified = DateTime.Now,
-                DateCreated = DateTime.Now,
-                HasChild = true,
-                Type = "Folder",
-            };
-            
-            List<FileManagerDirectoryContent> files = new List<FileManagerDirectoryContent>();
-            
-            var f1 = new FileManagerDirectoryContent()
-            {
-                Name = "Products",
-                //Path = "Files/Products",
-                FilterPath = "Files/Products",
-                Id = "1",
-                ParentId = "0",
-                Size = 0L,
-                IsFile = false,
-                DateModified = DateTime.Now,
-                DateCreated = DateTime.Now,
-                HasChild = false,
-                Type = "Folder",
-                FilterId = "0/",
-            };
-            files.Add(response.CWD);
-            files.Add(f1);
-
-            response.Files = files;
-/*
-            response.Files = new[]
-            {
-                response.CWD,
-                new FileManagerDirectoryContent()
-                {
-                    Name = "Files2",
-                    Size = 0L,
-                    IsFile = false,
-                    DateModified = DateTime.Now,
-                    DateCreated = DateTime.Now,
-                    HasChild = false,
-                    Type = "Folder"
-                }
-            };*/
-            return response;
-        }
-
-        
         private void GetData()
         {
             Data.Add(new FileManagerDirectoryContent()

@@ -21,14 +21,16 @@ public class DaxkoServiceProvider : IDaxkoServiceProvider
 {
     private readonly ILogger<DaxkoServiceProvider> _logger;
     private readonly HttpClient _httpClient;
+    private readonly IConfiguration _configuration;
     private readonly List<DaxkoOffering> _offerings;
     private string? _accessToken;
     private bool _isInitialized = false;
 
-    public DaxkoServiceProvider(ILogger<DaxkoServiceProvider> logger, HttpClient httpClient)
+    public DaxkoServiceProvider(ILogger<DaxkoServiceProvider> logger, HttpClient httpClient, IConfiguration configuration)
     {
         _logger = logger;
         _httpClient = httpClient;
+        _configuration = configuration;
         _offerings = new List<DaxkoOffering>();
     }
 
@@ -38,11 +40,21 @@ public class DaxkoServiceProvider : IDaxkoServiceProvider
         {
             _logger.LogInformation("Initializing Daxko service with authentication");
             
+            var clientId = _configuration["Daxko:ClientId"];
+            var clientSecret = _configuration["Daxko:ClientSecret"];
+            var scope = _configuration["Daxko:Scope"];
+            
+            if (string.IsNullOrEmpty(clientId) || string.IsNullOrEmpty(clientSecret) || string.IsNullOrEmpty(scope))
+            {
+                _logger.LogError("Daxko configuration is missing required values");
+                return false;
+            }
+            
             var authRequest = new
             {
-                client_id = "demo_mission_lens",
-                client_secret = "REMOVED_DAXKO_CLIENT_SECRET",
-                scope = "OPS_9001",
+                client_id = clientId,
+                client_secret = clientSecret,
+                scope = scope,
                 grant_type = "client_credentials"
             };
 
