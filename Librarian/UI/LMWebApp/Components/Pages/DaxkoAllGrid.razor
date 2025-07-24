@@ -56,7 +56,16 @@
         <DialogTemplates>
             <Header> Details </Header>
             <Content>
-                @APISelected
+                @if (CurrentRecord != null)
+                {
+                    @foreach(KeyValuePair<string, object> property in CurrentRecord as IDictionary<string, object>)
+                    {
+                        <div class="detail-row">
+                            <span class="label">@property.Key</span>
+                            <span class="value">@property.Value</span>
+                        </div>
+                    }
+                }
             </Content>
         </DialogTemplates>
         <DialogButtons>
@@ -113,9 +122,22 @@
         
     }
     
+    public static string Print(ExpandoObject dynamicObject)
+    {
+        var dynamicDictionary = dynamicObject as IDictionary<string, object>;
+
+        string cs = "";
+        foreach(KeyValuePair<string, object> property in dynamicDictionary)
+        {
+            cs += $"{property.Key}: {property.Value.ToString()}<br/>";
+        }
+
+        return cs;
+    }
+    
     // dialog features
     private bool isReviewVisible { get; set; } = false;
-    public object? CurrentRecord { get; set; }
+    public ExpandoObject CurrentRecord { get; set; }
     private string APISelected { get; set; }
     
     private void OnReview()
@@ -135,8 +157,14 @@
         public string Text { get; set; }
     }
     List<Endpoint> LocalData = new List<Endpoint> {
-        new Endpoint() { ID= "https://demo-api.partners.daxko.com/api/v1/branches/", Text= "Get All Branches" },
-        new Endpoint() { ID= "https://demo-api.partners.daxko.com/api/v1/branches/sites", Text= "Get All Sites" },
+        new Endpoint() { ID= "https://demo-api.partners.daxko.com/api/v1/branches/", Text= "Get list of branches" },
+        new Endpoint() { ID= "https://demo-api.partners.daxko.com/api/v1/members/me", Text= "Get my member info" },
+        new Endpoint() { ID= "https://demo-api.partners.daxko.com/api/v1/members/member_types", Text= "List member types" },
+        new Endpoint() { ID= "https://demo-api.partners.daxko.com/api/v1/members/note_types", Text= "Get member-note types" },
+        new Endpoint() { ID= "https://demo-api.partners.daxko.com/api/v1/membership/rate_questions", Text= "List rate questions" },
+        new Endpoint() { ID= "https://demo-api.partners.daxko.com/api/v1/membership/age_groups", Text= "List age groups" },
+        new Endpoint() { ID= "https://demo-api.partners.daxko.com/api/v1/prospects/tour_statuses", Text= "List tour statuses" },
+        new Endpoint() { ID= "https://demo-api.partners.daxko.com/api/v1/units/relationships/types", Text= "List Relationship Types" },
     };
     
     public async Task OnDropdownChange(ChangeEventArgs<string, Endpoint> args)
