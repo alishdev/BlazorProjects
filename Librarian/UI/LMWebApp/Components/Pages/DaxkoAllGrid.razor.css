@@ -1,0 +1,94 @@
+.ulstyle {
+        margin: 0px;
+        padding-left: 20px;
+        display: inline-block;
+    }
+    .list {
+    float: left;
+    line-height: 20px;
+    margin: 10px;
+    min-width: 200px;
+    }
+.grid-container {
+        width: 100%;
+        height: calc(100vh - 200px); /* Adjust for header, padding, and margins */
+        margin: 0;
+        padding: 0;
+    }
+    
+    .skeleton-container {
+        width: 100%;
+        height: 100%;
+        padding: 10px;
+    }
+    
+    .skeleton-container .e-skeleton {
+        margin-bottom: 10px;
+    }
+
+    /* Dialog content styles */
+    .offering-details {
+        max-height: 500px;
+        overflow-y: auto;
+        padding: 10px;
+    }
+
+    .detail-section {
+        margin-bottom: 20px;
+        border-bottom: 1px solid #e0e0e0;
+        padding-bottom: 15px;
+    }
+
+    .detail-section:last-child {
+        border-bottom: none;
+    }
+
+    .detail-section h4 {
+        color: #333;
+        margin-bottom: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        border-bottom: 2px solid #007bff;
+        padding-bottom: 5px;
+    }
+
+    .detail-row {
+        display: flex;
+        margin-bottom: 8px;
+        align-items: flex-start;
+    }
+
+    .detail-row .label {
+        font-weight: 600;
+        min-width: 120px;
+        color: #555;
+        margin-right: 10px;
+    }
+
+    .detail-row .value {
+        flex: 1;
+        color: #333;
+        word-wrap: break-word;
+    }
+
+    .highlights-list {
+        margin: 0;
+        padding-left: 20px;
+    }
+
+    .highlights-list li {
+        margin-bottom: 5px;
+        color: #333;
+    }
+
+    /* Responsive adjustments */
+    @@media (max-width: 768px) {
+        .detail-row {
+            flex-direction: column;
+        }
+        
+        .detail-row .label {
+            min-width: auto;
+            margin-bottom: 5px;
+        }
+    }

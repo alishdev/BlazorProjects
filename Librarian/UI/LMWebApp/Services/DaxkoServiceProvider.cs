@@ -15,6 +15,7 @@ public interface IDaxkoServiceProvider
     Task<bool> ApproveOfferingAsync(string id);
     Task<bool> RejectOfferingAsync(string id);
     Task<List<DaxkoMember>> GetMembersAsync();
+    Task<List<object>> GetRandomAPI(string endpoint);
 }
 
 public class DaxkoServiceProvider : IDaxkoServiceProvider
@@ -257,6 +258,60 @@ public class DaxkoServiceProvider : IDaxkoServiceProvider
         }
     }
 
+    private static List<object> DeserializeEndpointResponse(string responseContent)
+    {
+        List<object> vv = new List<object> { new DaxkoOffering()
+        {
+            Id = "1",
+            Name = "Test",
+            Description = "Test",
+            Type = "Test",
+            StartDate = DateTime.Now,
+            EndDate = DateTime.Now
+        } };
+        return vv;
+    }
+
+    public async Task<List<object>> GetRandomAPI(string endpoint)
+    {
+        if (!_isInitialized)
+        {
+            _logger.LogWarning("Daxko service not initialized. Attempting to initialize...");
+            await InitAsync();
+        }
+        
+        try
+        {
+            _logger.LogInformation("Retrieving Daxko members from API");
+            
+            if (string.IsNullOrEmpty(_accessToken))
+            {
+                _logger.LogError("Access token is null or empty. Cannot make API call.");
+                return new List<object>();
+            }
+            
+            // Add authorization header
+            _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _accessToken);
+            
+            var response = await _httpClient.GetAsync(endpoint);
+            
+            if (response.IsSuccessStatusCode)
+            {
+                var responseContent = await response.Content.ReadAsStringAsync();
+                _logger.LogInformation("Raw API response: {Response}", responseContent);
+                
+                return DeserializeEndpointResponse(responseContent);
+            }
+            
+            _logger.LogError("Failed to retrieve members from API. Status: {StatusCode}", response.StatusCode);
+            return new List<object>();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error retrieving Daxko members from API");
+            return new List<object>();
+        }
+    }
 }
 
 public class AuthResponse
