@@ -1,3 +1,4 @@
+using System.Dynamic;
 using LMWebApp.Models;
 using System.Text;
 using System.Text.Json;
@@ -15,7 +16,7 @@ public interface IDaxkoServiceProvider
     Task<bool> ApproveOfferingAsync(string id);
     Task<bool> RejectOfferingAsync(string id);
     Task<List<DaxkoMember>> GetMembersAsync();
-    Task<List<object>> GetRandomAPI(string endpoint);
+    Task<Tuple<string[], List<ExpandoObject>>>GetRandomAPI(string endpoint);
 }
 
 public class DaxkoServiceProvider : IDaxkoServiceProvider
@@ -258,21 +259,70 @@ public class DaxkoServiceProvider : IDaxkoServiceProvider
         }
     }
 
-    private static List<object> DeserializeEndpointResponse(string responseContent)
+    private static List<ExpandoObject> DeserializeEndpointResponse(string responseContent, out string[] headers)
     {
-        List<object> vv = new List<object> { new DaxkoOffering()
+        headers = new string[0];
+        var result = new List<ExpandoObject>();
+        
+        try
         {
-            Id = "1",
-            Name = "Test",
-            Description = "Test",
-            Type = "Test",
-            StartDate = DateTime.Now,
-            EndDate = DateTime.Now
-        } };
-        return vv;
+            // Parse the JSON response using JsonDocument for better control
+            using var document = JsonDocument.Parse(responseContent);
+            var root = document.RootElement;
+            
+            // Find the array property (it's not "total" or "has_more_records")
+            string? arrayPropertyName = null;
+            
+            foreach (var property in root.EnumerateObject())
+            {
+                string propertyName = property.Name;
+                if (propertyName != "total" && propertyName != "has_more_records" && 
+                    property.Value.ValueKind == JsonValueKind.Array)
+                {
+                    arrayPropertyName = propertyName;
+                    break;
+                }
+            }
+            
+            if (arrayPropertyName != null)
+            {
+                var array = root.GetProperty(arrayPropertyName);
+                
+                if (array.GetArrayLength() > 0)
+                {
+                    // Get headers from the first object in the array
+                    var firstItem = array[0];
+                    var headerList = new List<string>();
+                    foreach (var prop in firstItem.EnumerateObject())
+                    {
+                        headerList.Add(prop.Name);
+                    }
+                    headers = headerList.ToArray();
+                    
+                    // Convert each item in the array to a dynamic object
+                    foreach (var item in array.EnumerateArray())
+                    {
+                        dynamic dynamicItem = new ExpandoObject();
+                        foreach (var prop in item.EnumerateObject())
+                        {
+                            //dynamicItem[prop.Name] = prop.Value.GetRawText();
+                            ((IDictionary<string, object>)dynamicItem).Add(prop.Name, prop.Value.GetRawText());
+                        }
+                        result.Add(dynamicItem);
+                    }
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            // Log error or handle gracefully
+            Console.WriteLine($"Error deserializing response: {ex.Message}");
+        }
+        
+        return result;
     }
 
-    public async Task<List<object>> GetRandomAPI(string endpoint)
+    public async Task<Tuple<string[], List<ExpandoObject>>> GetRandomAPI(string endpoint)
     {
         if (!_isInitialized)
         {
@@ -287,7 +337,7 @@ public class DaxkoServiceProvider : IDaxkoServiceProvider
             if (string.IsNullOrEmpty(_accessToken))
             {
                 _logger.LogError("Access token is null or empty. Cannot make API call.");
-                return new List<object>();
+                return new Tuple<string[], List<ExpandoObject>>(Array.Empty<string>(), new List<ExpandoObject>() );
             }
             
             // Add authorization header
@@ -299,18 +349,20 @@ public class DaxkoServiceProvider : IDaxkoServiceProvider
             {
                 var responseContent = await response.Content.ReadAsStringAsync();
                 _logger.LogInformation("Raw API response: {Response}", responseContent);
-                
-                return DeserializeEndpointResponse(responseContent);
+
+                string[] headers;
+                var list = DeserializeEndpointResponse(responseContent, out headers);
+                return new Tuple<string[], List<ExpandoObject>>(headers, list);
             }
             
             _logger.LogError("Failed to retrieve members from API. Status: {StatusCode}", response.StatusCode);
-            return new List<object>();
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error retrieving Daxko members from API");
-            return new List<object>();
         }
+        
+        return new Tuple<string[], List<ExpandoObject>>(Array.Empty<string>(), new List<ExpandoObject>() );
     }
 }
 

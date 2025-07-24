@@ -1,5 +1,6 @@
 ﻿@page "/daxkoapi"
 @rendermode InteractiveServer
+@using System.Dynamic
 @using Syncfusion.Blazor
 @using Syncfusion.Blazor.Grids
 @using Syncfusion.Blazor.Popups
@@ -39,20 +40,13 @@
     }
     else
     {
-        <SfGrid ID="Grid" DataSource="@GridData" @ref="Grid" AllowPaging="true" AllowFiltering="true" AllowReordering="true" AllowGrouping="false" AllowExcelExport="true" AllowSelection="true"
-                AllowSorting="true" Toolbar="@(new List<string>() { "Details", "CsvExport", "Search" })" Height="80%" Width="100%">
-            <GridEditSettings AllowAdding="false" AllowEditing="true" AllowDeleting="false" Mode="Syncfusion.Blazor.Grids.EditMode.Normal"></GridEditSettings>
-            <GridFilterSettings Type="Syncfusion.Blazor.Grids.FilterType.FilterBar"></GridFilterSettings>
+        <SfGrid ID="Grid" DataSource="@GridData" @ref="Grid" AllowPaging="true" AllowFiltering="false" AllowReordering="false" AllowGrouping="false" AllowExcelExport="false" AllowSelection="true"
+                AllowSorting="true" Toolbar="@(new List<string>() { "Details"})" Height="80%" Width="100%">
+            <GridEditSettings AllowAdding="false" AllowEditing="false" AllowDeleting="false" Mode="Syncfusion.Blazor.Grids.EditMode.Normal"></GridEditSettings>
             <GridPageSettings PageSizes="true"></GridPageSettings>
             <GridSelectionSettings Type="Syncfusion.Blazor.Grids.SelectionType.Single"></GridSelectionSettings>
-            <GridEvents OnToolbarClick="ToolbarClick" OnLoad="LoadGrid" TValue="object"></GridEvents>
+            <GridEvents OnToolbarClick="ToolbarClick" OnLoad="LoadGrid" TValue="ExpandoObject"></GridEvents>
             <GridColumns>
-                <GridColumn Field=@nameof(DaxkoOffering.Id) HeaderText="ID" IsPrimaryKey="true" ValidationRules="@(new ValidationRules { Required = true })" TextAlign="Syncfusion.Blazor.Grids.TextAlign.Right" Width="60"></GridColumn>
-                <GridColumn Field=@nameof(DaxkoOffering.Name) HeaderText="Offering Name" ValidationRules="@(new ValidationRules { Required = true })" Width="150"></GridColumn>
-                <GridColumn Field=@nameof(DaxkoOffering.Description) HeaderText="Offering Description" ValidationRules="@(new ValidationRules { Required = true })" Width="150"></GridColumn>
-                <GridColumn Field=@nameof(DaxkoOffering.Type) HeaderText="Offering Type" ValidationRules="@(new ValidationRules { Required = true })" Width="150"></GridColumn>
-                <GridColumn Field=@nameof(DaxkoOffering.StartDate) HeaderText="Offering Start Date" EditType="EditType.DatePickerEdit" Format="d" TextAlign="Syncfusion.Blazor.Grids.TextAlign.Right" Width="90" Type="Syncfusion.Blazor.Grids.ColumnType.Date"></GridColumn>
-                <GridColumn Field=@nameof(DaxkoOffering.EndDate) HeaderText="Offering End Date" EditType="EditType.DatePickerEdit" Format="d" TextAlign="Syncfusion.Blazor.Grids.TextAlign.Right" Width="90" Type="Syncfusion.Blazor.Grids.ColumnType.Date"></GridColumn>
             </GridColumns>
         </SfGrid>
     }
@@ -74,8 +68,8 @@
 </div>
 
 @code {
-    public List<object>? GridData { get; set; }
-    SfGrid<object>? Grid;
+    public List<ExpandoObject>? GridData { get; set; }
+    SfGrid<ExpandoObject>? Grid;
     private bool isLoading = true;
     
     protected override async Task OnInitializedAsync()
@@ -84,14 +78,14 @@
         
         // Initialize the Daxko service with authentication
         var initSuccess = await DaxkoService.InitAsync();
-        if (initSuccess)
+        /*if (initSuccess && !string.IsNullOrEmpty(APISelected))
         {
             GridData = await DaxkoService.GetRandomAPI(APISelected);
         }
-        else
+        else*/
         {
             // Fallback to sample data if initialization fails
-            GridData = new List<object>();
+            GridData = new List<ExpandoObject>();
         }
         
         isLoading = false;
@@ -116,6 +110,7 @@
     
     public void LoadGrid()
     {
+        
     }
     
     // dialog features
@@ -147,6 +142,18 @@
     public async Task OnDropdownChange(ChangeEventArgs<string, Endpoint> args)
     {
         APISelected = $"id = {args.ItemData.ID}, text = {args.ItemData.Text}";
-        GridData = await DaxkoService.GetRandomAPI(args.ItemData.ID);
+        var tuple = await DaxkoService.GetRandomAPI(args.ItemData.ID);
+        GridData = tuple.Item2;
+        Grid.Columns.RemoveAll(x => 1 == 1);
+        if (GridData != null && GridData.Count > 0)
+        {
+            int count = 0;
+            foreach (string key in tuple.Item1)
+            {
+                Grid.Columns.Add(new GridColumn(){AutoFit = true, HeaderText = key, Field=key});
+                if (count++ > 5)
+                    break;
+            }
+        }
     }
 }
