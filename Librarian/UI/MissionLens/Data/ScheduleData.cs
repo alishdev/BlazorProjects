@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace LMWebApp2.Data
+namespace MissionLens.Data
 {
     public class ScheduleData
     {

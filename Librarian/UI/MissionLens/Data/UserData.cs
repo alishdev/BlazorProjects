@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
 
-namespace LMWebApp2.Data
+namespace MissionLens.Data
 {
     public class UserDetails
     {

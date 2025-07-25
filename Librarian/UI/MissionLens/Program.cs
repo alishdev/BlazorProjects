@@ -1,5 +1,5 @@
-﻿using LMWebApp2;
-using LMWebApp2.Components;
+﻿using MissionLens;
+using MissionLens.Components;
 using Syncfusion.Blazor;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,7 +11,11 @@ builder.Services.AddRazorComponents()
 
 var app = builder.Build();
 //Register Syncfusion license https://help.syncfusion.com/common/essential-studio/licensing/how-to-generate
-//Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("YOUR LICENSE KEY");
+var syncfusionLicense = builder.Configuration["SyncfusionLicense"];
+if (!string.IsNullOrEmpty(syncfusionLicense))
+{
+    Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense(syncfusionLicense);
+}
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
