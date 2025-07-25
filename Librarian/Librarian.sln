@@ -37,7 +37,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SyncfusionBlazorManual", "T
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LMWebApp", "UI\LMWebApp\LMWebApp.csproj", "{0D49D163-8BA0-47B5-BF07-C3D40209C8AF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LMWebApp2", "UI\LMWebApp2\LMWebApp2.csproj", "{3D3793F4-32A9-4953-9876-3DE130BE5660}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MissionLens", "UI\MissionLens\MissionLens.csproj", "{3D3793F4-32A9-4953-9876-3DE130BE5660}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

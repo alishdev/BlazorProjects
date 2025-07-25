@@ -3,9 +3,12 @@
 @using Syncfusion.Blazor.Navigations
 <SfSidebar ID="Sidebar" Type="SidebarType.Push" Width="300px" DockSize="65px" EnableDock="true" @ref="Sidebar" @bind-IsOpen="SidebarToggle">
     <div class="sidebar" style="position:fixed;z-index:1200">
+        <div class="logo-container">
+            <img src="images/mission-lens-logo.webp" alt="Mission Lens Logo" class="sidebar-logo" />
+        </div>
         <div class="topnav navbar navbar-dark">
             <button class="navbar-toggler" @onclick="ToggleNavMenu" />
-            <a class="navbar-brand" href=""><span class="displayText" style="margin-right:15px">LMWebApp2</span></a>
+            <a class="navbar-brand" href=""><span class="displayText" style="margin-right:15px">MissionLens</span></a>
         </div>
         <div @onmouseover="MouseIn" @onmouseout="MouseOut">
             <NavMenu />
@@ -170,6 +173,17 @@
     .e-sidebar {
         background: #2d323e;
         overflow: hidden;
+    }
+
+    .logo-container {
+        padding: 20px;
+        text-align: center;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .sidebar-logo {
+        max-width: 200px;
+        height: auto;
     }
 
     @@font-face {
