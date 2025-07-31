@@ -39,6 +39,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LMWebApp", "UI\LMWebApp\LMW
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MissionLens", "UI\MissionLens\MissionLens.csproj", "{3D3793F4-32A9-4953-9876-3DE130BE5660}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestPython", "TestPython\TestPython.csproj", "{EBC497DA-23CC-48F0-96C9-B0C666E06829}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -93,6 +95,10 @@ Global
 		{3D3793F4-32A9-4953-9876-3DE130BE5660}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3D3793F4-32A9-4953-9876-3DE130BE5660}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3D3793F4-32A9-4953-9876-3DE130BE5660}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EBC497DA-23CC-48F0-96C9-B0C666E06829}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EBC497DA-23CC-48F0-96C9-B0C666E06829}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EBC497DA-23CC-48F0-96C9-B0C666E06829}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EBC497DA-23CC-48F0-96C9-B0C666E06829}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -110,6 +116,7 @@ Global
 		{48849195-25FA-451D-BEA6-1A1EB287C4DC} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 		{0D49D163-8BA0-47B5-BF07-C3D40209C8AF} = {698B19F0-03CF-4706-B963-07B8B7242CD8}
 		{3D3793F4-32A9-4953-9876-3DE130BE5660} = {698B19F0-03CF-4706-B963-07B8B7242CD8}
+		{EBC497DA-23CC-48F0-96C9-B0C666E06829} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {161FDB27-BC68-4210-9618-A55AAA47CA50}
