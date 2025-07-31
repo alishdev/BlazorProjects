@@ -1,0 +1,29 @@
+﻿@page "/"
+
+@using CSnakes.Runtime
+@inject WebApplication app
+
+<PageTitle>Home</PageTitle>
+
+<h1>Hello, world!</h1>
+
+These are cool things:
+<ul>
+@foreach (var thing in coolThings)
+{
+    <li>@thing</li>
+}
+</ul>
+
+@code{
+
+    IReadOnlyList<string> coolThings;
+
+    protected override void OnInitialized()
+    {
+        var env = app.Services.GetRequiredService<IPythonEnvironment>();
+        var demo = env.Test();
+        coolThings = demo.CoolThings("a");
+    }
+
+}
