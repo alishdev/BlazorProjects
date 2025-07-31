@@ -1,7 +1,7 @@
 ﻿@page "/"
 
 @using CSnakes.Runtime
-@inject WebApplication app
+@inject IPythonEnvironment env
 
 <PageTitle>Home</PageTitle>
 
@@ -21,9 +21,8 @@ These are cool things:
 
     protected override void OnInitialized()
     {
-        var env = app.Services.GetRequiredService<IPythonEnvironment>();
         var demo = env.Test();
         coolThings = demo.CoolThings("a");
     }
 
-}
+}}

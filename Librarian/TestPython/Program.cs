@@ -19,9 +19,10 @@ public class Program
             WithPython().
             WithHome(home).
             WithVirtualEnvironment(venv).
-            FromNuGet("3.12.4").
-            FromMacOSInstallerLocator("3.12").
-            FromEnvironmentVariable("PYTHON_HOME", "3.12").
+            FromRedistributable("3.12").
+            //FromNuGet("3.12.4").
+            //FromMacOSInstallerLocator("3.12").
+            //FromEnvironmentVariable("PYTHON_HOME", "3.12").
             WithPipInstaller();
 
         var app = builder.Build();
