@@ -1,0 +1,1 @@
+This is a test document about machine learning and artificial intelligence. Machine learning is a subset of AI that focuses on algorithms that can learn from data. This document will be used to test the RAG system's ability to process text, generate embeddings, and perform similarity search.
