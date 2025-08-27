@@ -5,6 +5,8 @@ from config import Config
 import logging
 import re
 import numpy as np
+import time
+import psutil
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -156,19 +158,35 @@ class DatabaseManager:
     
     def search_similar_documents(self, query_embedding, top_k=5):
         """Search for similar documents using cosine similarity"""
+        start_time = time.time()
+        timings = {}
+        
         try:
-            # Ensure query embedding has the correct dimension
+            # Start profiling
+            cpu_start = psutil.cpu_percent()
+            memory_start = psutil.virtual_memory().used / 1024 / 1024  # MB
+            
+            # Step 1: Dimension adjustment timing
+            step1_start = time.time()
             if query_embedding.shape[0] != Config.DB_VECTOR_DIMENSION:
                 if query_embedding.shape[0] > Config.DB_VECTOR_DIMENSION:
                     query_embedding = query_embedding[:Config.DB_VECTOR_DIMENSION]
                 else:
                     padding = np.zeros(Config.DB_VECTOR_DIMENSION - query_embedding.shape[0], dtype=np.float32)
                     query_embedding = np.concatenate([query_embedding, padding])
+            step1_time = time.time() - step1_start
+            timings['dimension_adjustment'] = step1_time
             
-            # Convert to list and ensure proper vector type
+            # Step 2: Vector conversion timing
+            step2_start = time.time()
             query_embedding_list = query_embedding.tolist()
+            step2_time = time.time() - step2_start
+            timings['vector_conversion'] = step2_time
             
+            # Step 3: Database query timing
+            step3_start = time.time()
             with self.connection.cursor(cursor_factory=RealDictCursor) as cursor:
+                # Execute the search query
                 cursor.execute("""
                     SELECT 
                         d.id,
@@ -184,7 +202,26 @@ class DatabaseManager:
                 """, (query_embedding_list, query_embedding_list, top_k))
                 
                 results = cursor.fetchall()
-                return results
+            step3_time = time.time() - step3_start
+            timings['database_query'] = step3_time
+            
+            # Calculate total time and resource usage
+            total_time = time.time() - start_time
+            cpu_end = psutil.cpu_percent()
+            memory_end = psutil.virtual_memory().used / 1024 / 1024  # MB
+            
+            # Log performance metrics
+            logger.info(f"🔍 Search Performance Profile:")
+            logger.info(f"  ⏱️  Total time: {total_time:.4f}s")
+            logger.info(f"  📊 Step breakdown:")
+            logger.info(f"     - Dimension adjustment: {timings['dimension_adjustment']:.6f}s ({timings['dimension_adjustment']/total_time*100:.1f}%)")
+            logger.info(f"     - Vector conversion: {timings['vector_conversion']:.6f}s ({timings['vector_conversion']/total_time*100:.1f}%)")
+            logger.info(f"     - Database query: {timings['database_query']:.6f}s ({timings['database_query']/total_time*100:.1f}%)")
+            logger.info(f"  💾 Memory usage: {memory_end - memory_start:.2f} MB")
+            logger.info(f"  🖥️  CPU usage: {cpu_end - cpu_start:.1f}%")
+            logger.info(f"  📈 Results found: {len(results)}")
+            
+            return results
                 
         except Exception as e:
             logger.error(f"Error searching documents: {e}")
